@@ -26,7 +26,7 @@ _client = new RedisClient(endpoint))
 await _client.ConnectAsync(CancellationToken.None).ConfigureAwait(false);
 ``` 
 
- * `IRedisChannel` interface is used to execute commands. Channels are short lived, cheap to create, non-thread safe objects that represent virtual connections to Redis. Channels provide seamless access to command and subscription connections, analyze commands and decide how to route them through the three connection pools (multiplexed, exclusive and subscription).
+ * `IRedisChannel` interface is used to execute commands. Channels are short lived, cheap to create, non-thread safe objects that represent virtual connections to Redis. Channels provide seamless access to commander and subscriber connections, analyze commands and decide how to route them through the three connection pools (multiplexed, exclusive and subscription).
 
 ```cs
 using (var channel = _client.CreateChannel())
