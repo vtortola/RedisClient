@@ -1,0 +1,29 @@
+﻿@model SimpleQA.Models.IQuestionData
+
+<fieldset class="form-group">
+    @Html.LabelFor(x => x.Title)
+    @Html.TextBoxFor(x => x.Title, new { @class = "form-control", placeholder = "Use a concise title that summarize your question" })
+    @Html.ValidationMessageFor(x => x.Title)
+</fieldset>
+<fieldset class="form-group">
+    @Html.LabelFor(x => x.Content)
+    @Html.TextAreaFor(x => x.Content, new
+    {
+        @class = "form-control markdown-editable",
+        placeholder = "Provide an explanation of your case and question",
+        rows = 15
+    })
+    @Html.ValidationMessageFor(x => x.Content)
+</fieldset>
+
+<fieldset class="form-group">
+    @Html.LabelFor(x => x.Tags)
+    <br />
+    @Html.TagsFor(x=>x.Tags, Url.RouteUrl("AskTag"), new { @class = "form-control" })
+    @Html.ValidationMessageFor(x => x.Tags)
+</fieldset>
+<div class="preview">
+    <span class="preview-label">Preview</span>
+    <div class="preview-content">
+    </div>
+</div>

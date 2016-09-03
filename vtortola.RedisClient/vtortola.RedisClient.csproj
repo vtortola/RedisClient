@@ -1,0 +1,198 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{63537027-AC75-4B45-8A87-A617EE17EEE2}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>vtortola.Redis</RootNamespace>
+    <AssemblyName>vtortola.RedisClient</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\vtortola.RedisClient.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Client\Configuration\ExclusivePoolOptions.cs" />
+    <Compile Include="Client\Configuration\MultiplexPoolOptions.cs" />
+    <Compile Include="Client\Configuration\PreInitializationCommand.cs" />
+    <Compile Include="Client\Contracts\IRedisResultInspector.cs" />
+    <Compile Include="Client\Contracts\RedisType.cs" />
+    <Compile Include="Client\Exceptions\RedisClientBindingException.cs" />
+    <Compile Include="Client\Exceptions\RedisClientCastException.cs" />
+    <Compile Include="Client\Exceptions\RedisClientCommandException.cs" />
+    <Compile Include="Client\Exceptions\RedisClientConfigurationException.cs" />
+    <Compile Include="Client\Exceptions\RedisClientMultipleCommandException.cs" />
+    <Compile Include="Client\Exceptions\RedisClientProcedureParsingException.cs" />
+    <Compile Include="Client\Exceptions\RedisClientParsingException.cs" />
+    <Compile Include="Client\Exceptions\RedisClientAssertException.cs" />
+    <Compile Include="Client\Exceptions\RedisClientSocketException.cs" />
+    <Compile Include="Client\Procedure.cs" />
+    <Compile Include="Client\RedisChannelExtensions.cs" />
+    <Compile Include="Client\Transaction.cs" />
+    <Compile Include="Connection\PooledConnection.cs" />
+    <Compile Include="Client\Contracts\IRedisResults.cs" />
+    <Compile Include="Client\Contracts\IRedisClientLog.cs" />
+    <Compile Include="Client\RedisChannel.cs" />
+    <Compile Include="Client\RedisClient.cs" />
+    <Compile Include="Connection\ConnectionPool.cs" />
+    <Compile Include="Client\RedisResultInspector.cs" />
+    <Compile Include="Connection\BasicLoadBasedSelector.cs" />
+    <Compile Include="Connection\ConnectionInitializer.cs" />
+    <Compile Include="Connection\Simple\CommanderConnection.cs" />
+    <Compile Include="Connection\_ConnectionBase.cs" />
+    <Compile Include="Connection\Simple\Connection.cs" />
+    <Compile Include="Dynamic\FormatterHelper.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>FormatterHelper.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Dynamic\GetterHelper.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GetterHelper.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Dynamic\ObjectBinder.cs" />
+    <Compile Include="Dynamic\SetterHelper.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SetterHelper.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Operations\UnwatchOperation.cs" />
+    <Compile Include="Operations\DiscardTransactionOperation.cs" />
+    <Compile Include="Operations\PingSubscriberOperation.cs" />
+    <Compile Include="Operations\PingCommanderOperation.cs" />
+    <Compile Include="Operations\RemoveChannelOperation.cs" />
+    <Compile Include="Operations\CommandOperation.cs" />
+    <Compile Include="Operations\SubscriptionOperation.cs" />
+    <Compile Include="Connection\Concurrent\ConcurrentCommanderConnection.cs" />
+    <Compile Include="Connection\SocketWriter.cs" />
+    <Compile Include="Connection\SocketReader.cs" />
+    <Compile Include="Connection\ConnectionSelector.cs" />
+    <Compile Include="Connection\_ILoadBasedSelector.cs" />
+    <Compile Include="Connection\_ILoadMeasurable.cs" />
+    <Compile Include="Connection\AggregatedCommandConnection.cs" />
+    <Compile Include="Connection\_IConnection.cs" />
+    <Compile Include="Connection\_IConnectionInitializer.cs" />
+    <Compile Include="Connection\Concurrent\ConcurrentConnection.cs" />
+    <Compile Include="Connection\Concurrent\ConcurrentSubscriberConnection.cs" />
+    <Compile Include="Parsing\CachingExecutionPlanner.cs" />
+    <Compile Include="Parsing\ExecutionContext.cs" />
+    <Compile Include="Parsing\ExecutionContextOperation.cs" />
+    <Compile Include="Parsing\ParameterReader.cs" />
+    <Compile Include="Parsing\Procedure\ProcedureDefinition.cs" />
+    <Compile Include="Parsing\Procedure\ProcedureParameter.cs" />
+    <Compile Include="Parsing\_CommandBinder.cs" />
+    <Compile Include="Parsing\Procedure\ProcedureCommandBinder.cs" />
+    <Compile Include="Parsing\Command\RedisCommandBinder.cs" />
+    <Compile Include="Parsing\_IExecutionPlanner.cs" />
+    <Compile Include="Parsing\Procedure\ProcedureParser.cs" />
+    <Compile Include="Parsing\Procedure\RedisLuaParameterBinding.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>RedisLuaParameterBinding.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RESP\Command\RESPCommandLiteral.cs" />
+    <Compile Include="RESP\Command\RESPCommandParameter.cs" />
+    <Compile Include="RESP\Command\RESPCommandPart.cs" />
+    <Compile Include="RESP\Command\RESPCommandValue.cs" />
+    <Compile Include="RESP\Result\RESPObjectExtensions.cs" />
+    <Compile Include="RESP\Command\RESPCommand.cs" />
+    <Compile Include="Scripting\LoadingProcedure.cs" />
+    <Compile Include="Scripting\ProcedureCollection.cs" />
+    <Compile Include="Scripting\ScriptInitialization.cs" />
+    <Compile Include="Subscription\SubscriptionsInitialization.cs" />
+    <Compile Include="Operations\_IOperation.cs" />
+    <Compile Include="Tokens\NoWaitExecutionToken.cs" />
+    <Compile Include="Subscription\SubscriptionResponsesTracker.cs" />
+    <Compile Include="Client\Configuration\RedisClientOptions.cs" />
+    <Compile Include="Subscription\SubscriptionAggregator.cs" />
+    <Compile Include="Subscription\SubscriptionSplitter.cs" />
+    <Compile Include="Client\Contracts\IRedisChannel.cs" />
+    <Compile Include="Tokens\TokenHandling.cs" />
+    <Compile Include="Tokens\_ExecutionToken.cs" />
+    <Compile Include="Client\Exceptions\_RedisClientExceptions.cs" />
+    <Compile Include="Tokens\AsyncExecutionToken.cs" />
+    <Compile Include="Tokens\SyncExecutionToken.cs" />
+    <Compile Include="Client\RedisNotification.cs" />
+    <Compile Include="Parsing\Command\TextCommandWord.cs" />
+    <Compile Include="Parsing\ExecutionPlan.cs" />
+    <Compile Include="Parsing\ExecutionPlanner.cs" />
+    <Compile Include="Client\RedisResults.cs" />
+    <Compile Include="Parsing\Command\TextCommandWordParser.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RESP\Result\RESPArray.cs" />
+    <Compile Include="RESP\Result\RESPBulkString.cs" />
+    <Compile Include="RESP\Result\RESPError.cs" />
+    <Compile Include="RESP\RESPException.cs" />
+    <Compile Include="RESP\Result\RESPInteger.cs" />
+    <Compile Include="RESP\Result\RESPString.cs" />
+    <Compile Include="RESP\Result\RESPSimpleString.cs" />
+    <Compile Include="RESP\Result\RESPObject.cs" />
+    <Compile Include="Scripting\ProcedureLoader.cs" />
+    <Compile Include="Dynamic\Parameter.cs" />
+    <Compile Include="Tools\CancelQueueExtensions.cs" />
+    <Compile Include="Tools\Utf8ByteHelper.cs" />
+    <Compile Include="Tools\DisposeHelper.cs" />
+    <Compile Include="Tools\ParameterGuard.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Dynamic\FormatterHelper.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>FormatterHelper.cs</LastGenOutput>
+    </Content>
+    <Content Include="Dynamic\GetterHelper.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>GetterHelper.cs</LastGenOutput>
+    </Content>
+    <Content Include="Dynamic\SetterHelper.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>SetterHelper.cs</LastGenOutput>
+    </Content>
+    <Content Include="Parsing\Procedure\RedisLuaParameterBinding.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>RedisLuaParameterBinding.cs</LastGenOutput>
+      <CustomToolNamespace>vtortola.Redis</CustomToolNamespace>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

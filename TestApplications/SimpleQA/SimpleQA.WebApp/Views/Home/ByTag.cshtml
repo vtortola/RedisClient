@@ -1,0 +1,75 @@
+﻿@model SimpleQA.Models.HomeByTagViewModel
+
+@{
+    ViewBag.Title = Model.Tag + " questions";
+    ViewBag.Scene = User.Identity.IsAuthenticated ? "tagbrowsing" : String.Empty;
+}
+
+<div class="row home-header" data-push-topic="@Keys.TagNotification(Model.Tag)" data-push-topic-message="New questions about this tag have been added.">
+    @Html.QuestionSorter("Latest questions for " + Model.Tag, sorting => Url.RouteUrl("Tag", new { Sorting = sorting }))
+    @if (User.Identity.IsAuthenticated)
+    {
+        Html.RenderPartial("AskQuestionButton", Model.Tag ?? String.Empty);
+    }
+</div>
+
+@foreach (var question in Model.Questions)
+{
+    <div class="row question">
+        <div class="col-sm-3">
+            <div class="row">
+                <div class="col-sm-4 lead vcenter text-center">@(question.UpVotes - question.DownVotes)<div class="question-property-label">Votes</div></div>
+                <div class="col-sm-4 lead vcenter text-center">@question.AnswerCount<div class="question-property-label">Answers</div></div>
+                <div class="col-sm-4 lead vcenter text-center">@question.ViewCount<div class="question-property-label">Views</div></div>
+            </div>
+        </div>
+        <div class="col-sm-9">
+            <div class="row">
+                <div class="col-sm-12"><a href="@Url.RouteUrl("QuestionRead", new { id = question.Id, slug = question.Slug, action="get" })">@question.Title</a></div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">@question.ContentExcerpt</div>
+            </div>
+            <div class="row">
+                <div class="col-sm-10">
+                    @foreach (var tag in question.Tags)
+                    {
+                        <a class="tag label label-info" href="@Url.RouteUrl("Tag", new {tag=tag})">@tag</a>
+                    }
+                </div>
+                <div class="col-md-2 small text-nowrap">by <a class="text-nowrap" href="@Url.RouteUrl("User",new {user=question.User})">@question.User</a></div>
+            </div>
+        </div>
+    </div>
+}
+
+@Html.Pagination(5, page => Url.RouteUrl("Tag", new { Page = page, Ordering = Model.Sorting }))
+
+@section side{
+    <div class="well">
+        <h4>SimpleQA by Tag</h4>
+        <p>This view is similar to the home page, but it is showing questions tagged as '@Model.Tag'</p>
+        <p>It is in ongoing development, although its purpose is just to learn Reids by going through different scenarions in a web application, so there is not actual intention of finishing it or release it.</p>
+    </div>
+}
+
+@section sidebottom{
+    <div class="well">
+        <p>
+            If a new question with the give tag is added to the system, a <b>notification pops up</b> in the screen inviting the user to reload 
+            the page to see the newly added question.
+        </p>
+        <p>
+            As in the home page, it is also possible to browse by:
+            <ul>
+                <li>Interesting: questions ordered by score.</li>
+                <li>Newest: questions ordered by creation date.</li>
+                <li>Tag: clicking any tag on screen will bring you to the tag browsing view.</li>
+            </ul>
+        </p>
+    </div>
+}
+
+
+
+

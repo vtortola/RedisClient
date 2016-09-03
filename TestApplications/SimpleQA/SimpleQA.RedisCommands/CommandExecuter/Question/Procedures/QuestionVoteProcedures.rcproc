@@ -1,0 +1,22 @@
+﻿proc VoteQuestion($questionId, voteField, $questionsByScore, scoreIncr, $userVotes, vote, $questionTagsId, $tagsByScore)
+    
+	local voted = redis.call('ZSCORE', userVotes, questionId)
+	if ( voted ~= nil and voted ~= '' and voted ~= false ) then
+		error('ALREADYVOTED')
+	end
+
+	redis.call('HINCRBY', questionId, voteField, 1)
+    redis.call('HINCRBY', questionId, 'Score', scoreIncr)
+    redis.call('ZINCRBY', questionsByScore, scoreIncr, questionId)
+	redis.call('ZADD', userVotes, vote, questionId)
+
+	local tags = redis.call('SMEMBERS', questionTagsId)
+	for i=1, table.getn(tags), 1 
+	do 
+	   redis.call('ZINCRBY', tagsByScore, scoreIncr, tags[i]) 
+	   redis.call('ZINCRBY', 'tag:' .. tags[i] .. ':byscore', scoreIncr, questionId)
+	end
+
+	return redis.call('HMGET', questionId, 'UpVotes', 'DownVotes')
+
+endproc

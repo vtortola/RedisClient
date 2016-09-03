@@ -1,0 +1,52 @@
+﻿@{
+    var uriBuilder = new UriBuilder("ws", Request.Url.Host, Request.Url.Port);
+    var ws = uriBuilder.Uri.AbsoluteUri;
+    var qauser = User.AsSimpleQAPrincipal();
+}
+@if (User.Identity.IsAuthenticated)
+{
+    <div id="authenticated-control" class="navbar-form navbar-right" data-push-notifications-url="@ws">
+        Hi, <a id="user" href="@Url.RouteUrl("User", new { user = User.Identity.Name })">@User.Identity.Name</a>
+        <div id="authenticated-notifications" class="dropdown">
+            <button id="authenticated-notifications-button" 
+                    class="dropdown-toggle" type="button" data-toggle="dropdown" 
+                    data-user-inbox="@(Keys.UserInboxKey(User.Identity.Name))"
+                    data-user-inbox-url="@Url.RouteUrl("UserInbox")">
+                <span id="authenticated-notifications-incoming" class="@(qauser.InboxCount > 0 ? "" : "nodisplay")" >@qauser.InboxCount</span>
+                <span id="authenticated-notifications-icon" class="glyphicon glyphicon-inbox @(qauser.InboxCount > 0 ? "nodisplay" : "")"></span>
+            </button>
+            <div class="dropdown-menu" id="authenticated-notifications-items">
+                <div class="glyphicon glyphicon-refresh loading ">
+
+                </div>
+                <ul>
+
+                    @*<li><a href="#">Notification 1</a></li>
+            <li><a href="#">Notification 2</a></li>
+            <li><a href="#">Notification 3</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#">Notification 4</a></li>*@
+                </ul>
+
+            </div>
+
+        </div>
+        <form action="@Url.RouteUrl("Auth", new { action ="Logout" })" method="POST" class="inline">
+            <input type="hidden" name="returnUrl" value="@Request.Url.PathAndQuery">
+            <button type="submit" class="btn btn-success">Logout</button>
+        </form>
+    </div>
+}
+else
+{
+    <form id="login-form" action="@Url.RouteUrl("Auth", new { action = "Login"})" method="POST" class="navbar-form navbar-right">
+        <div class="form-group">
+            <input type="text" id="username" name="username" placeholder="Username" class="form-control">
+        </div>
+        <div class="form-group">
+            <input type="password" id="password" name="password" placeholder="Any password will do.." class="form-control">
+        </div>
+        <input type="hidden" name="returnUrl" value="@Request.Url.PathAndQuery">
+        <button type="submit" class="btn btn-success">Sign in</button>
+    </form>
+}

@@ -1,0 +1,5 @@
+﻿@model SimpleQA.Models.IAuthored
+<div class="authoring">
+    by <a class="text-nowrap authoring-user" href="@Url.RouteUrl("User",new {user=Model.User})">@Model.User</a>
+    <div class="small authoring-date">@Model.CreatedOn.ToString("yyyy/MM/dd HH:mm")</div>
+</div>

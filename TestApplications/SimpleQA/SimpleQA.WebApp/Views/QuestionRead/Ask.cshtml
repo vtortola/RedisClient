@@ -1,0 +1,50 @@
+﻿@model SimpleQA.Models.QuestionAddFormViewModel
+@{
+    ViewBag.Title = "Ask a Question";
+    ViewBag.Scene = "ask";
+    var tag = Model.Tags != null && Model.Tags.Length > 0 ? Model.Tags[0] : null;
+}
+
+<h2 class="page-header">
+    Ask a question @( tag != null ?" about " + tag:String.Empty)
+</h2>
+
+<form action="@Url.RouteUrl("AskQuestionWrite")" method="POST" onsubmit="$(this).valid()">
+    @{Html.RenderPartial("QuestionDraftInputs", Model);}
+    @Html.SessionTokenInput(User)
+    @Html.ValidationSummary(true)
+    <button type="submit" class="btn btn-primary">Post Question</button>
+    @if (Request.UrlReferrer != null)
+    {
+        <a href="@Request.UrlReferrer.AbsolutePath" class="btn btn-warning">Cancel</a>
+    }
+</form>
+
+@section side{
+    <div class="well">
+        <h4>SimpleQA Ask Question view</h4>
+        <p>This view allows the authenticated user to create a new question.</p>
+    </div>
+}
+
+@section sidebottom{
+    <div class="well">
+        <p>
+            Changes in the content are reflected in the PREVIEW section below.
+        </p>
+        <p>
+            The tag autocomplete control uses <a href="https://bootstrap-tagsinput.github.io/bootstrap-tagsinput/examples/" target="_blank">Bootstrap TagsInput</a>, and
+            the server uses a zset and its lexical sorting feature to sortlist the tags.
+        </p>
+        <p>
+            <b>Known Issue:</b> There is some disagreement between markdown components in how they understand the same input in server side and client side. For example you have to do a double line break to go to a new line.
+            Since this is just a proof of concept, I have this as a very low priority item.
+        </p>
+        <p>
+            The markdown editor is <a href="https://simplemde.com/" target="_blank">SimpleMDE</a>.
+        </p>
+        <p>
+            The markdown preview uses <a href="http://showdownjs.github.io/demo/" target="_blank">ShowdownJS</a>
+        </p>
+    </div>
+}

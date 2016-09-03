@@ -1,0 +1,69 @@
+﻿@model SimpleQA.Models.HomeViewModel
+@{
+    ViewBag.Scene = User.Identity.IsAuthenticated ? "home" : String.Empty;
+}
+<div class="row home-header">
+    @Html.QuestionSorter("Latest questions", sorting => Url.RouteUrl("DefaultPaginated", new { Sorting = sorting }))
+    @if (User.Identity.IsAuthenticated)
+    {
+        Html.RenderPartial("AskQuestionButton", String.Empty);
+    }
+</div>
+
+@foreach (var question in Model.Questions)
+{
+    <div class="row question">
+        <div class="col-sm-3">
+            <div class="row">
+                <div class="col-sm-4 lead vcenter text-center">@(question.UpVotes - question.DownVotes)<div class="question-property-label">Votes</div></div>
+                <div class="col-sm-4 lead vcenter text-center">@question.AnswerCount<div class="question-property-label">Answers</div></div>
+                <div class="col-sm-4 lead vcenter text-center">@question.ViewCount<div class="question-property-label">Views</div></div>
+            </div>
+        </div>
+
+        <div class="col-sm-9">
+            <div class="row">
+                <div class="col-sm-12"><a class="question-title" href="@Url.RouteUrl("QuestionRead", new { id = question.Id, slug = question.Slug })">@question.Title</a></div>
+            </div>
+            <div class="row">
+                <div class="col-sm-10">
+                    @foreach (var tag in question.Tags)
+                    {
+                        <a class="tag label label-info" href="@Url.RouteUrl("Tag", new {tag=tag})">@tag</a>
+                    }
+                </div>
+                <div class="col-md-2 small text-nowrap">by <a class="text-nowrap" href="@Url.RouteUrl("User",new {user=question.User})">@question.User</a></div>
+            </div>
+        </div>
+    </div>
+}
+
+@Html.Pagination(5, page => Url.RouteUrl("DefaultPaginated", new { Page = page, Sorting = Model.Sorting }))
+
+@section side{
+    <div class="well">
+        <h4>SimpleQA</h4>
+        <p>This webapp is a proof of concept to test vtortola.RedisClient. It is based on the example provided by the book <a href="https://amzn.com/1617290858" target="_blank">Redis in Action</a>.</p>
+        <p>It is in ongoing development, although its purpose is just to learn Reids by going through different scenarions in a web application, so there is not current intention of developing it as standalone application.</p>
+    </div>
+}
+
+@section sidebottom{
+    <div class="well">
+        <p>
+            You can login just by introducing an user name with any password.
+        </p>
+        <p>
+            It is possible to browse by:
+            <ul>
+                <li>Interesting: questions ordered by score.</li>
+                <li>Newest: questions ordered by creation date.</li>
+                <li>Tag: clicking any tag on screen will bring you to the tag browsing view.</li>
+            </ul>
+        </p>
+    </div>
+}
+
+
+
+

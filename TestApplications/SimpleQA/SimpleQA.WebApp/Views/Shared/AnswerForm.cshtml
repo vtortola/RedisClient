@@ -1,0 +1,15 @@
+﻿@model SimpleQA.Models.IAnswerData
+
+<h3 class="page-header">
+    Give an answer
+</h3>
+
+<form action="@Url.RouteUrl("AddAnswer", new { questionId = Model.QuestionId })" method="POST" onsubmit="$(this).valid()">
+    <fieldset class="form-group">
+        @Html.TextAreaFor(x => x.Content, new { rows = 5, @class = "form-control markdown-editable" })
+        @Html.SessionTokenInput(User)
+        @Html.ValidationMessageFor(x => x.Content)
+    </fieldset>
+    @Html.ValidationSummary(true)
+    <input type="submit" class="btn btn-primary" value="Post Answer" />
+</form>

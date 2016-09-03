@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{412C61B6-6868-49CA-81A8-62D3B4D98B8B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SimpleQA.RedisCommands</RootNamespace>
+    <AssemblyName>SimpleQA.RedisCommands</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="SimpleInjector, Version=3.1.5.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\SimpleInjector.3.1.5\lib\net45\SimpleInjector.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Threading.Tasks.Dataflow, Version=4.5.24.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.Tpl.Dataflow.4.5.24\lib\portable-net45+win8+wpa81\System.Threading.Tasks.Dataflow.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CommandExecuter\Answer\AnswerCreateCommandExecuter.cs" />
+    <Compile Include="CommandExecuter\Answer\AnswerDeleteCommandExecuter.cs" />
+    <Compile Include="CommandExecuter\Answer\AnswerEditCommandExecuter.cs" />
+    <Compile Include="CommandExecuter\Answer\AnswerVoteCommandExecuter.cs" />
+    <Compile Include="CommandExecuter\Authentication\AuthenticateCommandExecuter.cs" />
+    <Compile Include="CommandExecuter\Authentication\EndSessionCommandExecuter.cs" />
+    <Compile Include="CommandExecuter\Authentication\ValidateSessionCommandExecuter.cs" />
+    <EmbeddedResource Include="CommandExecuter\Question\Procedures\QuestionVoteProcedures.rcproc" />
+    <Compile Include="CommandExecuter\Question\QuestionCloseCommandExecuter.cs" />
+    <Compile Include="CommandExecuter\Question\QuestionCreateCommandExecuter.cs" />
+    <Compile Include="CommandExecuter\Question\QuestionDeleteCommandExecutor.cs" />
+    <Compile Include="CommandExecuter\Question\QuestionEditCommandExecuter.cs" />
+    <Compile Include="CommandExecuter\Question\QuestionVoteCommandExecuter.cs" />
+    <Compile Include="CommandExecuter\VisitQuestionCommandExecuter.cs" />
+    <Compile Include="Keys.cs" />
+    <Compile Include="Messaging\RedisClientMessaging.cs" />
+    <Compile Include="ModelBuilder\Answer\AnswerDeleteFormRequestBuilder.cs" />
+    <Compile Include="ModelBuilder\Answer\AnswerEditFormRequestBuilder.cs" />
+    <Compile Include="ModelBuilder\Answer\AnswerRequestBuilder.cs" />
+    <Compile Include="ModelBuilder\Home\HomeByTagRequestBuilder.cs" />
+    <Compile Include="ModelBuilder\Home\HomeRequestBuilder.cs" />
+    <Compile Include="ModelBuilder\Question\QuestionCloseFormRequestBuilder.cs" />
+    <Compile Include="ModelBuilder\Question\QuestionDeleteFormRequestBuilder.cs" />
+    <Compile Include="ModelBuilder\Question\QuestionEditFormRequestBuilder.cs" />
+    <Compile Include="ModelBuilder\Question\QuestionRequestBuilder.cs" />
+    <Compile Include="ModelBuilder\Tags\PopularTagsRequestBuilder.cs" />
+    <Compile Include="ModelBuilder\Tags\TagSuggestionRequestBuilder.cs" />
+    <Compile Include="ModelBuilder\User\UserInboxModelBuilder.cs" />
+    <Compile Include="ModelBuilder\User\UserModelBuilder.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RedisCommandsConfiguration.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\vtortola.RedisClient\vtortola.RedisClient.csproj">
+      <Project>{63537027-ac75-4b45-8a87-a617ee17eee2}</Project>
+      <Name>vtortola.RedisClient</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SimpleQA.Common\SimpleQA.Model.csproj">
+      <Project>{d3ca0210-2896-4f98-b1f2-7460f43cc503}</Project>
+      <Name>SimpleQA.Model</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="CommandExecuter\Question\Procedures\QuestionCreateProcedures.rcproc" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

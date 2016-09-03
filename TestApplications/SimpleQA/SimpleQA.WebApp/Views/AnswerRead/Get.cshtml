@@ -1,0 +1,23 @@
+﻿@model SimpleQA.Models.AnswerViewModel
+
+<section class="answer" id="@("ans_" + Model.Id)" data-vote-url="@Url.RouteUrl("AnswerWrite", new { action = "vote", questionId = Model.QuestionId, answerid = Model.Id })">
+    <div class="row">
+        <div class="col-sm-1 voting">
+            @{Html.RenderPartial("Vote", Model);}
+        </div>
+        <div class="col-sm-11 answer-content">
+            <div>@Html.Raw(Model.HtmlContent)</div>
+            @if (Model.AuthoredByUser && Model.Editable)
+            {
+                <div class="btn-group answer-actions" role="group" aria-label="...">
+                    <button class="btn btn-default edit-answer" data-edit-answer="@Url.RouteUrl("AnswerRead", new { action = "edit", questionId = Model.QuestionId, answerid = Model.Id })">Edit</button>
+                    <a data-toggle="modal" href="@Url.RouteUrl("AnswerRead", new { action = "delete", questionId = Model.QuestionId, answerid = Model.Id })" data-target="#delete-answer-@Model.Id" class="btn btn-default delete-answer">Delete</a>
+                </div>
+                @Html.BootstrapDialog("delete-answer-" + Model.Id)
+            }
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">@{Html.RenderPartial("Authoring", Model);}</div>
+    </div>
+</section>

@@ -1,0 +1,14 @@
+﻿@model SimpleQA.Models.AnswerEditFormViewModel
+
+<div class="col-sm-11 answer-editing">
+    <form action="@Url.RouteUrl("AnswerWrite", new { questionId = Model.QuestionId, answerId = Model.AnswerId })" method="post" onsubmit="$(this).valid()">
+        @Html.TextAreaFor(x => x.Content, new { @class = "form-control markdown-editable", rows = 5 })
+        @Html.SessionTokenInput(User)
+        @Html.ValidationMessageFor(x => x.Content)
+        @Html.ValidationSummary(true)
+        <div class="answer-actions">
+            <button type="button" class="btn btn-default cancel-editing">Cancel</button>
+            <button type="button" class="btn btn-primary post-editing">Post Answer</button>
+        </div>
+    </form>
+</div>

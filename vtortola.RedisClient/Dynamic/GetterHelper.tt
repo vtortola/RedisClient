@@ -1,0 +1,148 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>  
+<#
+   var valueTypes = new []
+   {
+		typeof(Char), 
+		typeof(Int16),	typeof(Int32),	typeof(Int64),
+		typeof(Single), typeof(Double), typeof(Decimal),
+		typeof(UInt16), typeof(UInt32), typeof(UInt64)
+   };
+#>
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Diagnostics.Contracts;
+using System.Linq; 
+using System.Reflection;
+
+/*
+     ###    THIS IS AN AUTOMATICALLY GENERATED FILE    ###
+ */
+
+namespace vtortola.Redis
+{
+	internal static class GetterHelper
+	{
+		static readonly Type IEnumerableType = typeof(IEnumerable);
+		static readonly Type StringType = typeof(String);
+		static readonly Type DateTimeType = typeof(DateTime);
+		<# foreach(var type in valueTypes) { #>static readonly Type <#= type.Name #>Type = typeof(<#= type.Name #>);
+		<# } #>
+
+		static readonly HashSet<Type> _supported = new HashSet<Type>(new[]
+		{
+			StringType, DateTimeType, typeof(Nullable<DateTime>), <# foreach(var type in valueTypes) { #> <#= type.Name #>Type, typeof(Nullable<<#= type.Name #>>), <# } #> 
+		});
+
+        internal static Boolean IsSupported(Type type)
+        {
+			var underlying = Nullable.GetUnderlyingType(type);
+            
+			if(underlying != null && underlying.IsEnum)
+				throw new RedisClientBindingException("Nullable enums are not supported at this moment. Consider including a 'None' value in your enumeration.");
+
+			return type.IsEnum || _supported.Contains(type);
+        }
+
+        internal static Func<T, IEnumerable<String>> CreateGetter<T>(PropertyInfo property)
+        {
+            var propertyAccessor = property.GetGetMethod();
+			var propertyType = property.PropertyType;
+
+            if (propertyType == StringType)
+            {
+                return GetStringGetter<T>(propertyAccessor);
+            }
+            if (IEnumerableType.IsAssignableFrom(propertyType))
+            {
+                if (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                {
+                    propertyType = propertyType.GetGenericArguments()[0];
+                }
+                else
+                {
+                    propertyType = propertyType
+                        .GetInterfaces()
+                        .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                        .Select(i => i.GetGenericArguments()[0])
+                        .Single();
+                }
+
+                if (propertyType.IsEnum)
+                    propertyType = Enum.GetUnderlyingType(propertyType);
+
+                 if (propertyType == StringType)
+                    return GetStringEnumerableGetter<T>(propertyAccessor);
+				 if (propertyType == DateTimeType)
+                    return GetDateTimeEnumerableGetter<T>(propertyAccessor);
+				<# foreach(var type in valueTypes) { #> if (propertyType == <#= type.Name #>Type)
+                    return Get<#= type.Name #>EnumerableGetter<T>(propertyAccessor);
+				<# } #>
+            }
+            else
+            {
+				if (propertyType.IsEnum)
+	                propertyType = Enum.GetUnderlyingType(propertyType);
+
+				if (propertyType == DateTimeType)
+                    return GetDateTimeGetter<T>(propertyAccessor);
+				<# foreach(var type in valueTypes) { #> if (propertyType == <#= type.Name #>Type)
+					return Get<#= type.Name #>Getter<T>(propertyAccessor);
+				<# } #>
+            }
+
+            throw new RedisClientBindingException("The type '" + propertyType.Name + "' is not supported as parameter member.\n" +
+                                                "Only members of type Enum, DateTime, Char, String, Int16, Int32, Int64, Single, Double, Decimal and collections of them are supported.\n" +
+                                                "Consider using Parameter.Collate to produce the right parameters.");
+        }
+
+		// STRING
+		static Func<T, IEnumerable<String>> GetStringEnumerableGetter<T>(MethodInfo propertyAccessor)
+        {
+            var function = (Func<T, IEnumerable<String>>)Delegate.CreateDelegate(typeof(Func<T, IEnumerable<String>>), propertyAccessor);
+            return (T obj) => function(obj);
+        }
+		static Func<T, IEnumerable<String>> GetStringGetter<T>(MethodInfo propertyAccessor)
+        {
+            var function = (Func<T, String>)Delegate.CreateDelegate(typeof(Func<T, String>), propertyAccessor);
+            return (T obj) => YieldReturn(function(obj));
+        }
+		// DATETIME
+        static Func<T, IEnumerable<String>> GetDateTimeEnumerableGetter<T>(MethodInfo propertyAccessor)
+        {
+            var function = (Func<T, IEnumerable<DateTime>>)Delegate.CreateDelegate(typeof(Func<T, IEnumerable<DateTime>>), propertyAccessor);
+            return (T obj) => function(obj).Select(x=>x.ToBinary().ToString(RESPObject.FormatInfo));
+        }
+        static Func<T, IEnumerable<String>> GetDateTimeGetter<T>(MethodInfo propertyAccessor)
+        {
+            var function = (Func<T, DateTime>)Delegate.CreateDelegate(typeof(Func<T, DateTime>), propertyAccessor);
+            return (T obj) => YieldReturn(function(obj).ToBinary().ToString(RESPObject.FormatInfo));
+        }
+		<# foreach(var type in valueTypes) { #> 
+		// <#= type.Name.ToUpperInvariant() #>
+		static Func<T, IEnumerable<String>> Get<#= type.Name #>EnumerableGetter<T>(MethodInfo propertyAccessor)
+        {
+            var function = (Func<T, IEnumerable<<#= type.Name #>>>)Delegate.CreateDelegate(typeof(Func<T, IEnumerable<<#= type.Name #>>>), propertyAccessor);
+            return (T obj) => function(obj).Select(c => c.ToString(RESPObject.FormatInfo));
+        }
+		static Func<T, IEnumerable<String>> Get<#= type.Name #>Getter<T>(MethodInfo propertyAccessor)
+        {
+            var function = (Func<T, <#= type.Name #>>)Delegate.CreateDelegate(typeof(Func<T, <#= type.Name #>>), propertyAccessor);
+            return (T obj) => YieldReturn(function(obj).ToString());
+        }
+		<# } #>
+
+		static IEnumerable<String> YieldReturn(String value)
+        {
+			if(value == null)
+				throw new RedisClientBindingException("Null values are not accepted as parameters.");
+            yield return value;
+        }
+	}
+}

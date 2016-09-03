@@ -1,0 +1,25 @@
+﻿@model SimpleQA.Models.IVotable
+@{
+    String autored = Model.AuthoredByUser ? "authored" : String.Empty;
+    String voting = String.Empty;
+    if(!Model.Votable)
+    {
+        voting = "disabled";
+    }
+    else if (Model.UpVoted.HasValue)
+    {
+        if (Model.UpVoted.Value)
+        {
+            voting = "upvoted";
+        }
+        else
+        {
+            voting = "downvoted";
+        }
+    }           
+}
+<div class="vote @voting @autored">
+    <button class="glyphicon glyphicon-triangle-top vote-up"></button>
+    <div class="votes">@(Model.UpVotes - Model.DownVotes)</div>
+    <button class="glyphicon glyphicon-triangle-bottom vote-down"></button>
+</div>

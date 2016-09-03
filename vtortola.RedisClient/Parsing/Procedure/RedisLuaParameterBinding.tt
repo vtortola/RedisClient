@@ -1,0 +1,31 @@
+﻿<#@ template language="C#" visibility="internal" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="vtortola.Redis" #>
+-- BEGIN vtortola.RedisClient parameter binding
+local ___key_index = 1
+local ___arg_index = 1
+<# for(var i=0; i<_parameters.Length; i++) { var parameter = _parameters[i]; if(parameter.IsKey){ #><# if(parameter.IsArray) { #>local <#= parameter.Name #> = {}
+local <#= parameter.Name #>_length = ARGV[___arg_index]; ___arg_index=___arg_index+1;
+for i=1, <#= parameter.Name #>_length, 1 do <#= parameter.Name #>[i] = KEYS[___key_index];  ___key_index=___key_index+1; end
+<# } else { #>local <#= parameter.Name #> = KEYS[___key_index]; ___key_index=___key_index+1;
+<# } } } #><# for(var i=0; i<_parameters.Length; i++) { var parameter = _parameters[i]; if(!parameter.IsKey){ #><# if(parameter.IsArray) { #>local <#= parameter.Name #> = {}
+local <#= parameter.Name #>_length = ARGV[___arg_index]; ___arg_index=___arg_index+1;
+for i=1, <#= parameter.Name #>_length, 1 do <#= parameter.Name #>[i] = ARGV[___arg_index];  ___arg_index=___arg_index+1; end
+<# } else { #>local <#= parameter.Name #> = ARGV[___arg_index]; ___arg_index=___arg_index+1;
+<# } } } #>
+-- END vtortola.RedisClient parameter binding
+
+<#+
+	readonly ProcedureParameter[] _parameters;
+
+	internal RedisLuaParameterBinding(ProcedureParameter[] parameters)
+	{
+		if(parameters == null)
+			throw new ArgumentNullException("parameters");
+
+		_parameters = parameters;
+	}
+#>

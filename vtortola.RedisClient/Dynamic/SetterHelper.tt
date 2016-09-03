@@ -1,0 +1,173 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>  
+<#
+   var valueTypes = new []
+   {
+		typeof(Char), 
+		typeof(Int16),	typeof(Int32),	typeof(Int64),
+		typeof(Single), typeof(Double), typeof(Decimal),
+		typeof(UInt16), typeof(UInt32), typeof(UInt64)
+   };
+#>
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Diagnostics.Contracts;
+using System.Linq; 
+using System.Reflection;
+
+namespace vtortola.Redis
+{
+	internal static class SetterHelper
+	{
+		static readonly Type IEnumerableType = typeof(IEnumerable);
+		static readonly Type StringType = typeof(String);
+		static readonly Type DateTimeType = typeof(DateTime);
+		<# foreach(var type in valueTypes) { #>static readonly Type <#= type.Name #>Type = typeof(<#= type.Name #>);
+		<# } #>
+
+		static readonly HashSet<Type> _supported = new HashSet<Type>(new[]
+		{
+			StringType, DateTimeType, typeof(Nullable<DateTime>), <# foreach(var type in valueTypes) { #> <#= type.Name #>Type, typeof(Nullable<<#= type.Name #>>), <# } #> 
+		});
+
+        internal static Boolean IsSupported(Type type)
+        {
+			var underlying = Nullable.GetUnderlyingType(type);
+            
+			if(underlying != null && underlying.IsEnum)
+				throw new RedisClientBindingException("Nullable enums are not supported at this moment. Consider including a 'None' value in your enumeration.");
+
+			return type.IsEnum || _supported.Contains(type);
+        }
+
+
+		internal static Setter<T> CreateSetter<T>(PropertyInfo property)
+        {
+            var propertyAccessor = property.GetSetMethod();
+			var propertyType = property.PropertyType;
+
+            if (propertyType == StringType)
+            {
+                return new Setter<T>()
+                {
+                    StringSetter = GetStringStringSetter<T>(propertyAccessor),
+                    NumericSetter = GetNumericStringSetter<T>(propertyAccessor)
+                };
+            }
+			var underlying = Nullable.GetUnderlyingType(propertyType);
+			if(underlying != null)
+			{
+			    if(underlying == DateTimeType)
+				{
+					return new Setter<T>()
+					{
+						StringSetter = GetNullableStringDateTimeSetter<T>(propertyAccessor),
+						NumericSetter = GetNullableNumericDateTimeSetter<T>(propertyAccessor)
+					};
+				}
+				<# foreach(var type in valueTypes) { #>if (underlying == <#= type.Name #>Type)
+				{
+					return new Setter<T>()
+					{
+						StringSetter = GetNullableString<#= type.Name #>Setter<T>(propertyAccessor),
+						NumericSetter = GetNullableNumeric<#= type.Name #>Setter<T>(propertyAccessor)
+					};
+				}
+				<# } #>}
+			else
+			{
+				if (propertyType.IsEnum)
+					propertyType = Enum.GetUnderlyingType(propertyType);
+
+				if(propertyType == DateTimeType)
+				{
+					return new Setter<T>()
+					{
+						StringSetter = GetStringDateTimeSetter<T>(propertyAccessor),
+						NumericSetter = GetNumericDateTimeSetter<T>(propertyAccessor)
+					};
+				}
+				<# foreach(var type in valueTypes) { #>if (propertyType == <#= type.Name #>Type)
+				{
+					return new Setter<T>()
+					{
+						StringSetter = GetString<#= type.Name #>Setter<T>(propertyAccessor),
+						NumericSetter = GetNumeric<#= type.Name #>Setter<T>(propertyAccessor)
+					};
+				}
+				<# } #>
+			}
+
+            throw new RedisClientBindingException("The type '" + propertyType.Name + "' is not supported as output member.\n" +
+                                                "Only members of type DateTime, Char, String, Int16, Int32, Int64, Single, Double, Decimal, nullables and collections of them are supported.\n" +
+                                                "Consider using Parameter.Collate to produce the right parameters.");
+		}
+
+		// STRING
+		static Action<T, Int64> GetNumericStringSetter<T>(MethodInfo propertyAccessor)
+        {
+            var func = (Action<T, String>)Delegate.CreateDelegate(typeof(Action<T, String>), propertyAccessor);
+            return (T obj, Int64 value) => func(obj, value.ToString(RESPObject.FormatInfo));
+        }
+        static Action<T, String> GetStringStringSetter<T>(MethodInfo propertyAccessor)
+        {
+            return (Action<T, String>)Delegate.CreateDelegate(typeof(Action<T, String>), propertyAccessor);
+        }
+		// DATETIME
+        static Action<T, String> GetStringDateTimeSetter<T>(MethodInfo propertyAccessor)
+        {
+            var func = (Action<T, DateTime>)Delegate.CreateDelegate(typeof(Action<T, DateTime>), propertyAccessor);
+            return (T obj, String str) => func(obj, DateTime.FromBinary(Int64.Parse(str)));
+        }
+        static Action<T, String> GetNullableStringDateTimeSetter<T>(MethodInfo propertyAccessor)
+        {
+            var func = (Action<T, Nullable<DateTime>>)Delegate.CreateDelegate(typeof(Action<T, Nullable<DateTime>>), propertyAccessor);
+            return (T obj, String str) => func(obj, str == null ? (Nullable<DateTime>)null : DateTime.FromBinary(Int64.Parse(str)));
+        }
+        static Action<T, Int64> GetNumericDateTimeSetter<T>(MethodInfo propertyAccessor)
+        {
+            var func = (Action<T, DateTime>)Delegate.CreateDelegate(typeof(Action<T, DateTime>), propertyAccessor);
+            return (T obj, Int64 value) => func(obj, DateTime.FromBinary(value));
+        }
+        static Action<T, Int64> GetNullableNumericDateTimeSetter<T>(MethodInfo propertyAccessor)
+        {
+            var func = (Action<T, Nullable<DateTime>>)Delegate.CreateDelegate(typeof(Action<T, Nullable<DateTime>>), propertyAccessor);
+            return (T obj, Int64 value) => func(obj, DateTime.FromBinary(value));
+        }
+		<# foreach(var type in valueTypes) { #> 
+		// <#= type.Name.ToUpperInvariant() #>
+        static Action<T, String> GetString<#= type.Name #>Setter<T>(MethodInfo propertyAccessor)
+        {
+            var func = (Action<T, <#= type.Name #>>)Delegate.CreateDelegate(typeof(Action<T, <#= type.Name #>>), propertyAccessor);
+            return (T obj, String str) => func(obj, <#= type.Name #>.Parse(str));
+        }
+		static Action<T, String> GetNullableString<#= type.Name #>Setter<T>(MethodInfo propertyAccessor)
+        {
+            var func = (Action<T, Nullable<<#= type.Name #>>>)Delegate.CreateDelegate(typeof(Action<T, Nullable<<#= type.Name #>>>), propertyAccessor);
+            return (T obj, String str) => func(obj, str == null? (Nullable<<#= type.Name #>>)null : <#= type.Name #>.Parse(str));
+        }
+        static Action<T, Int64> GetNumeric<#= type.Name #>Setter<T>(MethodInfo propertyAccessor)
+        {
+            var func = (Action<T, <#= type.Name #>>)Delegate.CreateDelegate(typeof(Action<T, <#= type.Name #>>), propertyAccessor);
+            return (T obj, Int64 value) => func(obj, Convert.To<#= type.Name #>(value));
+        }
+		static Action<T, Int64> GetNullableNumeric<#= type.Name #>Setter<T>(MethodInfo propertyAccessor)
+        {
+            var func = (Action<T, Nullable<<#= type.Name #>>>)Delegate.CreateDelegate(typeof(Action<T, Nullable<<#= type.Name #>>>), propertyAccessor);
+            return (T obj, Int64 value) => func(obj, Convert.To<#= type.Name #>(value));
+        }
+		<# } #>
+	}
+
+	internal sealed class Setter<T>
+    {
+        internal Action<T, String> StringSetter { get; set; }
+        internal Action<T, Int64> NumericSetter { get; set; }
+    }
+}

@@ -1,0 +1,31 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+
+namespace SimpleQA.WebApp.Filter
+{
+    public class SimpleQAAuthorizeAttribute : ActionFilterAttribute, IAuthorizationFilter
+    {
+        public void OnAuthorization(AuthorizationContext filterContext)
+        {
+            if (!filterContext.HttpContext.User.Identity.IsAuthenticated)
+            {
+                if (filterContext.HttpContext.Request.IsAjaxRequest())
+                {
+                    filterContext.Result = new HttpStatusCodeResult(500, "Your session has ended.");
+                }
+                else
+                {
+                    filterContext.Result = new ViewResult
+                    {
+                        ViewName = "~/Views/Error/SessionEnded.cshtml",
+                        ViewData = new ViewDataDictionary(),
+                        TempData = filterContext.Controller.TempData
+                    };
+                }
+            }
+        }
+    }
+}

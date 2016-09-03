@@ -1,0 +1,123 @@
+﻿@model SimpleQA.Models.QuestionViewModel
+
+@{
+    ViewBag.Title = Model.Title;
+    ViewBag.Scene = User.Identity.IsAuthenticated ? "question" : "questionanonymous";
+    var deleted = Model.Status == QuestionStatus.Deleted;
+    var open = Model.Status == QuestionStatus.Open;
+    var closed = Model.Status == QuestionStatus.Closed;
+}
+
+<h2 class="page-header">
+    <a href="@Url.RouteUrl("QuestionRead", new { id = Model.Id, slug = Model.Slug })">@Model.Title</a>
+</h2>
+
+<section id="question" data-push-topic="@Keys.QuestionNotification(Model.Id)" data-push-topic-message="The question has been updated." class="question-@Model.Status.ToString().ToLowerInvariant()" data-visit="@Url.RouteUrl("QuestionVisitCounter", new { questionId = Model.Id })">
+    <section id="question-header" data-vote-url="@Url.RouteUrl("QuestionWrite", new { action = "vote", id = Model.Id })">
+        <div class="row">
+            <div class="col-sm-1 voting">
+                @{Html.RenderPartial("Vote", Model);}
+            </div>
+            <div class="col-sm-11">
+                <div class="row">
+                    <div class="col-sm-12" id="question-content">@Html.Raw(Model.HtmlContent)</div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-offset-1 col-sm-11">
+                @foreach (var tag in Model.Tags)
+                {
+                    <a class="tag label label-info" href="@Url.RouteUrl("Tag", new {tag=tag})">@tag</a>
+                }
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-offset-1 col-sm-5">
+                <div id="question-actions" class="btn-group" role="group" aria-label="...">
+                    @if (Model.AuthoredByUser)
+                    {
+                        if (open)
+                        {
+                            <a class="btn btn-default" href="@Url.RouteUrl("QuestionRead", new { action = "edit", id = Model.Id })">Edit</a>
+                        }
+                        if (!deleted)
+                        {
+                            <a class="btn btn-default" data-toggle="modal" data-target="#delete-form" href="@Url.RouteUrl("QuestionRead", new { id = Model.Id, action="delete" })">Delete</a>
+                            @Html.BootstrapDialog("delete-form")
+                        }
+                        else
+                        {
+                            <button class="btn btn-default btn-disabled" disabled>Deleted</button>
+                        }
+                    }
+                    @if (User.Identity.IsAuthenticated && !Model.AuthoredByUser && open)
+                    {
+                        if (Model.Status == QuestionStatus.Closed)
+                        {
+                            <button class="btn btn-default btn-disabled" disabled>Closed</button>
+                        }
+                        else if (Model.UserVotedClose)
+                        {
+                            <button class="btn btn-default btn-disabled" disabled>Close (@Model.CloseVotes)</button>
+                        }
+                        else
+                        {
+                            <a class="btn btn-default" data-toggle="modal" data-target="#close-form" href="@Url.RouteUrl("QuestionRead", new { id = Model.Id, action="close" })">Close (@Model.CloseVotes)</a>
+                            @Html.BootstrapDialog("close-form")
+                        }
+                    }
+                </div>
+            </div>
+            <div class="col-sm-6">@{Html.RenderPartial("Authoring", Model);}</div>
+        </div>
+    </section>
+    @if (Model.Answers.Any())
+    {
+        <section id="answers">
+            <h3 class="page-header">
+                Answers
+            </h3>
+            @foreach (var answer in Model.Answers)
+            {
+                Html.RenderPartial("../AnswerRead/Get", answer);
+            }
+        </section>
+    }
+</section>
+
+@if (User.Identity.IsAuthenticated && open) 
+{ 
+    Html.RenderPartial("AnswerForm", new AnswerEditFormViewModel() { QuestionId = Model.Id });
+}
+
+@section side{
+    <div class="well">
+        <h4>SimpleQA Question View</h4>
+        <p>This view shows a posted question and its answers, if any.</p>
+        <p>
+            Some question management can be done:
+            <ul>
+                <li>Anonymouns users can just see the question, answers and their votes.</li>
+                <li>Authenticated users can vote to close que question.</li>
+                <li>The question poster can edit or delete the question.</li>
+            </ul>
+            
+        </p>
+    </div>
+}
+
+@section sidebottom{
+    <div class="well">
+        <p>
+            If the question is modified in another session, a <b>notification pops up</b> in the screen inviting the user to reload
+            the page to see the changes.
+        </p>
+        <p>
+            It is possible to add new answers using the 'Give an answer' textbox.
+        </p>
+        <p>
+            Questions and answers can be up-voted/down-voted, and the view should show if the user already voted an item.
+        </p>
+    </div>
+}

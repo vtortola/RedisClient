@@ -1,0 +1,21 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="row">
+    <div class="col-sm-8">
+        @RenderBody()
+    </div>
+    <div class="col-sm-4">
+        <div id="side">
+            @RenderSection("side", false)
+            @{Html.RenderAction("Popular", "Tags");}
+            @RenderSection("sidebottom", false)
+        </div>
+    </div>
+</div>
+<div id="sa-notification" class="alert alert-info fade in out">
+    <button type="button" class="close" aria-hidden="true">&times;</button>
+    <strong>Update message</strong>
+    <p class="sa-notification-message"></p>
+    <p><a href="javascript:window.location.reload()">Reload</a> this page</p>
+</div>

@@ -1,0 +1,25 @@
+﻿@model SimpleQA.Models.QuestionCloseFormViewModel
+
+<form action="@Url.RouteUrl("QuestionWrite", new { action = "close", id = Model.Id })" method="POST">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Vote to close question?</h4>
+    </div>
+    <div class="modal-body">
+        <p>Are you sure you want to vote to close this question?</p>
+        @if (Model.Votes < 1)
+        {
+            <p>You will be the first asking for closing it.</p>
+        }
+        else
+        {
+            <p>There is already @Model.Votes votes to close it, @(Constant.CloseVotesRequired - Model.Votes) more required.</p>
+        }
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        @Html.SessionTokenInput(User)
+        <input type="submit" class="btn btn-primary" value="Close" />
+    </div>
+</form>
+

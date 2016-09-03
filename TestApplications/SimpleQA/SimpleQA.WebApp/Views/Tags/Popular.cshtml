@@ -1,0 +1,9 @@
+﻿@model PopularTagsViewModel
+<div id="popular-tags" class="container contained">
+    <h3>Popular</h3>
+    <small>Tags ordered by the number of questions that have tagged.</small>
+    @foreach (var tag in Model.Tags)
+    {
+        <a class="tag label label-info" href="@Url.RouteUrl("Tag", new {tag=tag})">@tag</a>
+    }
+</div>

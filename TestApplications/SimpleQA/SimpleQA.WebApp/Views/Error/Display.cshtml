@@ -1,0 +1,49 @@
+﻿@model SimpleQA.SimpleQAException
+
+@{
+    ViewBag.Title = "Unexpected error";
+    var badRequest = Model as SimpleQABadRequestException;
+}
+
+<h2>An error has ocurred</h2>
+<p>@Model.Message</p>
+<p>Your error identificator is '@Model.Id', please quote it if you need contact support.</p>
+
+<hr/>
+
+@if(Model.InnerException!=null)
+{
+    <h2>@Model.InnerException.GetBaseException().Message</h2>
+}
+
+@if (badRequest != null)
+{
+    <ul>
+        @foreach (var error in badRequest.Errors)
+        {
+            <li>@error.ErrorMessage</li>
+        }
+    </ul>
+}
+
+@if (Model.StackTrace != null)
+{
+    <h3>Stack Trace</h3>
+    <div class="stacktrace">
+        @foreach(var line in Model.StackTrace.Split('\r'))
+        {
+        <div>@line</div>
+        }
+    </div>
+}
+
+@if (Model.InnerException != null)
+{
+    <h3>@Model.InnerException.Message Stack Trace</h3>
+    <div class="stacktrace">
+        @foreach (var line in Model.InnerException.StackTrace.Split('\r'))
+        {
+        <div>@line</div>
+        }
+    </div>
+}

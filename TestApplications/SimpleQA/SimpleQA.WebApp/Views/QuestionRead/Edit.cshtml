@@ -1,0 +1,52 @@
+﻿@model SimpleQA.Models.QuestionEditFormViewModel
+@{
+    ViewBag.Title = "Edit Question";
+    ViewBag.Scene = "ask";
+}
+
+<h2 class="page-header">
+    Edit Question
+</h2>
+
+<form action="@Url.RouteUrl("QuestionWrite", new { id=Model.Id, action="edit" })" method="POST" onsubmit="$(this).valid()">
+    @{Html.RenderPartial("QuestionDraftInputs", Model);}
+    @Html.SessionTokenInput(User)
+    @Html.ValidationSummary(true)
+    <button type="submit" class="btn btn-primary">Submit</button>
+    @if (Request.UrlReferrer != null)
+    {
+        <a href="@Request.UrlReferrer.AbsolutePath" class="btn btn-warning">Cancel</a>
+    }
+</form>
+
+@section side{
+    <div class="well">
+        <h4>SimpleQA Edit Question view</h4>
+        <p>This view allows the question author to modify the question content and tags.</p>
+    </div>
+}
+
+@section sidebottom{
+    <div class="well">
+        <p>
+            Changes in the content are reflected in the PREVIEW section below.
+        </p>
+        <p>
+            When the modifications are saved, other sessions viewing this question will get a notification pop-up inviting the user to reload to see the latest changes.
+        </p>
+        <p>
+            The tag autocomplete control uses <a href="https://bootstrap-tagsinput.github.io/bootstrap-tagsinput/examples/" target="_blank">Bootstrap TagsInput</a>, and
+            the server uses a zset and its lexical sorting feature to sortlist the tags.
+        </p>
+        <p>
+            <b>Known Issue:</b> There is some disagreement between markdown components in how they understand the same input in server side and client side. For example you have to do a double line break to go to a new line.
+            Since this is just a proof of concept, I have this as a very low priority item.
+        </p>
+        <p>
+            The markdown editor is <a href="https://simplemde.com/" target="_blank">SimpleMDE</a>.
+        </p>
+        <p>
+            The markdown preview uses <a href="http://showdownjs.github.io/demo/" target="_blank">ShowdownJS</a>
+        </p>
+    </div>
+}

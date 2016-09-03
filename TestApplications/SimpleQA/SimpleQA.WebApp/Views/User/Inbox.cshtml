@@ -1,0 +1,16 @@
+﻿@model UserInboxModel
+
+@if(Model.Questions.Any())
+{ 
+    <small>New answers for:</small>
+    <ul class="user-inbox-list">
+        @foreach (var question in Model.Questions)
+        {
+            <li class="user-inbox-list-item"><a href="@Url.RouteUrl("QuestionRead", new { id = question.Id, slug = question.Slug, action="get" })">@question.Title</a></li>
+        }
+    </ul>
+}
+else
+{
+    <a id="authenticated-notifications-items-empty">Nothing to show at this time :)</a>
+}
