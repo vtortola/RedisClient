@@ -145,8 +145,8 @@ options
        return a + b
      endproc"));
  ```
- 
- [Read more about available options](//github.com/vtortola/RedisClient/wiki/Options).
+[Read more about procedures management](//github.com/vtortola/RedisClient/wiki/Procedure-management).
+[Read more about available options](//github.com/vtortola/RedisClient/wiki/Options).
  
 Then they can be invoked as normal Redis commands:
 ```cs
