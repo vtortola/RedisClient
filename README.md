@@ -34,7 +34,7 @@ using (var channel = _client.CreateChannel())
     await channel.ExecuteAsync("incr mykey").ConfigureAwait(false);
 }
 ``` 
- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; It is possible to execute multiple statements per command, splitting them with line breaks. Statements are pipelined to the same connection (but still they may be interpolated with other commands by Redis, using `MULTI` if you want to avoid it).
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; It is possible to execute multiple statements per command, splitting them with line breaks. Statements are pipelined to the same connection (but still they may be interpolated with other commands by Redis, use `MULTI` if you want to avoid it).
 
 ```cs
 using (var channel = _client.CreateChannel())
