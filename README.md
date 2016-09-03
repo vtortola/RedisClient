@@ -7,7 +7,7 @@
  * Templated strings interface [(more about parameter binding)](//github.com/vtortola/RedisClient/wiki/Parameter-binding).
  * Seamless connection management [(more about connection management)](//github.com/vtortola/RedisClient/wiki/Connection-management).
  * Basic output binding [(more about output binding)](//github.com/vtortola/RedisClient/wiki/Getting-results).
- * Script managememnt through procedures [(more about procedures)]().
+ * Script managememnt through procedures [(more about procedures)](//github.com/vtortola/RedisClient/wiki/Procedures).
  * Support for asynchronous, synchronous and "fire and forget" operations.
  * Support for blocking operations and partial transactions.
  
@@ -187,3 +187,5 @@ using (var channel = _client.CreateChannel())
 }
 ``` 
 This will store the value `6` as string in the key `mysum` and will return `OK`. The value `mysum` is passed in `KEYS` rather than in `ARGV`.
+
+[Read more about procedures](//github.com/vtortola/RedisClient/wiki/Procedures).
