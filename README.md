@@ -78,7 +78,7 @@ Object's properties, `IEnumerable<Tuple<,>>` and `IEnumerable<KeyValuePair<,>>` 
 using (var channel = _client.CreateChannel())
 {
     await channel.ExecuteAsync("hmset myObject @data",
-                               new { data = Parameter.SequenceProperties(my))
+                               new { data = Parameter.SequenceProperties(myObjectInstance))
                                .ConfigureAwait(false);
 }
 ```
