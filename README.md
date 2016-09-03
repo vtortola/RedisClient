@@ -112,4 +112,33 @@ using (var channel = Client.CreateChannel())
 ```
 **Note:** You may feel tempted to put the `SUBSCRIBE` and `PUBLISH` statements in the same command, however it won't work because they will be executed in parallel in subscriber and commander connections respectively. Although technically possible to do, I considered this a very unlikely scenario, so in alas of better performace parallel execution is used.
 
-Subscriptions are cleared on `IRedisChannel.Dispose()`, so make sure you always dispose your channels.
+Subscriptions are automatically cleared on `IRedisChannel.Dispose()`, so make sure you always dispose your channels.
+
+### Executing procedures
+Rather than executing LUA scripts directly, they need to be wrapped in what is called a procedure:
+```
+proc Sum(a, b)
+    return a + b
+endproc
+```
+Procedures are loaded in the configuration, and they are automatically deployed to Redis when connecting the first time:
+```cs
+var options = new RedisClientOptions()
+options
+  .Procedures
+  .Load(new StringReader(@"
+     proc Sum(a, b)
+       return a + b
+     endproc"));
+ ```
+ 
+Then they can be invoked as normal Redis commands:
+```cs
+using (var channel = _client.CreateChannel())
+{
+    var result = await channel.ExecuteAsync("Sum 1 2").ConfigureAwait(false);
+    var value = result[0].GetInteger();
+}
+``` 
+ 
+ 
