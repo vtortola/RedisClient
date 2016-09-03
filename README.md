@@ -103,7 +103,7 @@ using (var channel = _client.CreateChannel())
         var results = await channel.ExecuteAsync(@"
                                     incr mycounter
                                     hgetall @customer",
-                                    new { customer = "customer:" + customerId )
+                                    new { customer = "customer:" + customerId} )
                                     .ConfigureAwait(false);
         var value = results[0].GetInteger();
         var obj = results[1].AsObjectCollation<Customer>();
