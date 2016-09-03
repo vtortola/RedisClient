@@ -90,13 +90,13 @@ A command execution result implements `IRedisResults`, which allows to inspect t
  ```cs
 using (var channel = _client.CreateChannel())
 {
-    var results = await channel.ExecuteAsync(@"
-                                incr mycounter
-                                hgetall @customer",
-                                new { customer = "customer:" + customerId )
-                                .ConfigureAwait(false);
-    var value = results[0].GetInteger();
-    var obj = results[1].AsObjectCollation<Customer>();
+        var results = await channel.ExecuteAsync(@"
+                                    incr mycounter
+                                    hgetall @customer",
+                                    new { customer = "customer:" + customerId )
+                                    .ConfigureAwait(false);
+        var value = results[0].GetInteger();
+        var obj = results[1].AsObjectCollation<Customer>();
 }
 ```
 
