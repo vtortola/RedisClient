@@ -87,16 +87,17 @@ A command execution result implements `IRedisResults`, which allows to inspect t
  * `.AsObjectCollation<T>()` allows to bind the result to an object by parsing a sequence of key-value pairs, and bind it to the object properties. For example `member1 value1 member2 value2` will be bound as `{ member1 = "value1", member2 = "value2" }`.
  * `.AsDictionaryCollation` allows to bind the result to an object by parsing a sequence of key-value pairs as `KeyValuePair<>`.
  
+
  ```cs
 using (var channel = _client.CreateChannel())
 {
-        var results = await channel.ExecuteAsync(@"
-                                    incr mycounter
-                                    hgetall @customer",
-                                    new { customer = "customer:" + customerId )
-                                    .ConfigureAwait(false);
-        var value = results[0].GetInteger();
-        var obj = results[1].AsObjectCollation<Customer>();
+    var results = await channel.ExecuteAsync(@"
+                                incr mycounter
+                                hgetall @customer",
+                                new { customer = "customer:" + customerId )
+                                .ConfigureAwait(false);
+    var value = results[0].GetInteger();
+    var obj = results[1].AsObjectCollation<Customer>();
 }
 ```
 
