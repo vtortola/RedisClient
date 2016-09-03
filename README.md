@@ -18,7 +18,7 @@
 Nuget..
 
 ### Setting it up
-The API has to fundamental parts:
+The API has two fundamental parts:
  * `RedisClient` class handles the connection management. Usually you have one instance across all your AppDomain (or two instances if you have master/slave). It is a thread safe object, that usually is cached for the extend of your application lifetime.
  
 ```cs
