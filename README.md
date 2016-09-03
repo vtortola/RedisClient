@@ -46,7 +46,7 @@ using (var channel = _client.CreateChannel())
                   .ConfigureAwait(false);
 }
 ``` 
-
+[Read more about available options](//github.com/vtortola/RedisClient/wiki/Options).
 [Read more about connection management](//github.com/vtortola/RedisClient/wiki/Connection-management).
 
 ### Binding parameters
@@ -141,6 +141,8 @@ options
        return a + b
      endproc"));
  ```
+ 
+ [Read more about available options](//github.com/vtortola/RedisClient/wiki/Options).
  
 Then they can be invoked as normal Redis commands:
 ```cs
