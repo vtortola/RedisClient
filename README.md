@@ -88,6 +88,7 @@ A command execution result implements `IRedisResults`, which allows to inspect t
  * `.AsDictionaryCollation` allows to bind the result to an object by parsing a sequence of key-value pairs as `KeyValuePair<>`.
  
 
+
  ```cs
 using (var channel = _client.CreateChannel())
 {
