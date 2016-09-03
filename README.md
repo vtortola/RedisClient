@@ -6,7 +6,7 @@
 
  * Templated strings interface [(more about parameter binding)](//github.com/vtortola/RedisClient/wiki/Parameter-binding).
  * Seamless connection management [(more about connection management)](//github.com/vtortola/RedisClient/wiki/Connection-management).
- * Basic output binding [(more about output binding)]().
+ * Basic output binding [(more about output binding)](//github.com/vtortola/RedisClient/wiki/Getting-results).
  * Script managememnt through procedures [(more about procedures)]().
  * Support for asynchronous, synchronous and "fire and forget" operations.
  * Support for blocking operations and partial transactions.
@@ -107,6 +107,8 @@ using (var channel = _client.CreateChannel())
         var obj = results[1].AsObjectCollation<Customer>();
 }
 ```
+
+[Read more about getting results)](//github.com/vtortola/RedisClient/wiki/Getting-results).
 
 ### Subscribing to channels
 `IRedisChannel` exposes a `NotificationHandler` property that can be used to get or set a handler for messages received by this channel. The handler will receive `RedisNotification` objects containing the message data.
