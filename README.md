@@ -8,8 +8,8 @@
  * Seamless connection management [(more about connection management)](//github.com/vtortola/RedisClient/wiki/Connection-management).
  * Basic output binding [(more about output binding)](//github.com/vtortola/RedisClient/wiki/Getting-results).
  * Script managememnt through procedures [(more about procedures)](//github.com/vtortola/RedisClient/wiki/Procedures).
- * Support for asynchronous, synchronous and "fire and forget" operations.
  * Support for blocking operations and partial transactions.
+ * Support for asynchronous, synchronous and "fire and forget" operations.
  
 ## Getting started
 
