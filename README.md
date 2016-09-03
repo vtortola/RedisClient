@@ -19,7 +19,7 @@ Nuget..
 
 ### Setting it up
 The API has to main fundamental pieces:
- * `RedisClient` class handles the connection management. Usually you have one instance across all your AppDomain (or two instances if you have master/slave). It is a thread safe object, expected for the extend of your application lifetime.
+ * `RedisClient` class handles the connection management. Usually you have one instance across all your AppDomain (or two instances if you have master/slave). It is a thread safe object, that usually is cached for the extend of your application lifetime.
  
 ```cs
 _client = new RedisClient(endpoint))
