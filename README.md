@@ -124,6 +124,8 @@ using (var channel = Client.CreateChannel())
 
 Subscriptions are automatically cleared on `IRedisChannel.Dispose()`, so make sure you always dispose your channels.
 
+[Read more about subscribing to topics](//github.com/vtortola/RedisClient/wiki/Subscribing).
+
 ### Executing procedures
 Rather than executing LUA scripts directly, they need to be wrapped in what is called a procedure:
 ```
