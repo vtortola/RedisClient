@@ -1,6 +1,6 @@
 # RedisClient
-## .NET client for Redis
-#### Status: ALPHA
+####.NET client for Redis
+##### Status: ALPHA
 
 **vtortola.RedisClient** is based on templated strings, analyzes the commands and decides which is the best way of executing them. It uses two connection pools: one shared, multiplexed and pipelined; and other exclusive and pipelined. It also uses a special syntax for working with LUA scripts, named [procedures]().
 
@@ -15,14 +15,14 @@
 
 ### Set up
 The API has to main fundamental pieces:
- * `RedisClient` class: handles the connection management. Usually you have one instance across all your AppDomain (or two instances if you have master/slave). It is a thread safe object, expected for the extend of your application lifetime.
+ * `RedisClient` class handles the connection management. Usually you have one instance across all your AppDomain (or two instances if you have master/slave). It is a thread safe object, expected for the extend of your application lifetime.
  
 ```cs
 _client = new RedisClient(endpoint))
 await _client.ConnectAsync(CancellationToken.None).ConfigureAwait(false);
 ``` 
 
- * `IRedisChannel` interface: the API you will use to execute commands. Channels are short lived, cheap to create, non-thread safe objects that represent virtual connections to Redis. Channels analyze commands and decide how to route them through the three connection pools (multiplexed, exclusive and subscription).
+ * `IRedisChannel` interface is used to execute commands. Channels are short lived, cheap to create, non-thread safe objects that represent virtual connections to Redis. Channels provide seamless access to command and subscription connections, analyze commands and decide how to route them through the three connection pools (multiplexed, exclusive and subscription).
 
 ```cs
 using (var channel = _client.CreateChannel())
@@ -37,7 +37,8 @@ using (var channel = _client.CreateChannel())
 {
     await channel.ExecuteAsync(@"
                   incr mykey
-                  decr otherkey")
+                  decr otherkey
+                  subscribe topic")
                   .ConfigureAwait(false);
 }
 ``` 
@@ -98,3 +99,5 @@ using (var channel = _client.CreateChannel())
     var obj = results[1].AsObjectCollation<Customer>();
 }
 ```
+
+### Subscribing
