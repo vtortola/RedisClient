@@ -16,7 +16,7 @@ namespace vtortola.Redis
         readonly Dictionary<IRedisChannel, HashSet<String>> _subscriptions;
 
         internal Int32 KeyCount { get { return _subscribed.Count; } }
-        internal Int32 ChannelCount { get { return _subscribed.Count; } }
+        internal Int32 ChannelCount { get { return _subscriptions.Count; } }
 
         internal SubscriptionAggregator()
         {
