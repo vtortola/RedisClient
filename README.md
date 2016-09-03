@@ -13,7 +13,11 @@
  
  ## Getting started
 
-### Set up
+### Installing
+
+Nuget..
+
+### Setting it up
 The API has to main fundamental pieces:
  * `RedisClient` class handles the connection management. Usually you have one instance across all your AppDomain (or two instances if you have master/slave). It is a thread safe object, expected for the extend of your application lifetime.
  
@@ -100,7 +104,7 @@ using (var channel = _client.CreateChannel())
 }
 ```
 
-### Subscribing
+### Subscribing to channels
 `IRedisChannel` exposes a `NotificationHandler` property that can be used to get or set a handler for messages received by this channel. The handler will receive `RedisNotification` objects containing the message data.
 ```cs
 using (var channel = Client.CreateChannel())
@@ -176,4 +180,4 @@ using (var channel = _client.CreateChannel())
     result[0].AssertOK();
 }
 ``` 
-This will store the value `6` as string in the key `mysum` and will return `OK`.  
+This will store the value `6` as string in the key `mysum` and will return `OK`. The value `mysum` is passed in `KEYS` rather than in `ARGV`.
