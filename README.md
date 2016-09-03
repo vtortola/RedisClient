@@ -5,13 +5,13 @@
 **vtortola.RedisClient** is based on templated strings, analyzes the commands and decides which is the best way of executing them. It uses two connection pools: one shared, multiplexed and pipelined; and other exclusive and pipelined. It also uses a special syntax for working with LUA scripts, named [procedures]().
 
  * Templated strings interface [(more about parameter binding)](//github.com/vtortola/RedisClient/wiki/Parameter-binding).
- * Seamless connection management [(more about connection management)]().
+ * Seamless connection management [(more about connection management)](//github.com/vtortola/RedisClient/wiki/Connection-management).
  * Basic output binding [(more about output binding)]().
  * Script managememnt through procedures [(more about procedures)]().
  * Support for asynchronous, synchronous and "fire and forget" operations.
  * Support for blocking operations and partial transactions.
  
- ## Getting started
+## Getting started
 
 ### Installing
 
@@ -47,6 +47,8 @@ using (var channel = _client.CreateChannel())
 }
 ``` 
 
+[Read more about connection management](//github.com/vtortola/RedisClient/wiki/Connection-management).
+
 ### Binding parameters
 Parameter binding works passing an object which properties will be bind to the command parameters, identified by a starting '@'. Only [integral types](https://msdn.microsoft.com/en-us/library/exx3b86w(v=vs.80).aspx), `String`, `DateTime` and their `IEnumerable<>` are supported. Commands should always start by a Redis command or a procedure alias.
 
@@ -81,7 +83,7 @@ using (var channel = _client.CreateChannel())
 }
 ```
 
-[(Read more about parameter binding)](//github.com/vtortola/RedisClient/wiki/Parameter-binding)
+[Read more about parameter binding](//github.com/vtortola/RedisClient/wiki/Parameter-binding).
 
 ### Getting results
 A command execution result implements `IRedisResults`, which allows to inspect the return in every single statement of the command through a `IRedisResultInspector` per statement. 
