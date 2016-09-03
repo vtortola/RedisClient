@@ -110,7 +110,7 @@ using (var channel = _client.CreateChannel())
 }
 ```
 
-[Read more about getting results)](//github.com/vtortola/RedisClient/wiki/Getting-results).
+[Read more about getting results](//github.com/vtortola/RedisClient/wiki/Getting-results).
 
 ### Subscribing to channels
 `IRedisChannel` exposes a `NotificationHandler` property that can be used to get or set a handler for messages received by this channel. The handler will receive `RedisNotification` objects containing the message data.
