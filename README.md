@@ -85,7 +85,7 @@ A command execution result implements `IRedisResults`, which allows to inspect t
  * `.GetXXX` methods: will try to read the value as `XXX` type, and will throw an `RedisClientCastException` if the data is not in the expected type.
  * `.AsXXX` methods: will try to read the value as `XXX` type, or parse it as `XXX` (there is no `.GetDouble()` because Redis only returns string, integer or error, but there is a `.AsDouble()`.
  * `.AsObjectCollation<T>()` allows to bind the result to an object by parsing a sequence of key-value pairs, and bind it to the object properties. For example `member1 value1 member2 value2` will be bound as `{ member1 = "value1", member2 = "value2" }`.
- * `.AsDictionaryCollation` allows to bind the result to an object by parsing a sequence of key-value pairs as `KeyValuePair<>`.
+ * `.AsDictionaryCollation<TKey, TValue>()` allows to bind the result to an object by parsing a sequence of key-value pairs as `KeyValuePair<>`.
  
  ```cs
 using (var channel = _client.CreateChannel())
@@ -101,3 +101,15 @@ using (var channel = _client.CreateChannel())
 ```
 
 ### Subscribing
+`IRedisChannel` exposes a `NotificationHandler` property that can be used to get or set a handler for messages received by this channel. The handler will receive `RedisNotification` objects containing the message data.
+```cs
+using (var channel = Client.CreateChannel())
+{
+    channel.NotificationHandler = msg => Console.WriteLine(msg.Content); // will print 'whatever'
+    channel.Execute("psubscribe h?llo");
+    channel.Execute("publish hello whatever");
+}
+```
+**Note:** You may feel tempted to put the `SUBSCRIBE` and `PUBLISH` statements in the same command, however it won't work because they will be executed in parallel in subscriber and commander connections respectively. Although technically possible to do, I considered this a very unlikely scenario, so in alas of better performace parallel execution is used.
+
+Subscriptions are cleared on `IRedisChannel.Dispose()`, so make sure you always dispose your channels.
