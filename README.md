@@ -30,7 +30,7 @@ using (var channel = _client.CreateChannel())
     await channel.ExecuteAsync("incr mykey").ConfigureAwait(false);
 }
 ``` 
- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; It is possible to execute multiple commands per execution splitting them with line breaks. Commands are pipelined to the same connection.
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; It is possible to execute multiple statements per command, splitting them with line breaks. Statements are pipelined to the same connection (but still they may be interpolated with other commands by Redis, using `MULTI` if you want to avoid it).
 
 ```cs
 using (var channel = _client.CreateChannel())
@@ -77,3 +77,23 @@ using (var channel = _client.CreateChannel())
 ```
 
 ### Getting results
+A command execution result implements `IRedisResults`, which allows to inspect the return in every single statement of the command through a `IRedisResultInspector` per statement. 
+ * Each statement correlates to a position in the `IRedisResults` items. First statement is item 0, and so on.
+ * `.RedisType`: indicates the result type.
+ * If the result is an error, accessing the statement result will throw a `RedisClientCommandException` with the details of the Redis error. It is possible to get the exception without throwing it using `.GetException()`.
+ * `.GetXXX` methods: will try to read the value as `XXX` type, and will throw an `RedisClientCastException` if the data is not in the expected type.
+ * `.AsXXX` methods: will try to read the value as `XXX` type, or parse it as `XXX` (there is no `.GetDouble()` because Redis only returns string, integer or error, but there is a `.AsDouble()`.
+ * `.AsObjectCollation<T>()` allows to bind the result to an object by parsing a sequence of key-value pairs, and bind it to the object properties. For example `member1 value1 member2 value2` will be bound as `{ member1 = "value1", member2 = "value2" }`.
+ * `.AsDictionaryCollation` allows to bind the result to an object by parsing a sequence of key-value pairs as `KeyValuePair<>`.
+ ```cs
+using (var channel = _client.CreateChannel())
+{
+    var results = await channel.ExecuteAsync(@"
+                                incr mycounter
+                                hgetall @customer",
+                                new { customer = "customer:" + customerId )
+                                .ConfigureAwait(false);
+    var value = results[0].GetInteger();
+    var obj = results[1].AsObjectCollation<Customer>();
+}
+```
