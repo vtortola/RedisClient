@@ -4,7 +4,7 @@
 
 **vtortola.RedisClient** is based on templated strings, analyzes the commands and decides which is the best way of executing them. It uses two connection pools: one shared, multiplexed and pipelined; and other exclusive and pipelined. It also uses a special syntax for working with LUA scripts, named [procedures]().
 
- * Templated strings interface [(more about parameter binding)]().
+ * Templated strings interface [(more about parameter binding)](//github.com/vtortola/RedisClient/wiki/Parameter-binding).
  * Seamless connection management [(more about connection management)]().
  * Basic output binding [(more about output binding)]().
  * Script managememnt through procedures [(more about procedures)]().
@@ -80,6 +80,8 @@ using (var channel = _client.CreateChannel())
                                .ConfigureAwait(false);
 }
 ```
+
+[(Read more about parameter binding)](//github.com/vtortola/RedisClient/wiki/Parameter-binding)
 
 ### Getting results
 A command execution result implements `IRedisResults`, which allows to inspect the return in every single statement of the command through a `IRedisResultInspector` per statement. 
