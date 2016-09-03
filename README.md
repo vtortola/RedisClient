@@ -1,5 +1,5 @@
 # RedisClient
-####.NET client for Redis
+#### Another .NET client for Redis, for the craic.
 ##### Status: ALPHA
 
 **vtortola.RedisClient** is based on templated strings, analyzes the commands and decides which is the best way of executing them. It uses two commander connection pools: one shared, multiplexed and pipelined; and other exclusive and pipelined; and an additional connection pool for subscriber connections. It also uses a special syntax for working with LUA scripts, named [procedures]().
