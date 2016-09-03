@@ -58,7 +58,7 @@ namespace vtortola.Redis
             CheckException();
             return _response.AsString();
         }
-        public Int64 AsInt64()
+        public Int64 AsInteger()
         {
             CheckException();
             return _response.AsInt64();

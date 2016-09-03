@@ -8,12 +8,12 @@ namespace vtortola.Redis
     public sealed class MultiplexPoolOptions
     {
         /// <summary>
-        /// Number of command connections.
+        /// Number of commander connections.
         /// </summary>
-        public Int32 CommandConnection { get; set; }
+        public Int32 CommandConnections { get; set; }
 
         /// <summary>
-        /// Number of subscription connections.
+        /// Number of subscriber connections.
         /// </summary>
         public Int32 SubscriptionOptions { get; set; }
     }

@@ -33,18 +33,18 @@ namespace vtortola.Redis
         }
         public void ThrowErrorIfAny()
         {
-            List<Exception> errors = null;
+            List<RedisClientCommandException> errors = null;
             for (var i = 0; i < _responses.Length; i++)
             {
                 var response = _responses[i];
                 if (response.Header == RESPHeaders.Error)
                 {
-                    errors = errors ?? new List<Exception>();
+                    errors = errors ?? new List<RedisClientCommandException>();
                     errors.Add(new RedisClientCommandException((RESPError)response, i + 1));
                 }
             }
             if (errors != null)
-                throw new AggregateException(errors);
+                throw new RedisClientMultipleCommandException(errors.ToArray());
         }
 
         public IEnumerator<IRedisResultInspector> GetEnumerator()

@@ -127,7 +127,7 @@ namespace vtortola.Redis
             PreventPingIfActive = true;
             Logger = NoLogger.Instance;
             var multiplexPool = new MultiplexPoolOptions();
-            multiplexPool.CommandConnection = 2;
+            multiplexPool.CommandConnections = 2;
             multiplexPool.SubscriptionOptions = 2;
             MultiplexPool = multiplexPool;
             var exclusivePool = new ExclusivePoolOptions();
@@ -178,7 +178,7 @@ namespace vtortola.Redis
 
         private void ValidateMultiplex(MultiplexPoolOptions config)
         {
-            ParameterGuard.CannotBeZeroOrNegative(config.CommandConnection, "MultiplexPoolOptions.CommandConnection");
+            ParameterGuard.CannotBeZeroOrNegative(config.CommandConnections, "MultiplexPoolOptions.CommandConnection");
             ParameterGuard.CannotBeZeroOrNegative(config.SubscriptionOptions, "MultiplexPoolOptions.SubscriptionOptions");
         }
     }

@@ -15,7 +15,7 @@ namespace IntegrationTests.RedisClientTests
         {
            using (var channel = Client.CreateChannel())
            { 
-                var result = await channel.ExecuteAsync(@"incr examplekey");
+               var result = await channel.ExecuteAsync(@"incr examplekey");
 
                 Assert.IsNotNull(result);
                 Assert.AreEqual(1L, result[0].GetInteger());

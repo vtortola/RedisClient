@@ -22,7 +22,7 @@ namespace SimpleQA.RedisCommands
             var store = Keys.AutoCompleteTags();
             var result = await _channel.ExecuteAsync("ZRANK @store @prefix", new { store, prefix = request.Query }).ConfigureAwait(false);
 
-            var start = result[0].AsInt64();
+            var start = result[0].AsInteger();
 
             result = await _channel.ExecuteAsync("ZRANGE @store @start @end", new { store, start, end = start + 50 }).ConfigureAwait(false);
 

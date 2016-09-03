@@ -36,7 +36,7 @@ namespace IntegrationTests.RedisClientTests
                 Logger = new TraceRedisClientLogger()
             };
 
-            options.MultiplexPool.CommandConnection = 10;
+            options.MultiplexPool.CommandConnections = 10;
             options.MultiplexPool.SubscriptionOptions = 10;
  
 

@@ -40,7 +40,7 @@ namespace SimpleQA.RedisCommands
                                         .ConfigureAwait(false);
 
             model.Page = request.Page;
-            model.TotalPages = (Int32)Math.Ceiling(result[1].AsInt64() / (Constant.ItemsPerPage * 1.0));
+            model.TotalPages = (Int32)Math.Ceiling(result[1].AsInteger() / (Constant.ItemsPerPage * 1.0));
 
             var list = new List<QuestionExcerptViewModel>(end - start);
             foreach (var questionKey in result[0].GetStringArray())

@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 
 namespace vtortola.Redis
@@ -46,7 +47,7 @@ namespace vtortola.Redis
         /// <summary>
         /// Gets the result as 64bit integer. If result is not an integer, it tries to parse it as such.
         /// </summary>
-        Int64 AsInt64();
+        Int64 AsInteger();
 
         /// <summary>
         /// Gets the result as string. If result is not a string, it returns the string representation.
@@ -87,9 +88,9 @@ namespace vtortola.Redis
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="ignoreMissingMembers">If <c>true</c> does not fail if there is a key without property.</param>
-        /// <param name="ignoreTypeMissmatchMembers">If <c>true</c> does not fail if cannot bind a value to the property indicated by the key.</param>
+        /// <param name="ignoreTypeMismatchMembers">If <c>true</c> does not fail if cannot bind a value to the property indicated by the key.</param>
         /// <returns></returns>
-        T AsObjectCollation<T>(Boolean ignoreMissingMembers = true, Boolean ignoreTypeMissmatchMembers = true) where T : new();
+        T AsObjectCollation<T>(Boolean ignoreMissingMembers = true, Boolean ignoreTypeMismatchMembers = true) where T : new();
 
         /// <summary>
         /// Collates a vector of key-values to the properties of an object of type T.

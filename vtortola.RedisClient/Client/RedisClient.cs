@@ -43,7 +43,7 @@ namespace vtortola.Redis
 
             _procedures = _options.Procedures != null ? _options.Procedures.ToCollection() : ProcedureCollection.Empty;
 
-            _multiplexedCommander = new AggregatedCommandConnection<ConcurrentCommanderConnection>(_options.MultiplexPool.CommandConnection, ConcurrentCommander, _options, _procedures);
+            _multiplexedCommander = new AggregatedCommandConnection<ConcurrentCommanderConnection>(_options.MultiplexPool.CommandConnections, ConcurrentCommander, _options, _procedures);
             _subscriptorsPool = new ConnectionSelector<ConcurrentSubscriberConnection>(_options.MultiplexPool.SubscriptionOptions, ConcurrentSubscriber, _options);
             _exclusivePool = new ConnectionPool(_options.ExclusivePool.Minimum, _options.ExclusivePool.Maximum, Commander, _options.Logger);
 
