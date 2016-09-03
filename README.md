@@ -2,7 +2,7 @@
 ####.NET client for Redis
 ##### Status: ALPHA
 
-**vtortola.RedisClient** is based on templated strings, analyzes the commands and decides which is the best way of executing them. It uses two connection pools: one shared, multiplexed and pipelined; and other exclusive and pipelined. It also uses a special syntax for working with LUA scripts, named [procedures]().
+**vtortola.RedisClient** is based on templated strings, analyzes the commands and decides which is the best way of executing them. It uses two commander connection pools: one shared, multiplexed and pipelined; and other exclusive and pipelined; and an additional connection pool for subscriber connections. It also uses a special syntax for working with LUA scripts, named [procedures]().
 
  * Templated strings interface [(more about parameter binding)](//github.com/vtortola/RedisClient/wiki/Parameter-binding).
  * Seamless connection management [(more about connection management)](//github.com/vtortola/RedisClient/wiki/Connection-management).
