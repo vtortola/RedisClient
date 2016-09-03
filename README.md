@@ -121,7 +121,7 @@ proc Sum(a, b)
     return a + b
 endproc
 ```
-Procedures are loaded in the configuration, and they are automatically deployed to Redis when connecting the first time:
+Procedures are loaded in the configuration, and they are automatically deployed to Redis when connecting the first time. Multiple procedures can be uploaded from the same reader.
 ```cs
 var options = new RedisClientOptions()
 options
@@ -140,5 +140,40 @@ using (var channel = _client.CreateChannel())
     var value = result[0].GetInteger();
 }
 ``` 
- 
- 
+
+Procedures accepts single and collection parameters:
+ * `parameterName` will expect a single value'.
+ * `parameterName[]` will expect one or more parameters. They are [LUA arrays](https://www.lua.org/pil/11.1.html).
+
+Also, parameters can be passed as keys to the script (important for clustering) using the `$` prefix, either in single or collection parameters. The parameter (or parameters) will be passed in `KEYS` rather than in `ARGV`.
+
+Quick example:
+```
+-- sums the content of a and stored the content
+-- into the key specified in <asum>
+proc sumAndStore($asum, a[])
+   local function sum(t)
+       local sum = 0
+       for i=1, table.getn(t), 1 
+       do 
+          sum = sum + t[i]
+       end
+       return sum
+   end
+   local result = sum(a)
+   return redis.call('set', asum, result)
+endproc
+``` 
+
+Invoking:
+```cs
+using (var channel = _client.CreateChannel())
+{
+    var result = await channel.ExecuteAsync(@"
+                               sumAndStore @key @values",
+                               new { key = "mysum", values = new [] { 1, 2, 3} }
+                               ).ConfigureAwait(false);
+    result[0].AssertOK();
+}
+``` 
+This will store the value `6` as string in the key `mysum` and will return `OK`.  
