@@ -50,6 +50,8 @@ using (var channel = _client.CreateChannel())
 [Read more about connection management](//github.com/vtortola/RedisClient/wiki/Connection-management).
 
 ### Binding parameters
+Although is possible to use RedisClient composing strings dynamically, it is unrecommended. Providing command templates will increase the performance since then the command execution plan can be cached.
+
 Parameter binding works passing an object which properties will be bind to the command parameters, identified by a starting '@'. Only [integral types](https://msdn.microsoft.com/en-us/library/exx3b86w(v=vs.80).aspx), `String`, `DateTime` and their `IEnumerable<>` are supported. Commands should always start by a Redis command or a procedure alias.
 
 ```cs
