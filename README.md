@@ -144,10 +144,7 @@ options
        return a + b
      endproc"));
  ```
-[Read more about procedures management](//github.com/vtortola/RedisClient/wiki/Procedure-management).
 
-[Read more about available options](//github.com/vtortola/RedisClient/wiki/Options).
- 
 Then they can be invoked as normal Redis commands:
 ```cs
 using (var channel = _client.CreateChannel())
@@ -195,3 +192,5 @@ using (var channel = _client.CreateChannel())
 This will store the value `6` as string in the key `mysum` and will return `OK`. The value `mysum` is passed in `KEYS` rather than in `ARGV`.
 
 [Read more about procedures](//github.com/vtortola/RedisClient/wiki/Procedures).
+[Read more about procedures management](//github.com/vtortola/RedisClient/wiki/Procedure-management).
+[Read more about available options](//github.com/vtortola/RedisClient/wiki/Options).
