@@ -10,10 +10,10 @@ namespace SimpleQA
     {
         public const String CookieKey = "sessionId";
 
-        public const Int64 CloseVotesRequired = 5;
+        public const Int64 CloseVotesRequired = 10;
 
         public static readonly Int64 VoteScore = TimeSpan.FromDays(1).Ticks;
 
-        public const Int32 ItemsPerPage = 5;
+        public const Int32 ItemsPerPage = 10;
     }
 }

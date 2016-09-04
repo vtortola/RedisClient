@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PerformanceComparison", "Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests.Common", "Tests\UnitTests.Common\UnitTests.Common.csproj", "{4062C116-1534-4368-811D-C7A606DEB0F6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StackExchangeDumpLoader", "TestApplications\SimpleQA\StackExchangeDumpLoader\StackExchangeDumpLoader.csproj", "{6DD55325-8A24-4E3A-9B4B-307A09DCFDCA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,10 @@ Global
 		{4062C116-1534-4368-811D-C7A606DEB0F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4062C116-1534-4368-811D-C7A606DEB0F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4062C116-1534-4368-811D-C7A606DEB0F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6DD55325-8A24-4E3A-9B4B-307A09DCFDCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6DD55325-8A24-4E3A-9B4B-307A09DCFDCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6DD55325-8A24-4E3A-9B4B-307A09DCFDCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6DD55325-8A24-4E3A-9B4B-307A09DCFDCA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -83,5 +89,6 @@ Global
 		{412C61B6-6868-49CA-81A8-62D3B4D98B8B} = {C66FE0FB-3D23-4B85-AF98-5BA764F3539C}
 		{E2624154-01D4-4D61-AD74-C7781EBAE43F} = {CE50CF46-02B6-4906-A8FE-80A2A8271F20}
 		{4062C116-1534-4368-811D-C7A606DEB0F6} = {4F3F5599-C9EC-4B5F-B9C1-A83454F729C9}
+		{6DD55325-8A24-4E3A-9B4B-307A09DCFDCA} = {C66FE0FB-3D23-4B85-AF98-5BA764F3539C}
 	EndGlobalSection
 EndGlobal
