@@ -12,7 +12,7 @@ A .NET Redis client based on templated strings. It provides an API through virtu
  
 A very rough, maybe flawed, [performance comparison](//github.com/vtortola/RedisClient/wiki/Performance) shows the that the performance is close to other well known clients.
 
-<a href="//github.com/vtortola/RedisClient/wiki/Performance" style="display:block"><img src="http://vtortola.github.io/redisclientperf.png" height="300"  ></a>
+<a href="//github.com/vtortola/RedisClient/wiki/Performance" style="display:block"><img src="http://vtortola.github.io/redisclientperf.png?what" height="300"  ></a>
 
 
 ## Getting started
