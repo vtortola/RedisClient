@@ -2,13 +2,12 @@
 #### Another .NET Redis client, for the craic.
 ##### Status: ALPHA
 
-**vtortola.RedisClient** is based on templated strings, analyzes the commands and decides which is the best way of executing them. It uses two commander connection pools: one shared, multiplexed and pipelined; and other exclusive and pipelined; and an additional connection pool for subscriber connections. It also uses a special syntax for working with LUA scripts, named [procedures]().
+A .NET Redis client based on templated strings. It provides an API through virtual connections (named "channels") that provide seamless access to commander and subscriber connections. Depending on the structure of the input, it routes the commands through three different connection pools (a multiplexed commander, a exclusive commander and a shared subscriber pool) transparently.  It also uses a special syntax for working with LUA scripts, named [procedures](//github.com/vtortola/RedisClient/wiki/Procedures).
 
  * Templated strings interface [(more about parameter binding)](//github.com/vtortola/RedisClient/wiki/Parameter-binding).
- * Seamless connection management [(more about connection management)](//github.com/vtortola/RedisClient/wiki/Connection-management).
+ * Transparent connection management [(more about connection management)](//github.com/vtortola/RedisClient/wiki/Connection-management).
  * Basic output binding [(more about output binding)](//github.com/vtortola/RedisClient/wiki/Getting-results).
- * Script managememnt through procedures [(more about procedures)](//github.com/vtortola/RedisClient/wiki/Procedures).
- * Support for blocking operations and partial transactions.
+ * Server-side scripting through procedures [(more about procedures)](//github.com/vtortola/RedisClient/wiki/Procedures).
  * Support for asynchronous, synchronous and "fire and forget" operations.
  
 ## Getting started
@@ -26,7 +25,7 @@ _client = new RedisClient(endpoint))
 await _client.ConnectAsync(CancellationToken.None).ConfigureAwait(false);
 ``` 
 
- * `IRedisChannel` interface is used to execute commands. Channels are short lived, cheap to create, non-thread safe objects that represent virtual connections to Redis. Channels provide seamless access to commander and subscriber connections, analyze commands and decide how to route them through the three connection pools (multiplexed, exclusive and subscription).
+ * `IRedisChannel` interface is used to execute commands. Channels are short lived, cheap to create, non-thread safe objects that represent virtual connections to Redis. Channels provide seamless access to commander and subscriber connections, analyze commands and decide how to route them through the three connection pools (multiplexed, exclusive and subscriber).
 
 ```cs
 using (var channel = _client.CreateChannel())
