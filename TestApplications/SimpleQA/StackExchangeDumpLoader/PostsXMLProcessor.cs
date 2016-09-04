@@ -19,26 +19,28 @@ namespace StackExchangeDumpLoader
             _mediator = mediator;
         }
 
-        public void Process(XDocument doc)
+        public Dictionary<String, String> Process(XDocument doc, IDictionary<String,String> usermap)
         {
             var posts = doc.Element("posts").Elements();
+            var idmap = new Dictionary<String, String>();
             foreach (var post in posts)
             {
                 var postType = post.Attribute("PostTypeId").Value;
                 switch (postType)
                 {
-                    case "1": AppendQuestion(post, posts);
+                    case "1": AppendQuestion(post, posts, idmap, usermap);
                         break;
                 }
             }
+            return idmap;
         }
 
-        private void AppendQuestion(XElement question, IEnumerable<XElement> posts)
+        private void AppendQuestion(XElement question, IEnumerable<XElement> posts, IDictionary<String, String> idmap, IDictionary<String,String> usermap)
         {
             var id = question.Attribute("Id").Value;
             var userId = question.Attribute("OwnerUserId").Value;
 
-            var user = new GenericPrincipal(new GenericIdentity(userId), null);
+            var user = new GenericPrincipal(new GenericIdentity(usermap[userId]), null);
 
             var tags = Regex.Matches(question.Attribute("Tags").Value, "<(.*?)>")
                             .OfType<Match>()
@@ -53,15 +55,16 @@ namespace StackExchangeDumpLoader
 
             var result = _mediator.ExecuteAsync<QuestionCreateCommand, QuestionCreateCommandResult>(command, user, CancellationToken.None).Result;
 
+            idmap.Add(id, result.Id);
+
             var answers = posts.Where(p => p.Attribute("PostTypeId").Value == "2" && p.Attribute("ParentId").Value == id);
             foreach (var answer in answers)
             {
-                AppendAnswer(result.Id, answer);
+                AppendAnswer(result.Id, answer, idmap, usermap);
             }
-
         }
 
-        private void AppendAnswer(String questionId, XElement answer)
+        private void AppendAnswer(String questionId, XElement answer, IDictionary<String, String> idmap, IDictionary<String, String> usermap)
         {
             var userId = answer.Attribute("OwnerUserId").Value; 
 
@@ -69,8 +72,10 @@ namespace StackExchangeDumpLoader
                                                   HttpUtility.HtmlDecode(answer.Attribute("Body").Value), 
                                                   answer.Attribute("Body").Value);
 
-            var user = new GenericPrincipal(new GenericIdentity(userId), null);
-            _mediator.ExecuteAsync<AnswerCreateCommand, AnswerCreateCommandResult>(command, user, CancellationToken.None).Wait();
+            var user = new GenericPrincipal(new GenericIdentity(usermap[userId]), null);
+            var result = _mediator.ExecuteAsync<AnswerCreateCommand, AnswerCreateCommandResult>(command, user, CancellationToken.None).Result;
+
+            idmap.Add(answer.Attribute("Id").Value, result.QuestionId + "@" + result.AnswerId);
         }
     }
 }

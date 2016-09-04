@@ -18,14 +18,14 @@ namespace StackExchangeDumpLoader
             dicontainer.Options.DefaultScopedLifestyle = new ExecutionContextScopeLifestyle();
 
             dicontainer.Register<PostsXMLProcessor>();
+            dicontainer.Register<UsersXMLProcessor>();
             dicontainer.Register<ICommandExecuterMediator>( () => new CommandExecuterMediator(dicontainer) );
             RedisCommandsConfiguration.Configure(dicontainer, null);
 
             using (dicontainer.BeginExecutionContextScope())
             {
-                var postsXMLProcessor = dicontainer.GetInstance<PostsXMLProcessor>();
-
-                postsXMLProcessor.Process(XDocument.Load(Path.Combine(directory, "Posts.xml")));
+                var users = dicontainer.GetInstance<UsersXMLProcessor>().Process(XDocument.Load(Path.Combine(directory, "Users.xml")));
+                dicontainer.GetInstance<PostsXMLProcessor>().Process(XDocument.Load(Path.Combine(directory, "Posts.xml")), users);
             }
 
             Console.WriteLine("END");
