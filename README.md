@@ -51,6 +51,7 @@ using (var channel = _client.CreateChannel())
 }
 ``` 
 [Read more about available options](//github.com/vtortola/RedisClient/wiki/Options).
+
 [Read more about connection management](//github.com/vtortola/RedisClient/wiki/Connection-management).
 
 ### Binding parameters
