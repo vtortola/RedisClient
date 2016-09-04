@@ -2,7 +2,7 @@
 #### Another .NET Redis client, for the craic.
 ##### Status: ALPHA
 
-A .NET Redis client based on templated strings. It provides an API through virtual connections (named "channels") that provide seamless access to commander and subscriber connections. Depending on the structure of the input, it transparently routes the commands through three different connection pools (a multiplexed commander, a exclusive commander and a shared subscriber pool).  It also uses a special syntax for working with LUA scripts, named [procedures](//github.com/vtortola/RedisClient/wiki/Procedures).
+A .NET Redis client based on templated strings that uses a special syntax for easing LUA script invocation named ["procedures"](//github.com/vtortola/RedisClient/wiki/Procedures). The API exposes virtual connections named "channels" that provide seamless access to Redis through three different connection pools in which input is routed depending their commands.
 
  * Templated strings interface [(more about parameter binding)](//github.com/vtortola/RedisClient/wiki/Parameter-binding).
  * Transparent connection management [(more about connection management)](//github.com/vtortola/RedisClient/wiki/Connection-management).
