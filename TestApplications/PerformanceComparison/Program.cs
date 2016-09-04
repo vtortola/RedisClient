@@ -3,6 +3,7 @@ using PerformanceComparison.Tests.SimpleTests;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading;
@@ -26,6 +27,8 @@ namespace PerformanceComparison
 
             var endpoint = new IPEndPoint(IPAddress.Loopback, 6379);
 
+            // This test is meaningless because ServiceStack does not pipeline by default
+            // and it does not support asynchronous operations.
             //CreateReport<RedisClientSimpleTest, ServiceStackSimpleTest, StackExchangeRedisSimpleTest>("simple", endpoint);
 
             Console.WriteLine("\n***************************************\n");
@@ -47,18 +50,52 @@ namespace PerformanceComparison
             foreach (var userCount in usersCounts)
             {
                 var partial = new List<TestData>(10);
-                for (int i = 0; i < 1; i++)
+                for (int i = 0; i < 10; i++)
                 {
                     partial.Add(PerformSingleTest<TRedisClient, TServiceStack, TStackExchange>(iterations, userCount, endpoint));
                 }
                 results.Add(new TestData()
                 {
                     Users = userCount,
-                    RedisClient = TimeSpan.FromTicks((Int64)partial.Average(x=>x.RedisClient.Ticks)),
-                    StackExchangeRedis = TimeSpan.FromTicks((Int64)partial.Average(x => x.StackExchangeRedis.Ticks)),
-                    ServiceStackRedis = TimeSpan.FromTicks((Int64)partial.Average(x => x.ServiceStackRedis.Ticks)),
+                    RedisClient = TimeSpan.FromTicks((Int64)partial.Min(x=>x.RedisClient.Ticks)),
+                    StackExchangeRedis = TimeSpan.FromTicks((Int64)partial.Min(x => x.StackExchangeRedis.Ticks)),
+                    ServiceStackRedis = TimeSpan.FromTicks((Int64)partial.Min(x => x.ServiceStackRedis.Ticks)),
                 });
             }
+
+            using (var writer = new StreamWriter(fileName+".csv"))
+            {
+                foreach (var userCount in usersCounts)
+                {
+                    writer.Write(",");
+                    writer.Write(userCount);
+                }
+
+                writer.WriteLine();
+                writer.Write("RedisClient");
+                foreach (var result in results)
+                {
+                    writer.Write(",");
+                    writer.Write(result.RedisClient.TotalMilliseconds);
+                }
+
+                writer.WriteLine();
+                writer.Write("ServiceStackRedis");
+                foreach (var result in results)
+                {
+                    writer.Write(",");
+                    writer.Write(result.ServiceStackRedis.TotalMilliseconds);
+                }
+
+                writer.WriteLine();
+                writer.Write("StackExchangeRedis");
+                foreach (var result in results)
+                {
+                    writer.Write(",");
+                    writer.Write(result.StackExchangeRedis.TotalMilliseconds);
+                }
+            }
+            Process.Start(fileName + ".csv");
         }
 
         static TestData PerformSingleTest<TRedisClient, TServiceStack, TStackExchange>(Int32 iterations, Int32 users, IPEndPoint endpoint)
