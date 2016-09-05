@@ -248,6 +248,7 @@
     <Content Include="Views\Error\_ViewStart.cshtml" />
     <Content Include="Views\Shared\_ColumnsLayout.cshtml" />
     <Content Include="Views\User\Inbox.cshtml" />
+    <Content Include="Views\Error\AuthenticationFailed.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

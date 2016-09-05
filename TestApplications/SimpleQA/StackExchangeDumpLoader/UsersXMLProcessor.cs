@@ -23,7 +23,7 @@ namespace StackExchangeDumpLoader
         {
             var users = doc.Element("users").Elements();
             var idmap = new Dictionary<String, String>();
-            var anonymous = new GenericPrincipal(new GenericIdentity("anon"), null);
+            var anonymous = new GenericPrincipal(new GenericIdentity("dumpprocessor"), null);
             foreach (var user in users)
             {
                 var command = new AuthenticateCommand(user.Attribute("DisplayName").Value, "whatever");

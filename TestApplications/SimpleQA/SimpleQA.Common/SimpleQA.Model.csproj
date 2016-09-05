@@ -87,6 +87,7 @@
     <Compile Include="Commands\Session\ValidateSessionCommand.cs" />
     <Compile Include="Commands\Visits\VisitQuestionCommand.cs" />
     <Compile Include="Constant.cs" />
+    <Compile Include="Exceptions\SimpleQAAuthenticationException.cs" />
     <Compile Include="Exceptions\SimpleQABadRequestException.cs" />
     <Compile Include="Exceptions\SimpleQAException.cs" />
     <Compile Include="Exceptions\SimpleQANotOwnerException.cs" />

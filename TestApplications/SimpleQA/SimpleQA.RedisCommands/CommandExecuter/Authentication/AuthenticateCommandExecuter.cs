@@ -17,6 +17,13 @@ namespace SimpleQA.RedisCommands
 
         public async Task<AuthenticateCommandResult> ExecuteAsync(AuthenticateCommand command, IPrincipal user, CancellationToken cancel)
         {
+            if(user.Identity.Name != "dumpprocessor")
+            {
+                var ismember = await _channel.ExecuteAsync("SISMEMBER users:builtin @user", new { user = command.Username }).ConfigureAwait(false);
+                if (ismember[0].GetInteger() == 1)
+                    throw new SimpleQAAuthenticationException("It is a built-in user.");
+            }
+
             var userData = new
             {
                 name = command.Username

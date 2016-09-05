@@ -38,6 +38,15 @@ namespace SimpleQA.WebApp.Filter
                         message += ("(" + simpleQaException.InnerException.Message + ")");
                     filterContext.Result = new HttpStatusCodeResult(500, message);
                 }
+                else if (simpleQaException is SimpleQAAuthenticationException)
+                {
+                    filterContext.Result = new ViewResult
+                    {
+                        ViewName = "~/Views/Error/AuthenticationFailed.cshtml",
+                        ViewData = new ViewDataDictionary<SimpleQAException>(simpleQaException),
+                        TempData = filterContext.Controller.TempData
+                    };
+                }
                 else
                 {
                     filterContext.Result = new ViewResult
