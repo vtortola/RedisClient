@@ -92,7 +92,7 @@ namespace SimpleQA.RedisCommands
                AnswerCount = 0,
                ViewCount = 0,
                Status = QuestionStatus.Open,
-               ContentExcerpt = GetExcerpt(command.Content, 50)
+               ContentExcerpt = GetExcerpt(command.Content, 150)
            });
            return data;
        }
@@ -143,13 +143,30 @@ namespace SimpleQA.RedisCommands
        {
            var array = new Char[length];
            var index = 0;
+           var tagContext = false;
+
            for (int i = 0; i < markdown.Length; i++)
            {
                var c = markdown[i];
 
-               if ((c == '\r' || c == '\n' || c == '\t' || c == ' ') && array[index] != ' ')
-                   array[index++] = ' ';
+               if(c == '<')
+               {
+                   tagContext = true;
+                   continue;
+               }
 
+               if (tagContext && c == '>')
+               {
+                   tagContext = false;
+                   continue;
+               }
+
+               if (tagContext)
+                   continue;
+
+               if ( IsSpacer(c) && array[index] != ' ')
+                   array[index++] = ' ';
+                              
                if (Char.IsLetterOrDigit(c))
                {
                    array[index++] = c;
@@ -158,7 +175,16 @@ namespace SimpleQA.RedisCommands
                if (index == length)
                    break;
            }
+
+           while (!IsSpacer(array[index-1]))
+               index--;
+
            return new String(array, 0, index);
+       }
+
+       static Boolean IsSpacer(Char c)
+       {
+           return c == '\r' || c == '\n' || c == '\t' || c == ' ';
        }
     }
 }

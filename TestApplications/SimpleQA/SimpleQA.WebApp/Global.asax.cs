@@ -1,21 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using System.Web.Routing;
-using System.Web.Security;
-using System.Web.SessionState;
-using System.Web.Http;
-using SimpleQA.WebApp.Filter;
-using SimpleInjector;
-using SimpleInjector.Integration.Web;
-using System.Reflection;
-using SimpleInjector.Integration.Web.Mvc;
-using System.Web.Optimization;
+﻿using NLog;
 using SimpleQA.WebApp.Models.ModelBinders;
 using StackExchange.Profiling;
-using NLog;
+using System;
+using System.Web;
+using System.Web.Mvc;
+using System.Web.Optimization;
+using System.Web.Routing;
 
 namespace SimpleQA.WebApp
 {
