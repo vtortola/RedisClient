@@ -191,6 +191,9 @@ header nav{
 .question {
     padding:10px 0 10px 0;
 }
+#question img{
+    max-width:500px;
+}
 .question:not(:last-child) {
     border-bottom: 1px solid #ccc;
 }

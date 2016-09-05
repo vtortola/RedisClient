@@ -18,26 +18,29 @@
     <div class="row question">
         <div class="col-sm-3">
             <div class="row">
-                <div class="col-sm-4 lead vcenter text-center">@(question.UpVotes - question.DownVotes)<div class="question-property-label">Votes</div></div>
-                <div class="col-sm-4 lead vcenter text-center">@question.AnswerCount<div class="question-property-label">Answers</div></div>
-                <div class="col-sm-4 lead vcenter text-center">@question.ViewCount<div class="question-property-label">Views</div></div>
+                <div class="col-sm-4 lead vcenter text-center" title="@question.Score">@((question.UpVotes - question.DownVotes).AsLabel())<div class="question-property-label">Votes</div></div>
+                <div class="col-sm-4 lead vcenter text-center">@question.AnswerCount.AsLabel()<div class="question-property-label">Answers</div></div>
+                <div class="col-sm-4 lead vcenter text-center" title="@question.ViewCount">@question.ViewCount.AsLabel()<div class="question-property-label">Views</div></div>
             </div>
         </div>
         <div class="col-sm-9">
             <div class="row">
-                <div class="col-sm-12"><a href="@Url.RouteUrl("QuestionRead", new { id = question.Id, slug = question.Slug, action="get" })">@question.Title</a></div>
+                <div class="col-sm-12"><a class="question-title" href="@Url.RouteUrl("QuestionRead", new { id = question.Id, slug = question.Slug, action="get" })">@question.Title</a></div>
             </div>
             <div class="row">
                 <div class="col-sm-12">@question.ContentExcerpt</div>
             </div>
             <div class="row">
-                <div class="col-sm-10">
+                <div class="col-sm-8">
                     @foreach (var tag in question.Tags)
                     {
                         <a class="tag label label-info" href="@Url.RouteUrl("Tag", new {tag=tag})">@tag</a>
                     }
                 </div>
-                <div class="col-md-2 small text-nowrap">by <a class="text-nowrap" href="@Url.RouteUrl("User",new {user=question.User})">@question.User</a></div>
+                <div class="col-md-4 text-nowrap authoring">
+                    by <a class="text-nowrap" href="@Url.RouteUrl("User",new {user=question.User})">@question.User</a>
+                    <div title="@question.CreatedOn.ToString("yyyy/MM/dd HH:mm")">@question.CreatedOn.RelativeDate()</div>
+                </div>            
             </div>
         </div>
     </div>

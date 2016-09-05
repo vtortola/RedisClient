@@ -212,8 +212,10 @@
     <Compile Include="Helpers\ContentHelper.cs" />
     <Compile Include="Helpers\DialogHelper.cs" />
     <Compile Include="Helpers\HtmlTagInputHelper.cs" />
+    <Compile Include="Helpers\NumberLabelHelper.cs" />
     <Compile Include="Helpers\PaginationHelper.cs" />
     <Compile Include="Helpers\QuestionOrderingHelper.cs" />
+    <Compile Include="Helpers\RelativeDateTimeHelper.cs" />
     <Compile Include="Helpers\SessionHelper.cs" />
     <Compile Include="Messaging\WebSocketNotificationExtensions.cs" />
     <Compile Include="Infrastructure\_ICommandExecuterMediator.cs" />

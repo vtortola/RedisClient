@@ -16,7 +16,7 @@ namespace SimpleQA.WebApp.Helpers
             var buttonList = new StringBuilder();
             var model = helper.ViewData.Model;
             var first = 1;
-            var last = pagesToShow;
+            var last = Math.Min(pagesToShow, model.TotalPages);
 
             if (model.Page > 1)
             {
