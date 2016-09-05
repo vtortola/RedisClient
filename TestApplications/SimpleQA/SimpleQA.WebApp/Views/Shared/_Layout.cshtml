@@ -4,13 +4,13 @@
     <head>
         <meta name="viewport" content="width=device-width" />
         <title>@(!String.IsNullOrWhiteSpace(ViewBag.Title)? ViewBag.Title + " | Simple QA":"Simple QA")</title>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-        <link href="~/Styles/simplemde.min.css" rel="stylesheet" />
         @*Using external link to prevent font errors in ISS express*@
         @*<link href="~/Styles/bootstrap.min.css" rel="stylesheet" />*@
-        @if (User.Identity.IsAuthenticated) 
-        { 
-        <link href="~/Styles/bootstrap-tagsinput.css" rel="stylesheet" />
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+        @if (User.Identity.IsAuthenticated)
+        {
+            <link href="~/Styles/simplemde.min.css" rel="stylesheet" />
+            <link href="~/Styles/bootstrap-tagsinput.css" rel="stylesheet" />
         }
         <link href="~/Styles/app.css" rel="stylesheet" />
     </head>
