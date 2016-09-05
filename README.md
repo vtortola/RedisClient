@@ -23,8 +23,10 @@ Also in this repository you will find [SimpleQA](//github.com/vtortola/RedisClie
 ## Getting started
 
 ### Installing
-
-Nuget..
+The alpha version is [available in NuGet](https://www.nuget.org/packages/vtortola.RedisClient/).
+```
+PM> Install-Package vtortola.RedisClient -Pre
+```
 
 ### Setting it up
 The API has two fundamental parts:
