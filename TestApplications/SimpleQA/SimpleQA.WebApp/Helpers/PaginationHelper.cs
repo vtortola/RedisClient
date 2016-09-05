@@ -15,21 +15,22 @@ namespace SimpleQA.WebApp.Helpers
         {
             var buttonList = new StringBuilder();
             var model = helper.ViewData.Model;
-            if(model.Page > 1)
+            var first = 1;
+            var last = pagesToShow;
+
+            if (model.Page > 1)
             {
-                for (int i = model.Page - 1; i > 0; i--)
-                {
-                    buttonList.AppendLine(CreateButton(urlFactory, i).ToString());
-                    pagesToShow--;
-                }
+                var half = pagesToShow / 2; // integer division
+                first = Math.Max(1, model.Page - half);
+                var skipped = 0;
+                if (first < half)
+                    skipped = half - first;
+                last = Math.Min(model.TotalPages, model.Page + half + skipped);
             }
-            buttonList.AppendLine(CreateButton(urlFactory, model.Page, "active").ToString());
-            if (model.Page < model.TotalPages)
+
+            for (int i = first; i <= last; i++)
             {
-                for (int i = model.Page + 1; i < Math.Min(model.Page+pagesToShow, model.TotalPages + 1) ; i++)
-                {
-                    buttonList.AppendLine(CreateButton(urlFactory, i).ToString());
-                }
+                buttonList.AppendLine(CreateButton(urlFactory, i, i == model.Page ? "active" : null).ToString());
             }
 
             var builder = new TagBuilder("ul");

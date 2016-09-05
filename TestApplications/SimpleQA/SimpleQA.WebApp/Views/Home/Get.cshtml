@@ -38,7 +38,7 @@
     </div>
 }
 
-@Html.Pagination(5, page => Url.RouteUrl("DefaultPaginated", new { Page = page, Sorting = Model.Sorting }))
+@Html.Pagination(10, page => Url.RouteUrl("DefaultPaginated", new { Page = page, Sorting = Model.Sorting }))
 
 @section side{
     <div class="well">

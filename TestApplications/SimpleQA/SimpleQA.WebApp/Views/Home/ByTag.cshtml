@@ -43,7 +43,7 @@
     </div>
 }
 
-@Html.Pagination(5, page => Url.RouteUrl("Tag", new { Page = page, Ordering = Model.Sorting }))
+@Html.Pagination(10, page => Url.RouteUrl("Tag", new { Page = page, Ordering = Model.Sorting }))
 
 @section side{
     <div class="well">
