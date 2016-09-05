@@ -10,10 +10,15 @@ A .NET Redis client based on templated strings that uses a special syntax for ea
  * Server-side scripting through procedures [(more about procedures)](//github.com/vtortola/RedisClient/wiki/Procedures).
  * Support for asynchronous, synchronous and "fire and forget" operations.
  
+#### Performance
 A very rough, maybe flawed, [performance comparison](//github.com/vtortola/RedisClient/wiki/Performance) shows the that the performance is close to other well known clients.
 
 <a href="//github.com/vtortola/RedisClient/wiki/Performance" style="display:block"><img src="http://vtortola.github.io/redisclientperf.png?what" height="300"  ></a>
 
+#### Use in a web application
+Also in this repository you will find [SimpleQA](//github.com/vtortola/RedisClient/wiki/SimpleQA-:-A-proof-of-concept), a proof of concept of a _Q&A_ application using RedisClient.
+
+<a href="//github.com/vtortola/RedisClient/wiki/SimpleQA-:-A-proof-of-concept"><img src="http://vtortola.github.io/SimpleQA/Mini.png?version=3" /></a>
 
 ## Getting started
 
