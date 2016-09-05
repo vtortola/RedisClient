@@ -19,13 +19,15 @@ namespace StackExchangeDumpLoader
 
             dicontainer.Register<PostsXMLProcessor>();
             dicontainer.Register<UsersXMLProcessor>();
+            dicontainer.Register<VotesXMLProcessor>();
             dicontainer.Register<ICommandExecuterMediator>( () => new CommandExecuterMediator(dicontainer) );
             RedisCommandsConfiguration.Configure(dicontainer, null);
 
             using (dicontainer.BeginExecutionContextScope())
             {
                 var users = dicontainer.GetInstance<UsersXMLProcessor>().Process(XDocument.Load(Path.Combine(directory, "Users.xml")));
-                dicontainer.GetInstance<PostsXMLProcessor>().Process(XDocument.Load(Path.Combine(directory, "Posts.xml")), users);
+                var posts = dicontainer.GetInstance<PostsXMLProcessor>().Process(XDocument.Load(Path.Combine(directory, "Posts.xml")), users);
+                dicontainer.GetInstance<VotesXMLProcessor>().Process(XDocument.Load(Path.Combine(directory, "Votes.xml")), users, posts);
             }
 
             Console.WriteLine("END");

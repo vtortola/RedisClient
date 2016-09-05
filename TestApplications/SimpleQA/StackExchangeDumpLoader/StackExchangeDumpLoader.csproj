@@ -60,6 +60,7 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+    <Compile Include="VotesXMLProcessor.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\vtortola.RedisClient\vtortola.RedisClient.csproj">
