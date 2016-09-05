@@ -45,6 +45,10 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="vtortola.RedisClient, Version=0.0.1.41058, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\vtortola.RedisClient.0.0.1-alpha\lib\net45\vtortola.RedisClient.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommandExecuter\Answer\AnswerCreateCommandExecuter.cs" />
@@ -80,10 +84,6 @@
     <Compile Include="RedisCommandsConfiguration.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\vtortola.RedisClient\vtortola.RedisClient.csproj">
-      <Project>{63537027-ac75-4b45-8a87-a617ee17eee2}</Project>
-      <Name>vtortola.RedisClient</Name>
-    </ProjectReference>
     <ProjectReference Include="..\SimpleQA.Common\SimpleQA.Model.csproj">
       <Project>{d3ca0210-2896-4f98-b1f2-7460f43cc503}</Project>
       <Name>SimpleQA.Model</Name>
