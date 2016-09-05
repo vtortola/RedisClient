@@ -18,7 +18,7 @@ A very rough, maybe flawed, [performance comparison](//github.com/vtortola/Redis
 #### Use in a web application
 Also in this repository you will find [SimpleQA](//github.com/vtortola/RedisClient/wiki/SimpleQA-:-A-proof-of-concept), a proof of concept of a _Q&A_ application using RedisClient.
 
-<a href="//github.com/vtortola/RedisClient/wiki/SimpleQA-:-A-proof-of-concept"><img src="http://vtortola.github.io/SimpleQA/Mini.png?v=2" /></a>
+<a href="//github.com/vtortola/RedisClient/wiki/SimpleQA-:-A-proof-of-concept"><img src="http://vtortola.github.io/SimpleQA/Mini.png?version=2" /></a>
 
 ## Getting started
 
