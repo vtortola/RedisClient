@@ -31,17 +31,7 @@ namespace SimpleQA.RedisCommands
             var slug = questionData[0];
             var inbox = Keys.UserInboxKey(questionData[1]);
 
-            var data = Parameter.SequenceProperties(new
-            {
-                Id = id,
-                User = user.Identity.Name,
-                Content = command.Content,
-                HtmlContent = command.HtmlContent,
-                CreatedOn = DateTime.Now,
-                Score = 0,
-                UpVotes = 0,
-                DownVotes = 0
-            });
+            var data = GetAnswerData(command, user, id);
 
             var answerKey = Keys.AnswerKey(command.QuestionId, id);
             var answerCollectionKey = Keys.AnswerCollectionKey(command.QuestionId);
@@ -55,6 +45,22 @@ namespace SimpleQA.RedisCommands
                                     new { answerKey, data, answerCollectionKey, questionKey, inbox }).ConfigureAwait(false);
             result.ThrowErrorIfAny();
             return new AnswerCreateCommandResult(command.QuestionId, slug, id);
+        }
+
+        private static System.Collections.Generic.IEnumerable<string> GetAnswerData(AnswerCreateCommand command, IPrincipal user, string id)
+        {
+            var data = Parameter.SequenceProperties(new
+            {
+                Id = id,
+                User = user.Identity.Name,
+                Content = command.Content,
+                HtmlContent = command.HtmlContent,
+                CreatedOn = command.CreationDate,
+                Score = 0,
+                UpVotes = 0,
+                DownVotes = 0
+            });
+            return data;
         }
     }
 }

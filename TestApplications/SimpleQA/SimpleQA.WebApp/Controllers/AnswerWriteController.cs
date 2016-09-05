@@ -2,6 +2,7 @@
 using SimpleQA.Markdown;
 using SimpleQA.Models;
 using SimpleQA.WebApp.Filter;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -33,7 +34,7 @@ namespace SimpleQA.WebApp.Controllers
         [HttpPost]
         public async Task<ActionResult> Add(AnswerCreateRequest request, CancellationToken cancel)
         {
-            var command = new AnswerCreateCommand(request.QuestionId, request.Content, _markdown.TransformIntoHTML(request.Content));
+            var command = new AnswerCreateCommand(request.QuestionId, DateTime.Now, request.Content, _markdown.TransformIntoHTML(request.Content));
             var result = await _mediator.ExecuteAsync<AnswerCreateCommand, AnswerCreateCommandResult>(command, User, cancel);
             return Redirect(Url.RouteUrl("QuestionRead", new { id = result.QuestionId, slug = result.Slug, action = "get" }) + "#ans_" + result.AnswerId);
         }

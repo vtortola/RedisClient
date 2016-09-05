@@ -8,12 +8,14 @@ namespace SimpleQA.Commands
         public String QuestionId { get; private set; }
         public String Content { get; private set; }
         public String HtmlContent { get; private set; }
+        public DateTime CreationDate { get; private set; }
 
-        public AnswerCreateCommand(String questionId, String content, String htmlContent)
+        public AnswerCreateCommand(String questionId, DateTime creationDate, String content, String htmlContent)
         {
             QuestionId = questionId;
             Content = content;
             HtmlContent = htmlContent;
+            CreationDate = creationDate;
         }
     }
 

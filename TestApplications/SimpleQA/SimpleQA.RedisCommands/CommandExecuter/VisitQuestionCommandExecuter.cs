@@ -18,13 +18,14 @@ namespace SimpleQA.RedisCommands
         {
             var key = new
             {
-                key = Keys.QuestionKey(command.QuestionId)
+                key = Keys.QuestionKey(command.QuestionId),
+                views = command.Views
             };
 
             var result = await _channel.ExecuteAsync("EXISTS @key", key).ConfigureAwait(false);
             if (result[0].GetInteger() == 1)
             {
-                await _channel.ExecuteAsync("HINCRBY @key ViewCount 1", key).ConfigureAwait(false);
+                await _channel.ExecuteAsync("HINCRBY @key ViewCount @views", key).ConfigureAwait(false);
             }
 
             return VisitQuestionCommandResult.Nothing;

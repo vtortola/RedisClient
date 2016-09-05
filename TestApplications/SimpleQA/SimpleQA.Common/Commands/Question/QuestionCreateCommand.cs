@@ -8,13 +8,15 @@ namespace SimpleQA.Commands
         public String Content { get; private set; }
         public String HtmlContent { get; private set; }
         public String[] Tags { get; private set; }
+        public DateTime CreationDate { get; private set; }
 
-        public QuestionCreateCommand(String title, String content, String htmlContent, String[] tags)
+        public QuestionCreateCommand(String title, String content, String htmlContent, DateTime creationDate, String[] tags)
         {
             Title = title.Trim();
             Content = content;
             Tags = tags;
             HtmlContent = htmlContent;
+            CreationDate = creationDate;
         }
     }
 

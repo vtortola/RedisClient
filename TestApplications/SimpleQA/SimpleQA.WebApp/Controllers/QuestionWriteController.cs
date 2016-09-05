@@ -27,7 +27,7 @@ namespace SimpleQA.WebApp.Controllers
         [HttpPost]
         public async Task<ActionResult> Ask(QuestionCreateRequest request, CancellationToken cancel)
         {
-            var command = new QuestionCreateCommand(request.Title, request.Content, _markdown.TransformIntoHTML(request.Content), request.Tags);
+            var command = new QuestionCreateCommand(request.Title, request.Content, _markdown.TransformIntoHTML(request.Content), DateTime.Now, request.Tags);
             var result = await _mediator.ExecuteAsync<QuestionCreateCommand, QuestionCreateCommandResult>(command, User, cancel);
             return RedirectToRoute("QuestionRead", new { id = result.Id, slug = result.Slug, action = "get" });
         }

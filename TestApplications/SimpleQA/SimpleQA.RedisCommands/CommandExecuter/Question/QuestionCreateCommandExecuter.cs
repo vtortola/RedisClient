@@ -33,7 +33,7 @@ namespace SimpleQA.RedisCommands
            if (String.IsNullOrWhiteSpace(slug))
                throw new SimpleQAException("Unable to generate a slug");
 
-           var initialScore = DateTime.Now.Ticks;
+           var initialScore = command.CreationDate.Ticks;
 
            var data = GetQuestionData(command, user, id, slug, initialScore);
 
@@ -83,7 +83,7 @@ namespace SimpleQA.RedisCommands
                Title = command.Title,
                Content = command.Content,
                HtmlContent = command.HtmlContent,
-               CreatedOn = DateTime.Now,
+               CreatedOn = command.CreationDate,
                User = user.Identity.Name,
                Slug = slug,
                Score = initialScore,

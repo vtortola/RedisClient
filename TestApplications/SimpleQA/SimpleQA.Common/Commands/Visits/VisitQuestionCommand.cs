@@ -11,11 +11,19 @@ namespace SimpleQA.Commands
     public class VisitQuestionCommand : ICommand<VisitQuestionCommandResult>
     {
         public String QuestionId { get; private set; }
+        public Int32 Views { get; private set; }
 
         public VisitQuestionCommand(String questionId)
+            :this(questionId, 1)
 	    {
-            QuestionId = questionId;
+
 	    }
+
+        public VisitQuestionCommand(String questionId, Int32 views)
+        {
+            QuestionId = questionId;
+            Views = views;
+        }
     }
 
     public class VisitQuestionCommandResult
