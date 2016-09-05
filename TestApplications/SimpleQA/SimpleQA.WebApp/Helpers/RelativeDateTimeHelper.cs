@@ -16,24 +16,24 @@ namespace SimpleQA.WebApp.Helpers
 
             if (diff.TotalMinutes < 60)
             {
-                relative = Truncate(diff.TotalMinutes).ToString() + " minutes ago.";
+                relative = Truncate(diff.TotalMinutes).ToString() + " minutes ago";
             }
             else if(diff.TotalHours < 24)
             {
-                relative = Truncate(diff.TotalHours).ToString() + " hours ago.";
+                relative = Truncate(diff.TotalHours).ToString() + " hours ago";
             }
             else if(diff.TotalDays < 31)
             {
-                relative = Truncate(diff.TotalDays).ToString() + " days ago.";
+                relative = Truncate(diff.TotalDays).ToString() + " days ago";
             }
             else if (diff.TotalDays < 365)
             {
                 // todo: asuming 31 days months. Which is wrong.
-                relative = Truncate(diff.TotalDays / 31).ToString() + " months ago.";
+                relative = Truncate(diff.TotalDays / 31).ToString() + " months ago";
             }
             else
             {
-                relative = String.Format("{0} years ago.", now.Year - datetime.Year);
+                relative = String.Format("{0} years ago", now.Year - datetime.Year);
             }
 
             return MvcHtmlString.Create(relative);

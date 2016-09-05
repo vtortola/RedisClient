@@ -28,7 +28,7 @@
                 <div class="col-sm-12"><a class="question-title" href="@Url.RouteUrl("QuestionRead", new { id = question.Id, slug = question.Slug, action="get" })">@question.Title</a></div>
             </div>
             <div class="row">
-                <div class="col-sm-12">@question.ContentExcerpt</div>
+                <div class="col-sm-12"><p>@question.ContentExcerpt</p></div>
             </div>
             <div class="row">
                 <div class="col-sm-8">

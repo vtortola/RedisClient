@@ -255,9 +255,10 @@ header nav{
 }
 .authoring {
     padding:5px 15px 5px 15px;
-    background-color:rgb(223, 233, 251);
+    background-color:rgb(201, 217, 238);
     border-radius:2px;
     float:right;
+    text-align: right;
 }
 .vote {
     width:50px;
