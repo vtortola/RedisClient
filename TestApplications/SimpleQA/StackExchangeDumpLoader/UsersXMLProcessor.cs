@@ -1,10 +1,13 @@
 ﻿using SimpleQA.Commands;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Security.Principal;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 using vtortola.Redis;
+using System.Linq;
 
 namespace StackExchangeDumpLoader
 {
@@ -19,18 +22,21 @@ namespace StackExchangeDumpLoader
             _channel = channel;
         }
 
-        public Dictionary<String, String> Process(XDocument doc)
+        public IDictionary<String, String> Process(XDocument doc)
         {
             var users = doc.Element("users").Elements();
-            var idmap = new Dictionary<String, String>();
+            var idmap = new ConcurrentDictionary<String, String>();
             var anonymous = new GenericPrincipal(new GenericIdentity("dumpprocessor"), null);
-            foreach (var user in users)
+
+            Parallel.ForEach(users, new ParallelOptions() { MaxDegreeOfParallelism = Environment.ProcessorCount }, user =>
             {
                 var command = new AuthenticateCommand(user.Attribute("DisplayName").Value, "whatever");
                 var result = _mediator.ExecuteAsync<AuthenticateCommand, AuthenticateCommandResult>(command, anonymous, CancellationToken.None).Result;
-                idmap.Add(user.Attribute("Id").Value, command.Username);
+                idmap.TryAdd(user.Attribute("Id").Value, command.Username);
                 _channel.Execute("sadd users:builtin @user", new { user = command.Username }).ThrowErrorIfAny();
-            }
+                Console.WriteLine("Added user: " + command.Username);
+            });
+
             return idmap;
         }
     }

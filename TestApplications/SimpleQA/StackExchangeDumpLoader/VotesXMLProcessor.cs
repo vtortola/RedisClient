@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Security.Principal;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace StackExchangeDumpLoader
@@ -19,7 +20,7 @@ namespace StackExchangeDumpLoader
         public void Process(XDocument doc, IDictionary<String, String> usermap, IDictionary<String, String> postmap)
         {
             var votes = doc.Element("votes").Elements();
-            foreach (var vote in votes)
+            Parallel.ForEach(votes, new ParallelOptions() { MaxDegreeOfParallelism = Environment.ProcessorCount }, vote =>
             {
                 var voteType = vote.Attribute("VoteTypeId").Value;
                 switch (voteType)
@@ -27,7 +28,7 @@ namespace StackExchangeDumpLoader
                     case "5": VotePost(vote, usermap, postmap);
                         break;
                 }
-            }
+            });
         }
 
         private void VotePost(XElement vote, IDictionary<String, String> usermap, IDictionary<String, String> postmap)
@@ -45,10 +46,12 @@ namespace StackExchangeDumpLoader
                 {
                     var parts = post.Split('@');
                     VoteAnswer(user, parts[0], parts[1]);
+                    Console.WriteLine("Answer " + post + " voted.");
                 }
                 else
                 {
                     VoteQuestion(user, post);
+                    Console.WriteLine("Question " + post + " voted.");
                 }
             }
             catch (Exception ex)
