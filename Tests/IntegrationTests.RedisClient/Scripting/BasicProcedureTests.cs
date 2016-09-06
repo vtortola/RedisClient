@@ -93,6 +93,35 @@ namespace IntegrationTests.RedisClientTests
                                     return a2 - a1 + arg3
                                  endproc");
 
+            builder.AppendLine(@"-- sums the content of <a[]> and stores the content
+                                -- into the key specified in <asum>
+                                proc AggregateSumAndStore($asum, a[])
+                                   local function sum(t)
+                                       local sum = 0
+                                       for i=1, table.getn(t), 1 
+                                       do 
+                                          sum = sum + t[i]
+                                       end
+                                       return sum
+                                   end
+                                   local result = sum(a)
+                                   return redis.call('set', asum, result)
+                                endproc");
+
+            builder.AppendLine(@"proc ZipAndStore(a[], $key, b[])
+                                    local result = a
+                                    local oper = b
+                                    if table.getn(b) > table.getn(a) then
+                                        result = b
+                                        oper = a
+                                    end
+                                    for i=1, table.getn(oper), 1 
+                                    do 
+                                       result[i] = result[i] + oper[i]
+                                    end
+                                    return redis.call('SADD', key, unpack(result))
+                                endproc");
+
             return new StringReader(builder.ToString());
         }
 
@@ -106,7 +135,39 @@ namespace IntegrationTests.RedisClientTests
                 Assert.AreEqual(uid, result[0].GetString());
             }
         }
+        [TestMethod]
+        public void CanZipAndStoreScript()
+        {
+            using (var channel = Client.CreateChannel())
+            {
+                var result = channel.Execute(@"
+                               DEL @key
+                               ZipAndStore @aArray @key @bArray
+                               SCARD @key
+                               SADD @key 6 8 10 9",
+                               new { key = "mysum", aArray = new[] { 1, 2, 3 }, bArray = new[] { 5, 6, 7, 9 } }
+                               );
+                Assert.AreEqual(4L, result[1].GetInteger());
+                Assert.AreEqual(4L, result[2].GetInteger());
+                Assert.AreEqual(0L, result[3].GetInteger());
+            }
+        }
+        [TestMethod]
+        public void CanAggregateSumAndStoreScript()
+        {
+            // This will store the value 6 as string in the key mysum and will return OK.
 
+            using (var channel = Client.CreateChannel())
+            {
+                var result = channel.Execute(@"
+                               AggregateSumAndStore @key @values
+                               GET @key",
+                               new { key = "mysum", values = new[] { 1, 2, 3 } }
+                               );
+                result[0].AssertOK();
+                Assert.AreEqual("6", result[1].GetString());
+            }
+        }
         [TestMethod]
         public void CanRunSimpleScriptWithParameters()
         {
