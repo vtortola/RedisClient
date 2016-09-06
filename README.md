@@ -42,7 +42,8 @@ await _client.ConnectAsync(CancellationToken.None).ConfigureAwait(false);
 ```cs
 using (var channel = _client.CreateChannel())
 {
-    await channel.ExecuteAsync("incr mykey").ConfigureAwait(false);
+    await channel.ExecuteAsync("incr mykey")
+                 .ConfigureAwait(false);
 }
 ``` 
  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;It is possible to execute multiple statements per command, splitting them with line breaks. Statements are pipelined to the same connection (but still they may be interpolated with other commands by Redis, use `MULTI` if you want to avoid it).
@@ -82,8 +83,8 @@ Collections are added to the command as sequences. For example, it is possible t
 using (var channel = _client.CreateChannel())
 {
     await channel.ExecuteAsync("sadd @setKey @data",
-                               new { setKey = "myset", data = new [] { "a", "b", "c" } })
-                               .ConfigureAwait(false);
+                  new { setKey = "myset", data = new [] { "a", "b", "c" } })
+                 .ConfigureAwait(false);
 }
 ``` 
 
@@ -92,8 +93,8 @@ Object's properties, `IEnumerable<Tuple<,>>` and `IEnumerable<KeyValuePair<,>>` 
 using (var channel = _client.CreateChannel())
 {
     await channel.ExecuteAsync("hmset myObject @data",
-                               new { data = Parameter.SequenceProperties(myObjectInstance))
-                               .ConfigureAwait(false);
+                  new { data = Parameter.SequenceProperties(myObjectInstance))
+                 .ConfigureAwait(false);
 }
 ```
 
@@ -162,7 +163,8 @@ Then they can be invoked as normal Redis commands:
 ```cs
 using (var channel = _client.CreateChannel())
 {
-    var result = await channel.ExecuteAsync("Sum 1 2").ConfigureAwait(false);
+    var result = await channel.ExecuteAsync("Sum 1 2")
+                              .ConfigureAwait(false);
     var value = result[0].GetInteger();
 }
 ``` 
