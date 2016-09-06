@@ -78,11 +78,14 @@ namespace vtortola.Redis
         public override String ToString()
         {
             var sb = new StringBuilder();
-            sb.AppendFormat("{0}{1}\r\n", this.Header, this.Count.ToString());
-            foreach (var item in _items)
+            sb.AppendFormat("{0}{1}\r\n[", this.Header, this.Count.ToString());
+            for (var i = 0; i < _items.Count; i++)
             {
-                sb.AppendLine(item.ToString());
+                sb.Append(_items[i].ToString());
+                if (i != _items.Count - 1)
+                    sb.Append(", ");
             }
+            sb.Append("]");
             return sb.ToString();
         }
     }
