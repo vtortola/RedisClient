@@ -29,6 +29,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests.Common", "Tests\U
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StackExchangeDumpLoader", "TestApplications\SimpleQA\StackExchangeDumpLoader\StackExchangeDumpLoader.csproj", "{6DD55325-8A24-4E3A-9B4B-307A09DCFDCA}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Debugger", "Debugger", "{E9FC78AD-E647-4941-80BC-7193120E6860}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vtortola.RedisClient.ProcedureDebugger", "Debugger\vtortola.RedisClient.ProcedureDebugger\vtortola.RedisClient.ProcedureDebugger.csproj", "{099F1CE2-7115-47EA-B4AD-37839021314E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests.ProcedureDebugger", "Debugger\UnitTests.ProcedureDebugger\UnitTests.ProcedureDebugger.csproj", "{4D15B38E-5A8D-4D5F-93D2-C3A0338E0B78}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +81,14 @@ Global
 		{6DD55325-8A24-4E3A-9B4B-307A09DCFDCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6DD55325-8A24-4E3A-9B4B-307A09DCFDCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6DD55325-8A24-4E3A-9B4B-307A09DCFDCA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{099F1CE2-7115-47EA-B4AD-37839021314E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{099F1CE2-7115-47EA-B4AD-37839021314E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{099F1CE2-7115-47EA-B4AD-37839021314E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{099F1CE2-7115-47EA-B4AD-37839021314E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D15B38E-5A8D-4D5F-93D2-C3A0338E0B78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D15B38E-5A8D-4D5F-93D2-C3A0338E0B78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D15B38E-5A8D-4D5F-93D2-C3A0338E0B78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D15B38E-5A8D-4D5F-93D2-C3A0338E0B78}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -90,5 +104,7 @@ Global
 		{E2624154-01D4-4D61-AD74-C7781EBAE43F} = {CE50CF46-02B6-4906-A8FE-80A2A8271F20}
 		{4062C116-1534-4368-811D-C7A606DEB0F6} = {4F3F5599-C9EC-4B5F-B9C1-A83454F729C9}
 		{6DD55325-8A24-4E3A-9B4B-307A09DCFDCA} = {C66FE0FB-3D23-4B85-AF98-5BA764F3539C}
+		{099F1CE2-7115-47EA-B4AD-37839021314E} = {E9FC78AD-E647-4941-80BC-7193120E6860}
+		{4D15B38E-5A8D-4D5F-93D2-C3A0338E0B78} = {E9FC78AD-E647-4941-80BC-7193120E6860}
 	EndGlobalSection
 EndGlobal

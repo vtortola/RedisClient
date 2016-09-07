@@ -1,0 +1,14 @@
+﻿-- sum both vectors and store the result in <key>
+proc ZipAndStore(a[], $key, b[])
+    local result = a
+    local oper = b
+    if table.getn(b) > table.getn(a) then
+        result = b
+        oper = a
+    end
+    for i=1, table.getn(oper), 1 
+    do 
+       result[i] = result[i] + oper[i]
+    end
+    return redis.call('SADD', key, unpack(result))
+endproc
