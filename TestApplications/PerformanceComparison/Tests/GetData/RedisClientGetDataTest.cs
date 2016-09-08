@@ -7,9 +7,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using vtortola.Redis;
 
-namespace PerformanceComparison.Tests.SimpleTests
+namespace PerformanceComparison.Tests.GetData
 {
-    public class RedisClientTransactionTest : ITest
+    public class RedisClientGetDataTest : ITest
     {
         RedisClient _client;
 
@@ -24,24 +24,22 @@ namespace PerformanceComparison.Tests.SimpleTests
             using (var channel = _client.CreateChannel())
             {
                 channel.Dispatch("flushdb");
-                await channel.ExecuteAsync("incr @key", new { key = "whatever" }).ConfigureAwait(false);
+                await channel.ExecuteAsync("sadd @key @data", new 
+                { 
+                    key = "testkeyRC",
+                    data = Enumerable.Range(0, 10).Select(i=>i.ToString("0000000000"))
+                }).ConfigureAwait(false);
             }
         }
 
         public async Task RunClient(Int32 id, CancellationToken cancel)
         {
-            var key = id.ToString();
             using(var channel = _client.CreateChannel())
             {
-                var data = new[] { "Member1", "Value1", "Member2", "Value2", "Member3", "Value3", "Member4", "Value4" };
-
-                await channel.ExecuteAsync(@"
-                              multi
-                              incr @key1
-                              set @key2 @key1
-                              hmset @key3 @data
-                              exec",
-                              new { key1 = key + "1", key2 = key + "2", key3 = key + "3", data }).ConfigureAwait(false);
+                var result = await channel
+                                    .ExecuteAsync(@"smembers @key",
+                                        new { key = "testkeyRC" }).ConfigureAwait(false);
+                var x = result[0].GetStringArray();
             }
         }
 

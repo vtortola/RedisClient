@@ -8,35 +8,30 @@ using System.Threading.Tasks;
 
 namespace PerformanceComparison.Tests.SimpleTests
 {
-    public class ServiceStackSimpleTest:SimpleTest
+    public class ServiceStackSimpleTest : ITest
     {
         IRedisClientsManager _pool;
-        public override Task Init(IPEndPoint endpoint, System.Threading.CancellationToken cancel)
+        public Task Init(IPEndPoint endpoint, System.Threading.CancellationToken cancel)
         {
-            _pool = new PooledRedisClientManager(50, 10, endpoint.ToString());
-            using (var client = _pool.GetClient())
+            _pool = new PooledRedisClientManager(100, 60, endpoint.ToString());
+            using (var client = _pool.GetCacheClient())
             {
                 client.FlushAll();
-                client.IncrementValue("whatever");
+                client.Increment("whatever", 1);
             }
             return Task.FromResult((Object)null);
         }
 
-        public override Task<Int64> RunClient(Int32 id, System.Threading.CancellationToken cancel)
+        public Task RunClient(Int32 id, System.Threading.CancellationToken cancel)
         {
-            var key = this.GetType().Name + "_" + id;
-            using (var client = _pool.GetClient())
-            {
-                for (int i = 0; i < Iterations; i++)
-                {
-                    client.IncrementValue(key);
-                }
+            var key = id.ToString();
+            using (var client = _pool.GetCacheClient())
+                client.Increment(key, 1); 
 
-                return Task.FromResult(client.Get<Int64>(key));
-            }
+            return Task.FromResult<Object>(null);
         }
 
-        public override void ClearData()
+        public void ClearData()
         {
             using (var client = _pool.GetClient())
                 client.FlushAll();

@@ -81,14 +81,15 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tests\ITest.cs" />
+    <Compile Include="Tests\GetData\RedisClientGetDataTest.cs" />
+    <Compile Include="Tests\GetData\ServiceStackGetDataTest.cs" />
+    <Compile Include="Tests\GetData\StackExchangeGetDataTest.cs" />
     <Compile Include="Tests\Transaction\RedisClientTransactionTest.cs" />
     <Compile Include="Tests\Transaction\ServiceStackTransactionTest.cs" />
     <Compile Include="Tests\Transaction\StackExchangeRedisTransactionTest.cs" />
-    <Compile Include="Tests\Transaction\_TransactionTest.cs" />
     <Compile Include="Tests\SimpleTests\RedisClientSimpleTest.cs" />
     <Compile Include="Tests\SimpleTests\ServiceStackSimpleTest.cs" />
     <Compile Include="Tests\SimpleTests\StackExchangeRedisSimpleTest.cs" />
-    <Compile Include="Tests\SimpleTests\_SimpleTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

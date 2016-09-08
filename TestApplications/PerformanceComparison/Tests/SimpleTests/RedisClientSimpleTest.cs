@@ -9,13 +9,17 @@ using vtortola.Redis;
 
 namespace PerformanceComparison.Tests.SimpleTests
 {
-    public class RedisClientSimpleTest : SimpleTest
+    public class RedisClientSimpleTest : ITest
     {
         RedisClient _client;
 
-        public override async Task Init(IPEndPoint endpoint, CancellationToken cancel)
+        public async Task Init(IPEndPoint endpoint, CancellationToken cancel)
         {
-            _client = new RedisClient(endpoint);
+            var options = new RedisClientOptions();
+            options.MultiplexPool.CommandConnections = 1;
+            options.MultiplexPool.SubscriptionOptions = 1;
+
+            _client = new RedisClient(endpoint, options);
 
             await _client.ConnectAsync(cancel).ConfigureAwait(false);
             using (var channel = _client.CreateChannel())
@@ -25,23 +29,17 @@ namespace PerformanceComparison.Tests.SimpleTests
             }
         }
 
-        public override async Task<Int64> RunClient(Int32 id, CancellationToken cancel)
+        public async Task RunClient(Int32 id, CancellationToken cancel)
         {
-            var key = this.GetType().Name + "_" + id;
+            var key = id.ToString();
             using (var channel = _client.CreateChannel())
             {
-                for (int i = 0; i < Iterations; i++)
-                {
-                    var r = await channel.ExecuteAsync(@"incr @key", new { key }).ConfigureAwait(false);
-                    r.ThrowErrorIfAny();
-                }
-
-                var final = await channel.ExecuteAsync("get @key", new { key }).ConfigureAwait(false);
-                return Int64.Parse(final[0].GetString());
+                var r = await channel.ExecuteAsync(@"incr @key", new { key }).ConfigureAwait(false);
+                r.ThrowErrorIfAny();
             }
         }
 
-        public override void ClearData()
+        public void ClearData()
         {
             using (var channel = _client.CreateChannel())
                 channel.Execute("flushdb");

@@ -11,7 +11,7 @@ namespace PerformanceComparison.Tests
     public interface ITest
     {
         Task Init(IPEndPoint endpoint, CancellationToken cancel);
-        Task<Int64> RunClient(Int32 id, CancellationToken cancel);
+        Task RunClient(Int32 id, CancellationToken cancel);
         void ClearData();
     }
 }

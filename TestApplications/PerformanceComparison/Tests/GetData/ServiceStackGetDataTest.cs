@@ -7,9 +7,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PerformanceComparison.Tests.SimpleTests
+namespace PerformanceComparison.Tests.GetData
 {
-    public class ServiceStackTransactionTest : ITest
+    public class ServiceStackGetDataTest : ITest
     {
         IRedisClientsManager _pool;
         public Task Init(IPEndPoint endpoint, System.Threading.CancellationToken cancel)
@@ -18,27 +18,16 @@ namespace PerformanceComparison.Tests.SimpleTests
             using (var c = _pool.GetClient())
             {
                 c.FlushAll();
-                c.Increment("whatever", 1);
+                c.AddRangeToSet("testkeySSE", Enumerable.Range(0, 10).Select(i => i.ToString("0000000000")).ToList());
             }
             return Task.FromResult((Object)null);
         }
 
         public Task RunClient(Int32 id, CancellationToken cancel)
         {
-            var key = id.ToString();
             using (var client = _pool.GetClient())
             {
-                var values = new[] { new KeyValuePair<String, String>("Member1", "Value1"), new KeyValuePair<String, String>("Member2", "Value2"), 
-                                     new KeyValuePair<String, String>("Member3", "Value3"), new KeyValuePair<String, String>("Member4", "Value4")};
-                
-                using (var trans = client.CreateTransaction())
-                {
-                    trans.QueueCommand(r => r.IncrementValue(key + "1"));
-                    trans.QueueCommand(r => r.Set(key + "2", key));
-                    trans.QueueCommand(r => r.SetRangeInHash(key + "3", values));
-                    trans.Commit();
-                }
-
+                var hash = client.GetAllItemsFromSet("testkeySSE");
                 return Task.FromResult<Object>(null);
             }
         }

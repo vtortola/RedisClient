@@ -1,4 +1,5 @@
 ﻿using PerformanceComparison.Tests;
+using PerformanceComparison.Tests.GetData;
 using PerformanceComparison.Tests.SimpleTests;
 using System;
 using System.Collections.Generic;
@@ -15,33 +16,43 @@ namespace PerformanceComparison
         class TestData
         {
             public Int32 Users { get; set; }
-            public TimeSpan RedisClient { get; set; }
-            public TimeSpan StackExchangeRedis { get; set; }
-            public TimeSpan ServiceStackRedis { get; set; }
+            public Double RedisClient { get; set; }
+            public Double StackExchangeRedis { get; set; }
+            public Double ServiceStackRedis { get; set; }
         }
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Press any key to start...");
-            Console.ReadKey(true);
-
             var endpoint = new IPEndPoint(IPAddress.Parse("192.168.0.16")/*IPAddress.Loopback*/, 6379);
 
-            // This test is meaningless because ServiceStack does not pipeline by default
-            // and it does not support asynchronous operations.
-            //CreateReport<RedisClientSimpleTest, ServiceStackSimpleTest, StackExchangeRedisSimpleTest>("simple", endpoint);
-
-            Console.WriteLine("\n***************************************\n");
-
-            CreateReport<RedisClientTransactionTest, ServiceStackTransactionTest, StackExchangeRedisTransactionTest>("transaction", endpoint);
+            Console.WriteLine("PERFORMANCE COMPARISON");
+            Console.WriteLine("Choose scneartio:");
+            Console.WriteLine("1) Simple INCR operation.");
+            Console.WriteLine("2) Multiple operation transaction.");
+            Console.WriteLine("3) Simple SMEMBERS getting 10 values.");
+            var option = Console.ReadKey();
+            switch (option.KeyChar)
+            {
+                case '1':
+                    CreateReport<RedisClientSimpleTest, ServiceStackSimpleTest, StackExchangeRedisSimpleTest>("simple", endpoint);
+                    break;
+                case '2':
+                    CreateReport<RedisClientTransactionTest, ServiceStackTransactionTest, StackExchangeRedisTransactionTest>("transaction", endpoint);
+                    break;
+                case '3':
+                    CreateReport<RedisClientGetDataTest, ServiceStackGetDataTest, StackExchangeGetDataTest>("getdata", endpoint);
+                    break;
+                default:
+                    throw new InvalidOperationException("No test defined with option " + option.KeyChar);
+            }
 
             Console.ReadKey(true);
         }
 
-        static TimeSpan GetMinimum(IEnumerable<TimeSpan> times)
+        static Double GetMinimum(IEnumerable<Double> times)
         {
             return times
-                    .Where(x => x != Timeout.InfiniteTimeSpan)
+                    .Where(x => !Double.IsPositiveInfinity(x))
                     .Min();
         }
 
@@ -50,28 +61,28 @@ namespace PerformanceComparison
             where TServiceStack : ITest, new()
             where TStackExchange : ITest, new()
         {
-            var usersCounts = new[] { 50, 100, 200, 500, 1000 };
-            var results = new List<TestData>(usersCounts.Length);
+            var threadCounts = new[] { 10, 25, 50, 75, 100 };
+            var results = new List<TestData>(threadCounts.Length);
 
-            foreach (var userCount in usersCounts)
+            foreach (var threadCount in threadCounts)
             {
                 var partial = new List<TestData>(10);
-                for (int i = 0; i < 10; i++)
+                for (int i = 0; i < 1; i++)
                 {
-                    partial.Add(PerformSingleTest<TRedisClient, TServiceStack, TStackExchange>(userCount, endpoint));
+                    partial.Add(PerformSingleTest<TRedisClient, TServiceStack, TStackExchange>(threadCount, 10000, endpoint));
                 }
                 results.Add(new TestData()
                 {
-                    Users = userCount,
+                    Users = threadCount,
                     RedisClient = GetMinimum(partial.Select(x=>x.RedisClient)),
                     StackExchangeRedis = GetMinimum(partial.Select(x => x.StackExchangeRedis)),
                     ServiceStackRedis = GetMinimum(partial.Select(x => x.ServiceStackRedis)),
                 });
             }
-
-            using (var writer = new StreamWriter(fileName+".csv"))
+            fileName = fileName + "_" + Guid.NewGuid().ToString() + ".csv";
+            using (var writer = new StreamWriter(fileName))
             {
-                foreach (var userCount in usersCounts)
+                foreach (var userCount in threadCounts)
                 {
                     writer.Write(",");
                     writer.Write(userCount);
@@ -82,7 +93,7 @@ namespace PerformanceComparison
                 foreach (var result in results)
                 {
                     writer.Write(",");
-                    writer.Write(result.RedisClient.TotalMilliseconds);
+                    writer.Write(result.RedisClient);
                 }
 
                 writer.WriteLine();
@@ -90,7 +101,7 @@ namespace PerformanceComparison
                 foreach (var result in results)
                 {
                     writer.Write(",");
-                    writer.Write(result.ServiceStackRedis.TotalMilliseconds);
+                    writer.Write(result.ServiceStackRedis);
                 }
 
                 writer.WriteLine();
@@ -98,59 +109,59 @@ namespace PerformanceComparison
                 foreach (var result in results)
                 {
                     writer.Write(",");
-                    writer.Write(result.StackExchangeRedis.TotalMilliseconds);
+                    writer.Write(result.StackExchangeRedis);
                 }
             }
-            Process.Start(fileName + ".csv");
+            Process.Start(fileName);
         }
 
         static void Display(String test, Tuple<Int64, TimeSpan> result)
         {
             if(result != null)
-                Console.WriteLine("{2}\t: Operations {0}, Time: {1}", result.Item1.ToString(), result.Item2.ToString(), test);
+                Console.WriteLine("{2}\t::: \tops/s: {0} \tTime: {1}", (result.Item1/result.Item2.TotalSeconds).ToString(".00").PadLeft(8, ' '), result.Item2.ToString(), test);
             else
-                Console.WriteLine("{0}\t: FAILED", test);
+                Console.WriteLine("{0}\t::: FAILED", test);
         }
 
-        static TimeSpan GetTime(Tuple<Int64, TimeSpan> result)
+        static Double GetOpsPerSecond(Tuple<Int64, TimeSpan> result)
         {
-            return result != null ? result.Item2 : Timeout.InfiniteTimeSpan;
+            return result != null ? (result.Item1 / result.Item2.TotalSeconds) : Double.PositiveInfinity;
         }
 
-        static TestData PerformSingleTest<TRedisClient, TServiceStack, TStackExchange>(Int32 users, IPEndPoint endpoint)
+        static TestData PerformSingleTest<TRedisClient, TServiceStack, TStackExchange>(Int32 threads, Int32 runsPerThread, IPEndPoint endpoint)
             where TRedisClient : ITest, new()
             where TServiceStack : ITest, new()
             where TStackExchange : ITest, new()
         {
-            Console.WriteLine("\nTesting 1000 iterations with {0} users.\n", users);
+            Console.WriteLine("\nTesting with {0} threads, with {1} tries per thread.\n", threads, runsPerThread);
 
             GC.Collect();
 
-            var serviceStack = Test(new TServiceStack(), users, endpoint);
+            var serviceStack = Test(new TServiceStack(), threads, runsPerThread, endpoint);
 
             GC.Collect();
 
-            var redisClient = Test(new TRedisClient(), users, endpoint);
+            var redisClient = Test(new TRedisClient(), threads, runsPerThread, endpoint);
 
             GC.Collect();
 
-            var stackExchange = Test(new TStackExchange(), users, endpoint);
+            var stackExchange = Test(new TStackExchange(), threads, runsPerThread, endpoint);
 
             Console.WriteLine();
-            Display("RedisClient", redisClient);
             Display("ServiceStack", serviceStack);
+            Display("RedisClient", redisClient);
             Display("StackExchange", stackExchange);
 
             return new TestData()
             {
-                Users = users,
-                RedisClient = GetTime(redisClient),
-                StackExchangeRedis = GetTime(stackExchange),
-                ServiceStackRedis = GetTime(serviceStack),
+                Users = threads,
+                RedisClient = GetOpsPerSecond(redisClient),
+                StackExchangeRedis = GetOpsPerSecond(stackExchange),
+                ServiceStackRedis = GetOpsPerSecond(serviceStack),
             };
         }
 
-        static Tuple<Int64, TimeSpan> Test(ITest test, Int32 concurrentUsers, IPEndPoint endpoint)
+        static Tuple<Int64, TimeSpan> Test(ITest test, Int32 threads, Int32 runsPerThread, IPEndPoint endpoint)
         {
             Int64 counter = 0;
             test.Init(endpoint, CancellationToken.None).Wait();
@@ -166,15 +177,18 @@ namespace PerformanceComparison
             sw.Start();
 
             Exception error = null;
-            for (int i = 0; i < concurrentUsers; i++)
+            for (int i = 0; i < threads; i++)
             {
                 int ii = i;
                 var ts = new ThreadStart(() =>
                 {
                     try
                     {
-                        var r = test.RunClient(ii, cancel.Token).Result;
-                        Interlocked.Add(ref counter, r);
+                        for (int r = 0; r < runsPerThread; r++)
+                        {
+                            test.RunClient(ii, cancel.Token).Wait();
+                            Interlocked.Increment(ref counter);
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -184,7 +198,7 @@ namespace PerformanceComparison
                     finally
                     {
                         var p = Interlocked.Increment(ref progress);
-                        var percentage = (Int32)((p * 100D) / concurrentUsers);
+                        var percentage = (Int32)((p * 100D) / threads);
                         while (bars < percentage)
                         {
                             Interlocked.Increment(ref bars);
