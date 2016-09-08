@@ -30,19 +30,13 @@ namespace PerformanceComparison.Tests.SimpleTests
             var key = this.GetType().Name + "_" + id;
             using (var channel = _client.CreateChannel())
             {
-                var data = new[] { "Member1", "Value1", "Member2", "Value2" };
                 for (int i = 0; i < Iterations; i++)
                 {
-                    var r = await channel.ExecuteAsync(@"
-                                          incr @key1
-                                          set @key2 @key1
-                                          hmset @key3 @data",
-                                          new { key1 = key + "1", key2 = key + "2", key3 = key + "3", data }).ConfigureAwait(false);
-
+                    var r = await channel.ExecuteAsync(@"incr @key", new { key }).ConfigureAwait(false);
                     r.ThrowErrorIfAny();
                 }
 
-                var final = await channel.ExecuteAsync("get @key", new { key = key + "1" }).ConfigureAwait(false);
+                var final = await channel.ExecuteAsync("get @key", new { key }).ConfigureAwait(false);
                 return Int64.Parse(final[0].GetString());
             }
         }

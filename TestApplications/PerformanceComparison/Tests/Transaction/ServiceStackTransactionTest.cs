@@ -15,7 +15,10 @@ namespace PerformanceComparison.Tests.SimpleTests
         {
             _pool = new PooledRedisClientManager(100, 60, endpoint.ToString());
             using (var c = _pool.GetClient())
+            {
+                c.FlushAll();
                 c.Increment("whatever", 1);
+            }
             return Task.FromResult((Object)null);
         }
 

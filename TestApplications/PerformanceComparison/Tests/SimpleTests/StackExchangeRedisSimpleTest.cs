@@ -22,15 +22,12 @@ namespace PerformanceComparison.Tests.SimpleTests
         {
             var key = this.GetType().Name + "_" + id;
             var db = _connection.GetDatabase();
-            var values = new[] { new HashEntry("Member1", "Value1"), new HashEntry("Member2", "Value2") };
             for (int i = 0; i < Iterations; i++)
             {
-                await db.StringIncrementAsync(key + "1").ConfigureAwait(false);
-                await db.StringSetAsync(key + "2", key).ConfigureAwait(false);
-                await db.HashSetAsync(key + "3", values).ConfigureAwait(false);
+                await db.StringIncrementAsync(key).ConfigureAwait(false);
             }
 
-            return Int64.Parse(await db.StringGetAsync(key + "1").ConfigureAwait(false));
+            return Int64.Parse(await db.StringGetAsync(key).ConfigureAwait(false));
         }
 
         public override void ClearData()
