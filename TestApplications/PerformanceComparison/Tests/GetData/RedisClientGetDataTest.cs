@@ -24,11 +24,18 @@ namespace PerformanceComparison.Tests.GetData
             using (var channel = _client.CreateChannel())
             {
                 channel.Dispatch("flushdb");
-                await channel.ExecuteAsync("sadd @key @data", new 
-                { 
-                    key = "testkeyRC",
-                    data = Enumerable.Range(0, 10).Select(i=>i.ToString("0000000000"))
-                }).ConfigureAwait(false);
+                var data = Enumerable.Range(0, 10).Select(i=>i.ToString("0000000000"));
+                await channel.ExecuteAsync(@"
+                              sadd @key @data
+                              sadd @key2 @data
+                              set @key3 'hi this is a test'"
+                    , new 
+                    { 
+                        key = "testkeyRC",
+                        key2 = "testkeyRC2",
+                        key3 = "testkeyRC3",
+                        data
+                    }).ConfigureAwait(false);
             }
         }
 
@@ -36,10 +43,18 @@ namespace PerformanceComparison.Tests.GetData
         {
             using(var channel = _client.CreateChannel())
             {
-                var result = await channel
-                                    .ExecuteAsync(@"smembers @key",
-                                        new { key = "testkeyRC" }).ConfigureAwait(false);
-                var x = result[0].GetStringArray();
+                await channel
+                        .ExecuteAsync(@"
+                                smembers @key
+                                smembers @key2
+                                get @key3",
+                                new 
+                                {
+                                    key = "testkeyRC",
+                                    key2 = "testkeyRC2",
+                                    key3 = "testkeyRC3", 
+                                }).ConfigureAwait(false);
+
             }
         }
 

@@ -67,7 +67,7 @@ namespace PerformanceComparison
             foreach (var threadCount in threadCounts)
             {
                 var partial = new List<TestData>(10);
-                for (int i = 0; i < 1; i++)
+                for (int i = 0; i < 5; i++)
                 {
                     partial.Add(PerformSingleTest<TRedisClient, TServiceStack, TStackExchange>(threadCount, 10000, endpoint));
                 }
