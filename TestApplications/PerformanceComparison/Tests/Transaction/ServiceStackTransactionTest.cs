@@ -13,7 +13,9 @@ namespace PerformanceComparison.Tests.SimpleTests
         IRedisClientsManager _pool;
         public override Task Init(IPEndPoint endpoint, System.Threading.CancellationToken cancel)
         {
-            _pool = new PooledRedisClientManager(50, 10, endpoint.ToString());
+            _pool = new PooledRedisClientManager(100, 60, endpoint.ToString());
+            using (var c = _pool.GetClient())
+                c.Increment("whatever", 1);
             return Task.FromResult((Object)null);
         }
 

@@ -25,7 +25,7 @@ namespace PerformanceComparison
             Console.WriteLine("Press any key to start...");
             Console.ReadKey(true);
 
-            var endpoint = new IPEndPoint(IPAddress.Loopback, 6379);
+            var endpoint = new IPEndPoint(IPAddress.Parse("192.168.0.16")/*IPAddress.Loopback*/, 6379);
 
             // This test is meaningless because ServiceStack does not pipeline by default
             // and it does not support asynchronous operations.
@@ -38,28 +38,34 @@ namespace PerformanceComparison
             Console.ReadKey(true);
         }
 
+        static TimeSpan GetMinimum(IEnumerable<TimeSpan> times)
+        {
+            return times
+                    .Where(x => x != Timeout.InfiniteTimeSpan)
+                    .Min();
+        }
+
         static void CreateReport<TRedisClient, TServiceStack, TStackExchange>(String fileName, IPEndPoint endpoint)
             where TRedisClient : ITest, new()
             where TServiceStack : ITest, new()
             where TStackExchange : ITest, new()
         {
-            const Int32 iterations = 1000;
-            var usersCounts = new[] {  10, 25, 50, 100, 200, 500 };
+            var usersCounts = new[] { 50, 100, 200, 500, 1000 };
             var results = new List<TestData>(usersCounts.Length);
 
             foreach (var userCount in usersCounts)
             {
                 var partial = new List<TestData>(10);
-                for (int i = 0; i < 10; i++)
+                for (int i = 0; i < 1; i++)
                 {
-                    partial.Add(PerformSingleTest<TRedisClient, TServiceStack, TStackExchange>(iterations, userCount, endpoint));
+                    partial.Add(PerformSingleTest<TRedisClient, TServiceStack, TStackExchange>(userCount, endpoint));
                 }
                 results.Add(new TestData()
                 {
                     Users = userCount,
-                    RedisClient = TimeSpan.FromTicks((Int64)partial.Min(x=>x.RedisClient.Ticks)),
-                    StackExchangeRedis = TimeSpan.FromTicks((Int64)partial.Min(x => x.StackExchangeRedis.Ticks)),
-                    ServiceStackRedis = TimeSpan.FromTicks((Int64)partial.Min(x => x.ServiceStackRedis.Ticks)),
+                    RedisClient = GetMinimum(partial.Select(x=>x.RedisClient)),
+                    StackExchangeRedis = GetMinimum(partial.Select(x => x.StackExchangeRedis)),
+                    ServiceStackRedis = GetMinimum(partial.Select(x => x.ServiceStackRedis)),
                 });
             }
 
@@ -98,56 +104,70 @@ namespace PerformanceComparison
             Process.Start(fileName + ".csv");
         }
 
-        static TestData PerformSingleTest<TRedisClient, TServiceStack, TStackExchange>(Int32 iterations, Int32 users, IPEndPoint endpoint)
+        static void Display(String test, Tuple<Int64, TimeSpan> result)
+        {
+            if(result != null)
+                Console.WriteLine("{2}\t: Operations {0}, Time: {1}", result.Item1.ToString(), result.Item2.ToString(), test);
+            else
+                Console.WriteLine("{0}\t: FAILED", test);
+        }
+
+        static TimeSpan GetTime(Tuple<Int64, TimeSpan> result)
+        {
+            return result != null ? result.Item2 : Timeout.InfiniteTimeSpan;
+        }
+
+        static TestData PerformSingleTest<TRedisClient, TServiceStack, TStackExchange>(Int32 users, IPEndPoint endpoint)
             where TRedisClient : ITest, new()
             where TServiceStack : ITest, new()
             where TStackExchange : ITest, new()
         {
-            Console.WriteLine("\nTesting {0} with {1} users.\n", iterations, users);
+            Console.WriteLine("\nTesting 1000 iterations with {0} users.\n", users);
 
             GC.Collect();
 
-            var serviceStack = Test(new TServiceStack(), iterations, users, endpoint);
+            var serviceStack = Test(new TServiceStack(), users, endpoint);
 
             GC.Collect();
 
-            var redisClient = Test(new TRedisClient(), iterations, users, endpoint);
+            var redisClient = Test(new TRedisClient(), users, endpoint);
 
             GC.Collect();
 
-            var stackExchange = Test(new TStackExchange(), iterations, users, endpoint);
+            var stackExchange = Test(new TStackExchange(), users, endpoint);
 
             Console.WriteLine();
-            Console.WriteLine("RedisClient  : Operations {0}, Time: {1}", redisClient.Item1.ToString(), redisClient.Item2.ToString());
-            Console.WriteLine("ServiceStack : Operations {0}, Time: {1}", serviceStack.Item1.ToString(), serviceStack.Item2.ToString());
-            Console.WriteLine("StackExchange: Operations {0}, Time: {1}", stackExchange.Item1.ToString(), stackExchange.Item2.ToString());
+            Display("RedisClient", redisClient);
+            Display("ServiceStack", serviceStack);
+            Display("StackExchange", stackExchange);
 
             return new TestData()
             {
                 Users = users,
-                RedisClient = redisClient.Item2,
-                StackExchangeRedis = stackExchange.Item2,
-                ServiceStackRedis = serviceStack.Item2
+                RedisClient = GetTime(redisClient),
+                StackExchangeRedis = GetTime(stackExchange),
+                ServiceStackRedis = GetTime(serviceStack),
             };
         }
 
-
-        static Tuple<Int64, TimeSpan> Test(ITest test, Int32 loops, Int32 concurrentUsers, IPEndPoint endpoint)
+        static Tuple<Int64, TimeSpan> Test(ITest test, Int32 concurrentUsers, IPEndPoint endpoint)
         {
             Int64 counter = 0;
             test.Init(endpoint, CancellationToken.None).Wait();
 
             var cancel = new CancellationTokenSource();
-            var taskList = new List<Thread>();
-            var semaphore = new SemaphoreSlim(concurrentUsers);
-            var step = loops / 100;
-            step = step == 0 ? 1 : step;
+            var threadLists = new List<Thread>();
+
+            var bars = 0;
+            var progress = 0;
+
             var sw = new Stopwatch();
             Console.WriteLine();
             sw.Start();
-            for (int i = 0; i < loops; i++)
+
+            Exception error = null;
+            for (int i = 0; i < concurrentUsers; i++)
             {
-                semaphore.Wait();
                 int ii = i;
                 var ts = new ThreadStart(() =>
                 {
@@ -158,31 +178,37 @@ namespace PerformanceComparison
                     }
                     catch (Exception ex)
                     {
-                        Console.Write("[E." + test.GetType().Name + "]");
+                        Console.Write("[E." + test.GetType().Name + ", "+ex.GetType().Name+":"+ex.Message+"]");
+                        Interlocked.CompareExchange(ref error, ex, null);
                     }
                     finally
                     {
-                        semaphore.Release();
+                        var p = Interlocked.Increment(ref progress);
+                        var percentage = (Int32)((p * 100D) / concurrentUsers);
+                        while (bars < percentage)
+                        {
+                            Interlocked.Increment(ref bars);
+                            Console.Write("|");
+                        }
                     }
                 });
+
                 var t = new Thread(ts);
                 t.Start();
-                taskList.Add(t);
-
-                if (i % step == 0)
-                    Console.Write("|");
+                threadLists.Add(t);
             }
 
-            foreach (var t in taskList)
-            {
+            foreach (var t in threadLists)
                 t.Join();
-            }
 
             sw.Stop();
             cancel.Cancel();
             test.ClearData();
 
-            return new Tuple<Int64, TimeSpan>(counter, sw.Elapsed);
+            if (error != null)
+                return null;
+            else
+                return new Tuple<Int64, TimeSpan>(counter, sw.Elapsed);
         }
     }
 }
