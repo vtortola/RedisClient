@@ -23,13 +23,13 @@ namespace PerformanceComparison
 
         static void Main(string[] args)
         {
-            var endpoint = new IPEndPoint(IPAddress.Parse("192.168.0.16")/*IPAddress.Loopback*/, 6379);
+            var endpoint = new IPEndPoint(/*IPAddress.Parse("192.168.0.16")*/IPAddress.Loopback, 6379);
 
             Console.WriteLine("PERFORMANCE COMPARISON");
             Console.WriteLine("Choose scneartio:");
             Console.WriteLine("1) Simple INCR operation.");
             Console.WriteLine("2) Multiple operation transaction.");
-            Console.WriteLine("3) Simple SMEMBERS getting 10 values.");
+            Console.WriteLine("3) Multiple read operations pipelined.");
             var option = Console.ReadKey();
             switch (option.KeyChar)
             {
@@ -67,7 +67,7 @@ namespace PerformanceComparison
             foreach (var threadCount in threadCounts)
             {
                 var partial = new List<TestData>(10);
-                for (int i = 0; i < 5; i++)
+                for (int i = 0; i < 1; i++)
                 {
                     partial.Add(PerformSingleTest<TRedisClient, TServiceStack, TStackExchange>(threadCount, 10000, endpoint));
                 }
@@ -118,7 +118,7 @@ namespace PerformanceComparison
         static void Display(String test, Tuple<Int64, TimeSpan> result)
         {
             if(result != null)
-                Console.WriteLine("{2}\t::: \tops/s: {0} \tTime: {1}", (result.Item1/result.Item2.TotalSeconds).ToString(".00").PadLeft(8, ' '), result.Item2.ToString(), test);
+                Console.WriteLine("{2}\t::: \tops/s: {0} \tTime: {1}", (result.Item1/result.Item2.TotalSeconds).ToString(".00").PadLeft(9, ' '), result.Item2.ToString(), test);
             else
                 Console.WriteLine("{0}\t::: FAILED", test);
         }
@@ -169,8 +169,9 @@ namespace PerformanceComparison
             var cancel = new CancellationTokenSource();
             var threadLists = new List<Thread>();
 
-            var bars = 0;
+            var total = threads * runsPerThread;
             var progress = 0;
+            var bars = 0;
 
             var sw = new Stopwatch();
             Console.WriteLine();
@@ -188,22 +189,20 @@ namespace PerformanceComparison
                         {
                             test.RunClient(ii, cancel.Token).Wait();
                             Interlocked.Increment(ref counter);
+
+                            var p = Interlocked.Increment(ref progress);
+                            var percentage = (Int32)((p * 100D) / total);
+                            while (bars < percentage)
+                            {
+                                Interlocked.Increment(ref bars);
+                                Console.Write("|");
+                            }
                         }
                     }
                     catch (Exception ex)
                     {
                         Console.Write("[E." + test.GetType().Name + ", "+ex.GetType().Name+":"+ex.Message+"]");
                         Interlocked.CompareExchange(ref error, ex, null);
-                    }
-                    finally
-                    {
-                        var p = Interlocked.Increment(ref progress);
-                        var percentage = (Int32)((p * 100D) / threads);
-                        while (bars < percentage)
-                        {
-                            Interlocked.Increment(ref bars);
-                            Console.Write("|");
-                        }
                     }
                 });
 

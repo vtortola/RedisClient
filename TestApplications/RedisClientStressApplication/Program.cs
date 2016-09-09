@@ -12,13 +12,15 @@ namespace RedisClientStressApplication
 {
     class Program
     {
-        static Int32 userCount = 100;
-        static Int32 loops = 100;
+        static Int32 threads = 100;
+        static Int32 iterationsPerThread = 10000;
 
         static void Main(string[] args)
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
+
+            var endpoint = new IPEndPoint(IPAddress.Parse("192.168.0.16"), 6379);
 
             Trace.Listeners.Add(new ConsoleTraceListener());
             Console.ForegroundColor = ConsoleColor.Yellow;
@@ -26,13 +28,19 @@ namespace RedisClientStressApplication
             Console.ResetColor();
             Console.WriteLine("Choose a test:");
             Console.WriteLine("1) Object test.");
+            Console.WriteLine("2) Simple test.");
             Console.Write("Select:");
             var value = (Char)Console.Read();
-            Func<ITestScenario> scenario = null; ;
+
+            Func<ITestScenario> scenario = null; 
             switch (value)
             {
                 case '1':
-                    scenario = () => new ObjectOperationTest();
+                    scenario = () => new ObjectOperationTest(endpoint);
+                    break;
+
+                case '2':
+                    scenario = () => new SimpleOperationTest(endpoint);
                     break;
 
                 default:
@@ -48,14 +56,14 @@ namespace RedisClientStressApplication
             var list = new List<WeakReference>();
             var results = new List<Double>();
             var total = 0L;
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 5; i++)
             {
                 Console.ForegroundColor = ConsoleColor.Cyan;
                 Console.WriteLine("\nTest:");
                 Console.ResetColor();
 
                 var scenario = scenarioFactory();
-                var result = scenario.Test(userCount, loops);
+                var result = scenario.Test(threads, iterationsPerThread);
 
                 Console.ForegroundColor = ConsoleColor.Green;
                 var opts = (result.Item1 / result.Item2.TotalSeconds);
