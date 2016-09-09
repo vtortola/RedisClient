@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using vtortola.RedisClient.ProcedureDebugger;
+using UnitTests.Common;
 
 namespace UnitTests.ProcedureDebugger
 {
@@ -31,6 +32,38 @@ namespace UnitTests.ProcedureDebugger
             AssertEqualArrays(new[] { "1", "2", "3", "4" }, array);
         }
 
-        // Add safe string test cases
+        [TestMethod]
+        [ExpectedExceptionPattern(typeof(InvalidOperationException), MessagePattern="^Array parameter ended unexpectedly: ")]
+        public void FailOnOpenArray()
+        {
+            var array = SessionModel.ParseArray("[1, 2, 3, 4", 0);
+        }
+
+        [TestMethod]
+        public void CanParseSafeStringArray()
+        {
+            var array = SessionModel.ParseArray("[\"1\", \"2\", \"3\", \"4\"]", 0);
+            AssertEqualArrays(new[] { "1", "2", "3", "4" }, array);
+        }
+
+        [TestMethod]
+        public void CanParseStringArray()
+        {
+            var array = SessionModel.ParseArray("[\"1 \", \"2,2\", \"3,,,4\", \"4\"]", 0);
+            AssertEqualArrays(new[] { "1 ", "2,2", "3,,,4", "4" }, array);
+        }
+        [TestMethod]
+        public void CanParseSingleQuotesStringArray()
+        {
+            var array = SessionModel.ParseArray("['1 ', '2,2', '3,,,\"', '\"4']", 0);
+            AssertEqualArrays(new[] { "1 ", "2,2", "3,,,\"", "\"4" }, array);
+        }
+
+        [TestMethod]
+        [ExpectedExceptionPattern(typeof(InvalidOperationException), MessagePattern = "^Array parameter ended unexpectedly: ")]
+        public void FailOnOpenArray2()
+        {
+            var array = SessionModel.ParseArray("[\"1 \", \"2,2\", \"3,,,4\", \"4]", 0);
+        }
     }
 }

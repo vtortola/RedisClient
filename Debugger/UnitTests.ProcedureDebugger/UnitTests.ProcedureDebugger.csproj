@@ -55,6 +55,10 @@
     <Compile Include="ParsingCommandLine.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Tests\UnitTests.Common\UnitTests.Common.csproj">
+      <Project>{4062c116-1534-4368-811d-c7a606deb0f6}</Project>
+      <Name>UnitTests.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\vtortola.RedisClient.ProcedureDebugger\vtortola.RedisClient.ProcedureDebugger.csproj">
       <Project>{099f1ce2-7115-47ea-b4ad-37839021314e}</Project>
       <Name>vtortola.RedisClient.ProcedureDebugger</Name>

@@ -19,7 +19,8 @@ namespace vtortola.RedisClient.ProcedureDebugger
     {
         public String FileName { get; private set; }
         public String Procedure { get; private set; }
-        public String ExtraCommands { get; private set; }
+        public String CliCommands { get; private set; }
+        public Boolean SyncMode { get; private set; }
         public Dictionary<String, String[]> Parameters { get; private set; }
 
         private SessionModel()
@@ -27,56 +28,66 @@ namespace vtortola.RedisClient.ProcedureDebugger
             Parameters = new Dictionary<String, String[]>();
         }
 
-        public static SessionModel Parse(String[] args)
+        public static SessionModel Parse(params String[] args)
         {
             var session = new SessionModel();
-            var extraCommands = new StringBuilder();
-            var lastWasExtra = false;
+            var redisCliCommands = new StringBuilder();
 
             for (int i = 0; i < args.Length; i++)
             {
                 var arg = args[i];
-                if(arg == "--file")
+                switch(arg)
                 {
-                    session.FileName = args[++i];
-                    lastWasExtra = false;
+                    case "--file":
+                        session.FileName = args[++i];
+                        break;
+
+                    case "--procedure":
+                        session.Procedure = args[++i];
+                        break;
+
+                    case "--eval":
+                        throw new InvalidOperationException("--eval command is forbidden, use --file and --procedure");
+
+                    case "-h":
+                    case "-p":
+                    case "-s":
+                    case "-a":
+                        redisCliCommands.Append(arg);
+                        redisCliCommands.Append(' ');
+                        redisCliCommands.Append(args[++i]);
+                        redisCliCommands.Append(' ');
+                        break;
+
+                    case "--sync-mode":
+                        session.SyncMode = true;
+                        break;
+
+                    default:
+                        if (arg.StartsWith("--@"))
+                        {
+                            arg = arg.Substring(3, arg.Length - 3);
+                            session.Parameters.Add(arg, ParseValues(args[++i]));
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException("invalid part: " + arg);
+                        }
+                        break;
                 }
-                else if (arg == "--procedure")
-                {
-                    session.Procedure = args[++i];
-                    lastWasExtra = false;
-                }
-                else if (arg == "--eval")
-                {
-                    throw new InvalidOperationException("--eval command is forbidden, use --file and --procedure");
-                }
-                else if (arg.StartsWith("--@"))
-                {
-                    arg = arg.Substring(3, arg.Length - 3);
-                    session.Parameters.Add(arg, ParseValues(args[++i]));
-                    lastWasExtra = false;
-                }
-                else
-                {
-                    if(arg.StartsWith("-"))
-                    {
-                        lastWasExtra = true;
-                        extraCommands.Append(arg);
-                        extraCommands.Append(" ");
-                    }
-                    else if(lastWasExtra)
-                    {
-                        extraCommands.Append(arg);
-                        lastWasExtra = false;
-                    }
-                    else
-                    {
-                        throw new InvalidOperationException("invalid part: " + arg);
-                    }
-                }
+
             }
-            session.ExtraCommands = extraCommands.ToString();
+            session.CliCommands = redisCliCommands.ToString();
+            Validate(session);
             return session;
+        }
+
+        static void Validate(SessionModel session)
+        {
+            if (String.IsNullOrWhiteSpace(session.FileName))
+                throw new InvalidOperationException("--file is mandatory");
+            if (String.IsNullOrWhiteSpace(session.Procedure))
+                throw new InvalidOperationException("--procedure is mandatory");
         }
 
         static String[] ParseValues(String valuesString)
@@ -99,24 +110,46 @@ namespace vtortola.RedisClient.ProcedureDebugger
         {
             var list = new List<String>();
             String current = String.Empty;
+            Char? context = null;
             for (; index < valuesString.Length; index++)
             {
                 var c = valuesString[index];
-                if (c == ']' || c == ',')
+                if (c == '"' || c == '\'')
                 {
-                    list.Add(current);
-                    current = String.Empty;
+                    if (context.HasValue)
+                    {
+                        if (context.Value == c)
+                        {
+                            context = null;
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        context = c;
+                        continue;
+                    }
                 }
-                else if(c== '[' || c == ' ')
+                else if (!context.HasValue)
                 {
-                    continue;
-                }
-                else
-                {
-                    current += c;
+                    if (c == ']' || c == ',')
+                    {
+                        list.Add(current);
+                        current = String.Empty;
+                        continue;
+                    }
+                    else if(c== '[' || c == ' ')
+                    {
+                        continue;
+                    }
                 }
 
+                current += c;
             }
+
+            if (!String.IsNullOrWhiteSpace(current))
+                throw new InvalidOperationException("Array parameter ended unexpectedly: " + valuesString);
+
             return list.ToArray();
         }
     }

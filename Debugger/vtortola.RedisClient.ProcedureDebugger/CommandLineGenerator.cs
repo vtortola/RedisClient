@@ -57,7 +57,7 @@ namespace vtortola.RedisClient.ProcedureDebugger
             }
 
             var builder = new StringBuilder(" --ldb ");
-            builder.Append(session.ExtraCommands);
+            builder.Append(session.CliCommands);
             builder.Append(' ');
             builder.AppendFormat("--eval \"{0}\" ", tempFile);
             foreach (var key in keyValues)
