@@ -2,7 +2,7 @@
 #### Another .NET Redis client, for the craic.
 ##### Status: ALPHA
 
-A .NET Redis client based on templated strings that uses a special syntax for easing LUA script invocation named ["procedures"](//github.com/vtortola/RedisClient/wiki/Procedures). The API exposes virtual connections named "channels" that provide seamless access to Redis through three different connection pools.
+An experimental .NET Redis client based on templated strings that uses a special syntax for easing LUA script invocation named ["procedures"](//github.com/vtortola/RedisClient/wiki/Procedures). The API exposes virtual connections named "channels" that provide seamless access to Redis through three different connection pools.
 
  * Templated strings interface [(more about parameter binding)](//github.com/vtortola/RedisClient/wiki/Parameter-binding).
  * Transparent connection management [(more about connection management)](//github.com/vtortola/RedisClient/wiki/Connection-management).
@@ -13,7 +13,9 @@ A .NET Redis client based on templated strings that uses a special syntax for ea
 #### Performance
 A very rough, maybe flawed, [performance comparison](//github.com/vtortola/RedisClient/wiki/Performance) shows the that the performance is close to other well known clients.
 
-<a href="//github.com/vtortola/RedisClient/wiki/Performance" style="display:block"><img src="http://vtortola.github.io/redisclientperf.png?what" height="300"  ></a>
+<a href="//github.com/vtortola/RedisClient/wiki/Performance" style="display:block"><img src="http://vtortola.github.io/rcclientperfTran.png" height="250"></a>
+<a href="//github.com/vtortola/RedisClient/wiki/Performance" style="display:block"><img src="http://vtortola.github.io/rcclientperfPipe.png" height="250"></a>
+
 
 #### Use in a web application
 Also in this repository you will find [SimpleQA](//github.com/vtortola/RedisClient/wiki/SimpleQA-:-A-proof-of-concept), a proof of concept of a _Q&A_ application using RedisClient.
