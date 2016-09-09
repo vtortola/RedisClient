@@ -71,9 +71,9 @@ namespace IntegrationTests.RedisClientTests
                 Assert.AreEqual(1L, results[0].GetInteger());
 
                 var counter = 0;
-                while (msgList.Count < 1 && counter < 5)
+                while (msgList.Count < 1 && counter < 10)
                 {
-                    Thread.Sleep(100);
+                    await Task.Delay(100).ConfigureAwait(false);
                     counter++;
                 }
                 Assert.AreEqual(1, msgList.Count);

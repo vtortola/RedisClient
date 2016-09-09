@@ -45,7 +45,7 @@ namespace IntegrationTests.RedisClientTests
                         subscribe whatever
                         get aa";
 
-                var results = await channel.ExecuteAsync(cmd);
+                var results = await channel.ExecuteAsync(cmd).ConfigureAwait(false);
 
                 Assert.AreEqual("OK", results[0].GetString());
                 Assert.AreEqual("OK", results[1].GetString());
@@ -55,9 +55,9 @@ namespace IntegrationTests.RedisClientTests
                 Assert.AreEqual(1L, results[0].GetInteger());
 
                 var counter = 0;
-                while (msgList.Count < 1 && counter < 5)
+                while (msgList.Count < 1 && counter < 10)
                 {
-                    Thread.Sleep(100);
+                    await Task.Delay(100).ConfigureAwait(false);
                     counter++;
                 }
                 Assert.AreEqual(1, msgList.Count);
