@@ -11,7 +11,7 @@ An experimental .NET Redis client based on templated strings that uses a special
  * Support for asynchronous, synchronous and "fire and forget" operations.
  
 #### Performance
-A very rough, maybe flawed, [performance comparison](//github.com/vtortola/RedisClient/wiki/Performance) shows the that the performance is close to other well known clients.
+A [performance comparison](//github.com/vtortola/RedisClient/wiki/Performance) shows the that the performance is close to other well known clients.
 
 <a href="//github.com/vtortola/RedisClient/wiki/Performance" style="display:block"><img src="http://vtortola.github.io/rcclientperfTran.png" height="250"></a>
 <a href="//github.com/vtortola/RedisClient/wiki/Performance" style="display:block"><img src="http://vtortola.github.io/rcclientperfPipe.png" height="250"></a>
