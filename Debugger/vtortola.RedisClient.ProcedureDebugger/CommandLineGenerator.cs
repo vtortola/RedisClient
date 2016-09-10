@@ -22,7 +22,7 @@ namespace vtortola.RedisClient.ProcedureDebugger
 
             var procedure = procedures.SingleOrDefault(p => p.Name.Equals(session.Procedure, StringComparison.InvariantCultureIgnoreCase));
             if (procedure == null)
-                throw new InvalidOperationException(String.Format("Cannot find the specified procedure '{0}' in '{1}'", session.Procedure, session.FileName));
+                throw new SyntaxException(String.Format("Cannot find the specified procedure '{0}' in '{1}'", session.Procedure, session.FileName));
 
             // generate temporary LUA file with the procedure content
             var tempFile = Path.GetTempFileName();
@@ -37,7 +37,7 @@ namespace vtortola.RedisClient.ProcedureDebugger
                 // if parameter is an array, then the length is added to the ARGV
                 String[] values;
                 if (!session.Parameters.TryGetValue(keyParameter.Name, out values) || values.Length == 0)
-                    throw new InvalidOperationException("Command line does not include values for parameter: " + keyParameter.Name);
+                    throw new SyntaxException("Command line does not include values for parameter: " + keyParameter.Name);
 
                 if (values.Length > 1)
                     argValues.Add(values.Length.ToString());
@@ -49,7 +49,7 @@ namespace vtortola.RedisClient.ProcedureDebugger
                 // if parameter is an array, then the length is added to the ARGV
                 String[] values;
                 if (!session.Parameters.TryGetValue(argParameter.Name, out values) || values.Length == 0)
-                    throw new InvalidOperationException("Command line does not include values for parameter: " + argParameter.Name);
+                    throw new SyntaxException("Command line does not include values for parameter: " + argParameter.Name);
 
                 if (values.Length > 1)
                     argValues.Add(values.Length.ToString());

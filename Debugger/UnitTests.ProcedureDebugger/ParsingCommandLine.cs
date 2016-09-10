@@ -27,24 +27,31 @@ namespace UnitTests.ProcedureDebugger
         }
 
         [TestMethod]
-        [ExpectedExceptionPattern(typeof(InvalidOperationException), MessagePattern="^--eval command is forbidden, use --file and --procedure$")]
+        [ExpectedExceptionPattern(typeof(SyntaxException), MessagePattern = "^--eval command is forbidden, use --file and --procedure$")]
         public void FailIfEvalIsPresent()
         {
             SessionModel.Parse("--file", "mfile.rcpc", "--procedure", "procedurename","--eval","whatever", "--@p1", "p1 value", "--@p2", "p2 value");
         }
 
         [TestMethod]
-        [ExpectedExceptionPattern(typeof(InvalidOperationException), MessagePattern = "^--file is mandatory$")]
+        [ExpectedExceptionPattern(typeof(SyntaxException), MessagePattern = "^--file is mandatory$")]
         public void FailIfMissingFile()
         {
             SessionModel.Parse("--procedure", "procedurename", "--@p1", "p1 value", "--@p2", "p2 value");
         }
 
         [TestMethod]
-        [ExpectedExceptionPattern(typeof(InvalidOperationException), MessagePattern = "^--procedure is mandatory$")]
+        [ExpectedExceptionPattern(typeof(SyntaxException), MessagePattern = "^--procedure is mandatory$")]
         public void FailIfMissingProcedure()
         {
             SessionModel.Parse("--file", "mfile.rcpc", "--@p1", "p1 value", "--@p2", "p2 value");
+        }
+
+        [TestMethod]
+        [ExpectedExceptionPattern(typeof(SyntaxException), MessagePattern = "^Unexpected command part: whatever$")]
+        public void FailIfUnkownElementsArePresent()
+        {
+            SessionModel.Parse("--file", "mfile.rcpc", "--procedure", "procedurename", "whatever", "value");
         }
     }
 }

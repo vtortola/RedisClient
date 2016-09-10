@@ -33,7 +33,7 @@ namespace UnitTests.ProcedureDebugger
         }
 
         [TestMethod]
-        [ExpectedExceptionPattern(typeof(InvalidOperationException), MessagePattern="^Array parameter ended unexpectedly: ")]
+        [ExpectedExceptionPattern(typeof(SyntaxException), MessagePattern = @"^Array parameter ended unexpectedly: \[1, 2, 3, 4$")]
         public void FailOnOpenArray()
         {
             var array = SessionModel.ParseArray("[1, 2, 3, 4", 0);
@@ -60,7 +60,7 @@ namespace UnitTests.ProcedureDebugger
         }
 
         [TestMethod]
-        [ExpectedExceptionPattern(typeof(InvalidOperationException), MessagePattern = "^Array parameter ended unexpectedly: ")]
+        [ExpectedExceptionPattern(typeof(SyntaxException), MessagePattern = "^Array parameter ended unexpectedly: \\[\"1 \", \"2,2\", \"3,,,4\", \"4\\]$")]
         public void FailOnOpenArray2()
         {
             var array = SessionModel.ParseArray("[\"1 \", \"2,2\", \"3,,,4\", \"4]", 0);

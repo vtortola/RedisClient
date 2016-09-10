@@ -47,7 +47,7 @@ namespace vtortola.RedisClient.ProcedureDebugger
                         break;
 
                     case "--eval":
-                        throw new InvalidOperationException("--eval command is forbidden, use --file and --procedure");
+                        throw new SyntaxException("--eval command is forbidden, use --file and --procedure");
 
                     case "-h":
                     case "-p":
@@ -71,7 +71,7 @@ namespace vtortola.RedisClient.ProcedureDebugger
                         }
                         else
                         {
-                            throw new InvalidOperationException("invalid part: " + arg);
+                            throw new SyntaxException("Unexpected command part: " + arg);
                         }
                         break;
                 }
@@ -85,9 +85,9 @@ namespace vtortola.RedisClient.ProcedureDebugger
         static void Validate(SessionModel session)
         {
             if (String.IsNullOrWhiteSpace(session.FileName))
-                throw new InvalidOperationException("--file is mandatory");
+                throw new SyntaxException("--file is mandatory");
             if (String.IsNullOrWhiteSpace(session.Procedure))
-                throw new InvalidOperationException("--procedure is mandatory");
+                throw new SyntaxException("--procedure is mandatory");
         }
 
         static String[] ParseValues(String valuesString)
@@ -148,7 +148,7 @@ namespace vtortola.RedisClient.ProcedureDebugger
             }
 
             if (!String.IsNullOrWhiteSpace(current))
-                throw new InvalidOperationException("Array parameter ended unexpectedly: " + valuesString);
+                throw new SyntaxException("Array parameter ended unexpectedly: " + valuesString);
 
             return list.ToArray();
         }

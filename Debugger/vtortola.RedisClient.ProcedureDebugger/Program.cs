@@ -23,15 +23,25 @@ namespace vtortola.RedisClient.ProcedureDebugger
                 {
                     LaunchDebugger(args);
                 }
+                catch(SyntaxException sex)
+                {
+                    ShowError("Syntax Error", sex);
+                }
                 catch (Exception ex)
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine(ex.Message);
-                    Console.ResetColor();
-                    Console.WriteLine();
-                    ShowHelp();
+                    ShowError("Unhandled Exception", ex);
                 }
             }
+        }
+
+        private static void ShowError(String title, Exception ex)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(title);
+            Console.WriteLine(ex.Message);
+            Console.ResetColor();
+            Console.WriteLine();
+            ShowHelp();
         }
 
         static void LaunchDebugger(String[] args)
