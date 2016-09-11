@@ -21,7 +21,7 @@ namespace IntegrationTests.RedisClientTests.Scripting
 
         TextReader GetScript()
         {
-            return new StreamReader("Scripting\\Scripts\\MULTIGET.lua");
+            return new StreamReader("MULTIGET.lua");
         }
 
         List<String> UserIds;
@@ -50,6 +50,7 @@ namespace IntegrationTests.RedisClientTests.Scripting
         }
 
         [TestMethod]
+        [DeploymentItem("Scripting\\Scripts\\MULTIGET.lua")]
         public async Task CanPassDataToScript()
         {
             using (var channel = Client.CreateChannel())

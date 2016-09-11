@@ -83,7 +83,7 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="Scripting\Scripts\MULTIGET.lua">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <Choose>
