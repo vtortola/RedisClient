@@ -4,18 +4,7 @@ using System.Text;
 
 namespace vtortola.RedisClient.ProcedureDebugger
 {
-    public sealed class Parameter
-    {
-        public String Name { get; private set; }
-        public String[] Values { get; private set; }
-        public Parameter(String name, String[] values)
-        {
-            Name = name;
-            Values = values;
-        }
-    }
-
-    public sealed class SessionModel
+    internal sealed class InputModel
     {
         public String FileName { get; private set; }
         public String Procedure { get; private set; }
@@ -23,14 +12,14 @@ namespace vtortola.RedisClient.ProcedureDebugger
         public Boolean SyncMode { get; private set; }
         public Dictionary<String, String[]> Parameters { get; private set; }
 
-        private SessionModel()
+        private InputModel()
         {
             Parameters = new Dictionary<String, String[]>();
         }
 
-        public static SessionModel Parse(params String[] args)
+        internal static InputModel Parse(params String[] args)
         {
-            var session = new SessionModel();
+            var session = new InputModel();
             var redisCliCommands = new StringBuilder();
 
             for (int i = 0; i < args.Length; i++)
@@ -82,7 +71,7 @@ namespace vtortola.RedisClient.ProcedureDebugger
             return session;
         }
 
-        static void Validate(SessionModel session)
+        static void Validate(InputModel session)
         {
             if (String.IsNullOrWhiteSpace(session.FileName))
                 throw new SyntaxException("--file is mandatory");

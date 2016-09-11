@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 
 namespace vtortola.RedisClient.ProcedureDebugger
 {
-    public sealed class SyntaxException : Exception
+    internal sealed class SyntaxException : Exception
     {
-        public SyntaxException(String message)
+        internal SyntaxException(String message)
             : base(message)
         {
 
         }
 
-        public SyntaxException(String message, Exception inner)
+        internal SyntaxException(String message, Exception inner)
             : base (message, inner)
         {
 

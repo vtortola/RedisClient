@@ -1,0 +1,11 @@
+﻿proc Test1(a[], $key, b[])
+
+endproc
+
+proc Test2($key1, $somekeys[], arg, someargv[])
+
+endproc
+
+proc Test4()
+
+endproc

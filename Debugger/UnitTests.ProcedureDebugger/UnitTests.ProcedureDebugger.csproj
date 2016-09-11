@@ -53,6 +53,7 @@
     <Compile Include="ParsingArraysTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ParsingCommandLine.cs" />
+    <Compile Include="CommandLineGeneratorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Tests\UnitTests.Common\UnitTests.Common.csproj">
@@ -63,6 +64,16 @@
       <Project>{099f1ce2-7115-47ea-b4ad-37839021314e}</Project>
       <Name>vtortola.RedisClient.ProcedureDebugger</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Files\procedureExample.rcproc">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Files\wrongFile.rcproc">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

@@ -15,7 +15,7 @@ namespace UnitTests.ProcedureDebugger
         [TestMethod]
         public void CanParseCommandLine()
         {
-            var session = SessionModel.Parse("--file", "mfile.rcpc", "--procedure", "procedurename", "--@p1","p1 value", "--@p2", "p2 value");
+            var session = InputModel.Parse("--file", "mfile.rcpc", "--procedure", "procedurename", "--@p1","p1 value", "--@p2", "p2 value");
 
             Assert.AreEqual("mfile.rcpc", session.FileName);
             Assert.AreEqual("procedurename", session.Procedure);
@@ -30,28 +30,28 @@ namespace UnitTests.ProcedureDebugger
         [ExpectedExceptionPattern(typeof(SyntaxException), MessagePattern = "^--eval command is forbidden, use --file and --procedure$")]
         public void FailIfEvalIsPresent()
         {
-            SessionModel.Parse("--file", "mfile.rcpc", "--procedure", "procedurename","--eval","whatever", "--@p1", "p1 value", "--@p2", "p2 value");
+            InputModel.Parse("--file", "mfile.rcpc", "--procedure", "procedurename","--eval","whatever", "--@p1", "p1 value", "--@p2", "p2 value");
         }
 
         [TestMethod]
         [ExpectedExceptionPattern(typeof(SyntaxException), MessagePattern = "^--file is mandatory$")]
         public void FailIfMissingFile()
         {
-            SessionModel.Parse("--procedure", "procedurename", "--@p1", "p1 value", "--@p2", "p2 value");
+            InputModel.Parse("--procedure", "procedurename", "--@p1", "p1 value", "--@p2", "p2 value");
         }
 
         [TestMethod]
         [ExpectedExceptionPattern(typeof(SyntaxException), MessagePattern = "^--procedure is mandatory$")]
         public void FailIfMissingProcedure()
         {
-            SessionModel.Parse("--file", "mfile.rcpc", "--@p1", "p1 value", "--@p2", "p2 value");
+            InputModel.Parse("--file", "mfile.rcpc", "--@p1", "p1 value", "--@p2", "p2 value");
         }
 
         [TestMethod]
         [ExpectedExceptionPattern(typeof(SyntaxException), MessagePattern = "^Unexpected command part: whatever$")]
         public void FailIfUnkownElementsArePresent()
         {
-            SessionModel.Parse("--file", "mfile.rcpc", "--procedure", "procedurename", "whatever", "value");
+            InputModel.Parse("--file", "mfile.rcpc", "--procedure", "procedurename", "whatever", "value");
         }
     }
 }

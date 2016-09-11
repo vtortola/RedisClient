@@ -45,16 +45,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommandLineGenerator.cs" />
+    <Compile Include="DebuggingFileSession.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SessionModel.cs" />
+    <Compile Include="InputModel.cs" />
     <Compile Include="SyntaxException.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <Content Include="procedureExample.rcproc">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\vtortola.RedisClient\vtortola.RedisClient.csproj">

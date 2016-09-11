@@ -46,12 +46,16 @@ namespace vtortola.RedisClient.ProcedureDebugger
 
         static void LaunchDebugger(String[] args)
         {
-            var redisCliArguments = CommandLineGenerator.Generate(args);
-            Process cmd = new Process();
-            cmd.StartInfo.FileName = Path.Combine(ConfigurationManager.AppSettings["RedisCliExeLocation"], "redis-cli.exe");
-            cmd.StartInfo.Arguments = redisCliArguments;
-            cmd.StartInfo.WorkingDirectory = Environment.CurrentDirectory;
-            cmd.Start();
+            using (var session = CommandLineGenerator.Generate(args))
+            {
+                Process cmd = new Process();
+                cmd.StartInfo.FileName = Path.Combine(ConfigurationManager.AppSettings["RedisCliExeLocation"], "redis-cli.exe");
+                cmd.StartInfo.Arguments = session.CliArguments;
+                cmd.StartInfo.WorkingDirectory = Environment.CurrentDirectory;
+                cmd.Start();
+                cmd.WaitForExit();
+                Console.WriteLine("Dispose");
+            }
         }
 
         static Boolean AskForHelp(String[] args)

@@ -28,7 +28,7 @@ namespace UnitTests.ProcedureDebugger
         [TestMethod]
         public void CanParseSimpleArray()
         {
-            var array = SessionModel.ParseArray("[1, 2, 3, 4]", 0);
+            var array = InputModel.ParseArray("[1, 2, 3, 4]", 0);
             AssertEqualArrays(new[] { "1", "2", "3", "4" }, array);
         }
 
@@ -36,26 +36,26 @@ namespace UnitTests.ProcedureDebugger
         [ExpectedExceptionPattern(typeof(SyntaxException), MessagePattern = @"^Array parameter ended unexpectedly: \[1, 2, 3, 4$")]
         public void FailOnOpenArray()
         {
-            var array = SessionModel.ParseArray("[1, 2, 3, 4", 0);
+            var array = InputModel.ParseArray("[1, 2, 3, 4", 0);
         }
 
         [TestMethod]
         public void CanParseSafeStringArray()
         {
-            var array = SessionModel.ParseArray("[\"1\", \"2\", \"3\", \"4\"]", 0);
+            var array = InputModel.ParseArray("[\"1\", \"2\", \"3\", \"4\"]", 0);
             AssertEqualArrays(new[] { "1", "2", "3", "4" }, array);
         }
 
         [TestMethod]
         public void CanParseStringArray()
         {
-            var array = SessionModel.ParseArray("[\"1 \", \"2,2\", \"3,,,4\", \"4\"]", 0);
+            var array = InputModel.ParseArray("[\"1 \", \"2,2\", \"3,,,4\", \"4\"]", 0);
             AssertEqualArrays(new[] { "1 ", "2,2", "3,,,4", "4" }, array);
         }
         [TestMethod]
         public void CanParseSingleQuotesStringArray()
         {
-            var array = SessionModel.ParseArray("['1 ', '2,2', '3,,,\"', '\"4']", 0);
+            var array = InputModel.ParseArray("['1 ', '2,2', '3,,,\"', '\"4']", 0);
             AssertEqualArrays(new[] { "1 ", "2,2", "3,,,\"", "\"4" }, array);
         }
 
@@ -63,7 +63,7 @@ namespace UnitTests.ProcedureDebugger
         [ExpectedExceptionPattern(typeof(SyntaxException), MessagePattern = "^Array parameter ended unexpectedly: \\[\"1 \", \"2,2\", \"3,,,4\", \"4\\]$")]
         public void FailOnOpenArray2()
         {
-            var array = SessionModel.ParseArray("[\"1 \", \"2,2\", \"3,,,4\", \"4]", 0);
+            var array = InputModel.ParseArray("[\"1 \", \"2,2\", \"3,,,4\", \"4]", 0);
         }
     }
 }
