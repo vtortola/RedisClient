@@ -3,7 +3,7 @@
 ##### Status: ALPHA 
 [![Build status](https://ci.appveyor.com/api/projects/status/we9e8or6ajlm72pu/branch/master?svg=true)](https://ci.appveyor.com/project/vtortola/redisclient/branch/master)
 
-An experimental .NET Redis client based on templated strings that uses a special syntax for easing LUA script invocation named ["procedures"](//github.com/vtortola/RedisClient/wiki/Procedures). The API exposes virtual connections named "channels" that provide seamless access to Redis through three different connection pools.
+An experimental .NET Redis client that uses a special syntax for easing LUA script invocation named ["procedures"](//github.com/vtortola/RedisClient/wiki/Procedures). The interface is based on templated strings, allowing to execute custom defined server side procedures as regular Redis commands. Executions are done through "channels", in essence virtual connections that provide seamless access to Redis through three different connection pools.
 
  * Templated strings interface [(more about parameter binding)](//github.com/vtortola/RedisClient/wiki/Parameter-binding).
  * Transparent connection management [(more about connection management)](//github.com/vtortola/RedisClient/wiki/Connection-management).
