@@ -13,7 +13,7 @@ namespace vtortola.Redis
 
         Int32 _nextResponse = -1;
 
-        public Boolean IsCompleted { get; private set; }
+        public Boolean IsCompleted { get { return _nextResponse >= _responses.Length; } }
 
         internal CommandOperation(RESPCommand[] commands, RESPObject[] responses, ProcedureCollection procedures)
         {
@@ -49,9 +49,7 @@ namespace vtortola.Redis
         public void HandleResponse(RESPObject response)
         {
             _responses[_nextResponse] = response;
-
             PointToNextResponse();
-            IsCompleted = _nextResponse >= _responses.Length;
         }
     }
 }
