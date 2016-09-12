@@ -10,7 +10,50 @@ An experimental .NET Redis client that uses a special syntax for easing LUA scri
  * Basic output binding [(more about output binding)](//github.com/vtortola/RedisClient/wiki/Getting-results).
  * Server-side scripting through procedures [(more about procedures)](//github.com/vtortola/RedisClient/wiki/Procedures).
  * Support for asynchronous, synchronous and "fire and forget" operations.
- 
+
+#### Simple procedure example
+Imagine a catalog application, with products/services defined as different hashes in the Redis database, where each hash contains the properties of each product, like 
+name, url, stock, description, picture url, etc... Also you have different zsets containing the keys of all products sorted by a specific properties or just grouped by categories. 
+Since there may be a big amount of products, pagination is needed to avoid blowing up the server response with too much data. 
+
+How is this pagination achieved **without server side scripting**? First querying the zset with the desired range to obtain the list of hash keys that need to be retrieved, and then retrieving
+each key (usually) one by one. 
+
+This can be expedited and simplified **with server-side scripting**. For example, you can use a procedure to get the list of products directly, without extra round trips:
+
+```
+proc ZPaginate(zset, page, itemsPerPage)
+	
+	local start  = page * itemsPerPage
+	local stop = start + itemsPerPage - 1
+	local items = redis.call('ZREVRANGE', zset, start, stop)
+
+	local result = {}
+
+	for index, key in ipairs(items) do
+	    result[index] = redis.call('HGETALL', key)
+	end
+
+	return result
+endproc
+```   
+
+Using the templated string syntax you can invoke this procedure easily:
+```
+// Execute procedure
+var result = channel.Execute("PaginationTest @key @page @items", 
+                              new { key = "products:bydate",  page=3, items=10 });
+
+// Expand result of the first line as a collection of results
+var hashes = result[0].AsResults();
+
+// Bind each hash to objects
+// Where <Product> is a class with properties that match the hash keys.
+var products = hashes.Select(h => h.AsObjectCollation<Product>()).ToArray();
+```
+
+Server side scripting has multiple advantages, like preventing multiple round trips to the Redis instance or atomicity. [Continue reading about procedures](//github.com/vtortola/RedisClient#executing-procedures) 
+
 #### Performance
 A [performance comparison](//github.com/vtortola/RedisClient/wiki/Performance) shows the that the performance is close to other well known clients.
 
