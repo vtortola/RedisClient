@@ -41,7 +41,7 @@ endproc
 Using the templated string syntax you can invoke this procedure easily:
 ```
 // Execute procedure
-var result = channel.Execute("PaginationTest @key @page @items", 
+var result = channel.Execute("ZPaginate @key @page @items", 
                               new { key = "products:bydate",  page=3, items=10 });
 
 // Expand result of the first line as a collection of results
