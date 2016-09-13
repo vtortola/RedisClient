@@ -154,6 +154,7 @@ A command execution result implements `IRedisResults`, which allows to inspect t
  * If the result is an error, accessing the statement result will throw a `RedisClientCommandException` with the details of the Redis error. It is possible to get the exception without throwing it using `.GetException()`.
  * `.GetXXX` methods: will try to read the value as `XXX` type, and will throw an `RedisClientCastException` if the data is not in the expected type.
  * `.AsXXX` methods: will try to read the value as `XXX` type, or parse it as `XXX` (there is no `.GetDouble()` because Redis only returns string, integer or error, but there is a `.AsDouble()`.
+ * `.AsResults()` method: will expand a single result as another collection of `IRedisResultInspector`. This is useful when a LUA script is returning an array of other Redis types.
  * `.AsObjectCollation<T>()` allows to bind the result to an object by parsing a sequence of key-value pairs, and bind it to the object properties. For example `member1 value1 member2 value2` will be bound as `{ member1 = "value1", member2 = "value2" }`.
  * `.AsDictionaryCollation<TKey, TValue>()` allows to bind the result to an object by parsing a sequence of key-value pairs as `KeyValuePair<>`.
  
