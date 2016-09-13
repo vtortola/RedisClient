@@ -9,6 +9,7 @@ An experimental .NET Redis client that uses a special syntax for easing LUA scri
  * Transparent connection management [(more about connection management)](//github.com/vtortola/RedisClient/wiki/Connection-management).
  * Basic output binding [(more about output binding)](//github.com/vtortola/RedisClient/wiki/Getting-results).
  * Server-side scripting through procedures [(more about procedures)](//github.com/vtortola/RedisClient/wiki/Procedures).
+ * A [debugging tool for procedures](//github.com/vtortola/RedisClient/wiki/Procedure-Debugger) is available in this repository.
  * Support for asynchronous, synchronous and "fire and forget" operations.
 
 #### Simple procedure example
