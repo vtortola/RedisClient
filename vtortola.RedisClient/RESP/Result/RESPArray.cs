@@ -21,6 +21,11 @@ namespace vtortola.Redis
             _items = new RESPObject[length];
         }
 
+        internal RESPArray(params RESPObject[] items)
+        {
+            _items = items;
+        }
+
         internal T ElementAt<T>(Int32 index)
             where T:RESPObject
         {

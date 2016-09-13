@@ -22,7 +22,6 @@ namespace UnitTest.RedisClient.Protocol
             Assert.AreEqual("Big\r\nWorld", item2.Value);
             var item3 = array.ElementAt<RESPInteger>(2);
             Assert.AreEqual(1L, item3.Value);
-            Assert.IsFalse(array.IsNullArray);
         }
 
         [TestMethod]
@@ -38,7 +37,6 @@ namespace UnitTest.RedisClient.Protocol
             Assert.AreEqual("Big\r\nWorld\r\n", item2.Value);
             var item3 = array.ElementAt<RESPInteger>(2);
             Assert.AreEqual(1L, item3.Value);
-            Assert.IsFalse(array.IsNullArray);
         }
 
         [TestMethod]
@@ -48,7 +46,6 @@ namespace UnitTest.RedisClient.Protocol
             RESPArray array = RESPArray.Load(source);
 
             Assert.AreEqual(0, array.Count);
-            Assert.IsTrue(array.IsNullArray);
         }
 
         [TestMethod]
@@ -58,7 +55,6 @@ namespace UnitTest.RedisClient.Protocol
             RESPArray array = RESPArray.Load(source);
 
             Assert.AreEqual(0, array.Count);
-            Assert.IsFalse(array.IsNullArray);
         }
 
         [TestMethod]
@@ -101,7 +97,6 @@ namespace UnitTest.RedisClient.Protocol
             Assert.AreEqual(null, item2.Value);
             var item3 = array.ElementAt<RESPBulkString>(2);
             Assert.AreEqual("bar", item3.Value);
-            Assert.IsFalse(array.IsNullArray);
         }
     }
 }

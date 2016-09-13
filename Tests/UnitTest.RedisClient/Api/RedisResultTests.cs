@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using vtortola.Redis;
 using System.Globalization;
 using UnitTests.Common;
+using System.Linq;
 
 namespace UnitTest.RedisClient
 {
@@ -11,7 +12,7 @@ namespace UnitTest.RedisClient
     {
         RESPArray BuildArray(params String[] literals)
         {
-            return new RESPArray(literals);
+            return new RESPArray(literals.Select(l=> new RESPBulkString(l)).ToArray());
         }
 
         [TestMethod]

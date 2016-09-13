@@ -44,7 +44,7 @@ namespace UnitTest.RedisClient
 
         private RESPArray BuildArray(params String[] literals)
         {
-            return new RESPArray(literals);
+            return new RESPArray(literals.Select(l=>new RESPBulkString(l)).ToArray());
         }
 
         private IEnumerable<RESPCommand> EnumerableRESPArray(RESPCommand array)
