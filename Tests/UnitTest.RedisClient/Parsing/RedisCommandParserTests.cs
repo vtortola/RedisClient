@@ -221,7 +221,7 @@ namespace UnitTest.RedisClient
         public void FailsOnMissingParameters()
         {
             var plan = _parser.Build("INCRBY key @amount");
-            var commands = plan.Bind<Object>(null);
+            var commands = plan.Bind<Object>(new Object());
         }
     }
 }

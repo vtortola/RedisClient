@@ -22,20 +22,20 @@ namespace vtortola.Redis
             Parts.Add(part);
         }
 
-        internal abstract RESPCommand Bind<T>(ParameterReader<T> values);
+        internal abstract RESPCommand Bind<T>(T parameters);
 
         protected RESPCommand CreateUnboundCommand()
         {
             return new RESPCommand(Header, IsSubscription, Parts.Count);
         }
 
-        protected static IEnumerable<RESPCommandPart> GetParameterByName<T>(String parameterName, ParameterReader<T> parameters)
+        protected static IEnumerable<RESPCommandPart> GetParameterByName<T>(String parameterName, T obj)
         {
             Exception error = null;
             try
             {
-                if (parameters != null)
-                    return parameters.GetValues(parameterName).Select(n => new RESPCommandValue(n));
+                if (obj != null)
+                    return ParameterReader<T>.GetValues(obj, parameterName).Select(n => new RESPCommandValue(n));
             }
             catch (RedisClientBindingException)
             {

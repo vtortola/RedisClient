@@ -18,7 +18,7 @@ namespace vtortola.Redis
             base.Add(new RESPCommandLiteral(procedure.Digest));
         }
 
-        internal override RESPCommand Bind<T>(ParameterReader<T> values)
+        internal override RESPCommand Bind<T>(T parameters)
         {
             if (_procedure.Error != null)
                 throw _procedure.Error;
@@ -33,9 +33,9 @@ namespace vtortola.Redis
 
             command.Add(Parts[0]);
 
-            ProcessKeys<T>(values, keys, argv);
+            ProcessKeys<T>(parameters, keys, argv);
 
-            ProcessArgs<T>(values, argv);
+            ProcessArgs<T>(parameters, argv);
 
             command.Add(new RESPCommandLiteral(keys.Count.ToString()));
 
@@ -47,7 +47,7 @@ namespace vtortola.Redis
             return command;
         }
 
-        private void ProcessArgs<T>(ParameterReader<T> values, List<RESPCommandPart> argv)
+        private void ProcessArgs<T>(T parameters, List<RESPCommandPart> argv)
         {
             for (int i = 0; i < _procedure.Parameters.Length; i++)
             {
@@ -55,11 +55,11 @@ namespace vtortola.Redis
                 if (parameter.IsKey)
                     continue;
                 var part = Parts[i + 1];
-                AppendParameter(argv, argv, values, parameter, part);
+                AppendParameter(argv, argv, parameters, parameter, part);
             }
         }
 
-        private void ProcessKeys<T>(ParameterReader<T> values, List<RESPCommandPart> keys, List<RESPCommandPart> argv)
+        private void ProcessKeys<T>(T parameters, List<RESPCommandPart> keys, List<RESPCommandPart> argv)
         {
             for (int i = 0; i < _procedure.Parameters.Length; i++)
             {
@@ -67,16 +67,16 @@ namespace vtortola.Redis
                 if (!parameter.IsKey)
                     continue;
                 var part = Parts[i + 1];
-                AppendParameter(keys, argv, values, parameter, part);
+                AppendParameter(keys, argv, parameters, parameter, part);
             }
         }
 
-        static void AppendParameter<T>(List<RESPCommandPart> list, List<RESPCommandPart> argv, ParameterReader<T> values, ProcedureParameter parameter, RESPCommandPart commandPart)
+        static void AppendParameter<T>(List<RESPCommandPart> list, List<RESPCommandPart> argv, T parameters, ProcedureParameter parameter, RESPCommandPart commandPart)
         {
             var parameterPart = commandPart as RESPCommandParameter;
             if (parameterPart != null)
             {
-                var paramValues = GetParameterByName<T>(parameterPart.Value, values).ToList();
+                var paramValues = GetParameterByName<T>(parameterPart.Value, parameters).ToList();
                 MapInputParameterToProcParameter(parameter, paramValues, argv);
                 list.AddRange(paramValues);
             }

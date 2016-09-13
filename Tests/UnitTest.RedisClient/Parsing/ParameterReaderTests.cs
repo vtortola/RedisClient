@@ -15,8 +15,7 @@ namespace UnitTest.RedisClient.Parsing
         [ExpectedExceptionPattern(typeof(RedisClientBindingException), MessagePattern="^The parameter key 'Whatever' does not exists in the given parameter data.$")]
         public void FailOnRequiringMemberOfEmptyParameters()
         {
-            var reader = new ParameterReader<Object>();
-            reader.GetValues("Whatever").ToArray();
+            ParameterReader<Object>.GetValues(null, "Whatever").ToArray();
         }
 
         private void AssertSameValues(String[] expected, String[] returned)
@@ -39,11 +38,10 @@ namespace UnitTest.RedisClient.Parsing
 
         private void Test<T>(T parameter, String[] keys, String[] expected)
         {
-            var reader = new ParameterReader<T>(parameter);
             var parsed = new List<String>();
             foreach (var key in keys)
             {
-                parsed.AddRange(reader.GetValues(key));
+                parsed.AddRange(ParameterReader<T>.GetValues(parameter, key));
             }
             AssertSameValues(expected, parsed.ToArray());
         }

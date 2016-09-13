@@ -14,14 +14,14 @@ namespace vtortola.Redis
         {
         }
 
-        internal override RESPCommand Bind<T>(ParameterReader<T> values)
+        internal override RESPCommand Bind<T>(T parameters)
         {
             var command = base.CreateUnboundCommand();
             foreach (var part in Parts)
             {
                 var parameter = part as RESPCommandParameter;
                 if (parameter != null)
-                    command.AddRange(GetParameterByName(parameter.Value, values));
+                    command.AddRange(GetParameterByName(parameter.Value, parameters));
                 else
                     command.Add(part);
             }

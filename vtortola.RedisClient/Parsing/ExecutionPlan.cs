@@ -28,10 +28,9 @@ namespace vtortola.Redis
         internal RESPCommand[] Bind<T>(T parameters = null) where T:class
         {
             var result = new RESPCommand[_binders.Count];
-            var values = parameters == null ? ParameterReader<T>.Empty : new ParameterReader<T>(parameters);
 
             for (var i = 0; i < _binders.Count; i++)
-                result[i] = _binders[i].Bind(values);
+                result[i] = _binders[i].Bind(parameters);
 
             return result;
         }
