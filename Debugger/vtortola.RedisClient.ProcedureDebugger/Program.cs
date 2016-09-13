@@ -46,15 +46,17 @@ namespace vtortola.RedisClient.ProcedureDebugger
 
         static void LaunchDebugger(String[] args)
         {
+            Console.WriteLine("Generating script and binding paramters...");
             using (var session = CommandLineGenerator.Generate(args))
             {
+                Console.WriteLine("Launching redis-cli -ldb...");
                 Process cmd = new Process();
                 cmd.StartInfo.FileName = Path.Combine(ConfigurationManager.AppSettings["RedisCliExeLocation"], "redis-cli.exe");
                 cmd.StartInfo.Arguments = session.CliArguments;
                 cmd.StartInfo.WorkingDirectory = Environment.CurrentDirectory;
                 cmd.Start();
                 cmd.WaitForExit();
-                Console.WriteLine("Dispose");
+                Console.WriteLine("End");
             }
         }
 
@@ -66,7 +68,7 @@ namespace vtortola.RedisClient.ProcedureDebugger
         static void ShowHelp()
         {
             ShowVersion();
-            Console.WriteLine("Usage procedure-debugger [OPTIONS]");
+            Console.WriteLine("Usage proc-dbg-launcher [OPTIONS]");
             Console.WriteLine("\t-h <hostname>       Server hostname (default: 127.0.0.1).");
             Console.WriteLine("\t-p <port>           Server port (default: 6379).");
             Console.WriteLine("\t-s <socket>         Server socket (overrides hostname and port).");
@@ -80,13 +82,20 @@ namespace vtortola.RedisClient.ProcedureDebugger
             Console.WriteLine("\t--file <filename>   Name of the file with the procedure/s.");
             Console.WriteLine("\t--procedure <proc>  Name of the procedure to execute.");
             Console.WriteLine("\t--@<name> <value>   Name and value for a parameter.");
-            Console.WriteLine();         
+            Console.WriteLine("\t                    Parameter values can contain arrays using square brackets.");
+            Console.WriteLine();
+            Console.WriteLine("Examples:");
+            Console.WriteLine("  --file test.rcproc --procedure ZPagination --@zset articles:bydate --@page 1 --@count 2");
+            Console.WriteLine("  --file test.rcproc --procedure SaveArticle --@article ['id', '1', 'Title', 'This is a test'] --@tags ['test']");
+            Console.WriteLine();
 
         }
 
         static void ShowVersion()
         {
             Console.WriteLine("procedure-debugger " + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString());
+            Console.WriteLine("More info at: https://github.com/vtortola/RedisClient/wiki/Procedure-Debugger");
+            Console.WriteLine();
         }
 
         private static bool AskForVersion(string[] args)
