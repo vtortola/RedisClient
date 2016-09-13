@@ -40,7 +40,7 @@ endproc
 ```   
 
 Using the templated string syntax you can invoke this procedure easily:
-```
+```cs
 // Execute procedure
 var result = channel.Execute("ZPaginate @key @page @items", 
                               new { key = "products:bydate",  page=3, items=10 });
