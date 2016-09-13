@@ -23,7 +23,7 @@ namespace PerformanceComparison
 
         static void Main(string[] args)
         {
-            var endpoint = new IPEndPoint(/*IPAddress.Parse("192.168.0.16")*/IPAddress.Loopback, 6379);
+            var endpoint = new IPEndPoint(IPAddress.Parse("192.168.0.16"), 6379);
 
             Console.WriteLine("PERFORMANCE COMPARISON");
             Console.WriteLine("Choose scneartio:");
@@ -49,11 +49,11 @@ namespace PerformanceComparison
             Console.ReadKey(true);
         }
 
-        static Double GetMinimum(IEnumerable<Double> times)
+        static Double GetMaximum(IEnumerable<Double> opsPerSecond)
         {
-            return times
+            return opsPerSecond
                     .Where(x => !Double.IsPositiveInfinity(x))
-                    .Min();
+                    .Max();
         }
 
         static void CreateReport<TRedisClient, TServiceStack, TStackExchange>(String fileName, IPEndPoint endpoint)
@@ -74,9 +74,9 @@ namespace PerformanceComparison
                 results.Add(new TestData()
                 {
                     Users = threadCount,
-                    RedisClient = GetMinimum(partial.Select(x=>x.RedisClient)),
-                    StackExchangeRedis = GetMinimum(partial.Select(x => x.StackExchangeRedis)),
-                    ServiceStackRedis = GetMinimum(partial.Select(x => x.ServiceStackRedis)),
+                    RedisClient = GetMaximum(partial.Select(x=>x.RedisClient)),
+                    StackExchangeRedis = GetMaximum(partial.Select(x => x.StackExchangeRedis)),
+                    ServiceStackRedis = GetMaximum(partial.Select(x => x.ServiceStackRedis)),
                 });
             }
             fileName = fileName + "_" + Guid.NewGuid().ToString() + ".csv";
