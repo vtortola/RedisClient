@@ -35,8 +35,7 @@ namespace vtortola.Redis
         public IEnumerable<RESPCommand> Execute()
         {
             _tracker = _subscriptions.Aggregate(_channel, _commands.Where((c, i) => _commands[i].IsSubscription));
-            foreach (var cmd in _tracker.GetCommands())
-                yield return cmd;
+            return _tracker.GetCommands();
         }
 
         public void HandleResponse(RESPObject response)

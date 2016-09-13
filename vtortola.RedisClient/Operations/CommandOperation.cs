@@ -42,8 +42,7 @@ namespace vtortola.Redis
 
         public IEnumerable<RESPCommand> Execute()
         {
-            foreach (var command in _commands.Where(c => !c.IsSubscription))
-                yield return command;
+            return _commands.Where(c => !c.IsSubscription);
         }
 
         public void HandleResponse(RESPObject response)
