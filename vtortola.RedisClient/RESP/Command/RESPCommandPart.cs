@@ -10,7 +10,7 @@ namespace vtortola.Redis
 
         internal abstract String Value { get;}
 
-        protected static readonly Char[] _empty = new Char[] { RESPHeaders.BulkString, '-', '1', CRChar, LFChar };
+        protected static readonly String _empty = "$-1\r\n";
 
         internal abstract void WriteTo(SocketWriter writer);
 

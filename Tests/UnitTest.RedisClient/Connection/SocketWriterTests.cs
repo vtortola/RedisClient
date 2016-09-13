@@ -15,12 +15,12 @@ namespace UnitTest.RedisClient
             using(var writer = new SocketWriter(ms, 8))
             using(var reader = new StreamReader(ms))
             {
-                writer.Write("777\r\n".ToCharArray());
-                writer.Write("888\r\n".ToCharArray());
-                writer.Write("999\r\n".ToCharArray());
-                writer.Write(new []{'x'});
-                writer.Write("#".ToCharArray());
-                writer.Write("\r\n".ToCharArray());
+                writer.Write("777\r\n");
+                writer.Write("888\r\n");
+                writer.Write("999\r\n");
+                writer.Write("x");
+                writer.Write("#");
+                writer.Write("\r\n");
 
                 writer.Flush();
                 ms.Seek(0, SeekOrigin.Begin);
@@ -42,10 +42,10 @@ namespace UnitTest.RedisClient
             using (var writer = new SocketWriter(ms, 8))
             using (var reader = new StreamReader(ms))
             {
-                writer.Write("This is line 1\r\n".ToCharArray());
-                writer.Write((str1 + "\r\n").ToCharArray());
-                writer.Write((str2 + "\r\n").ToCharArray());
-                writer.Write("This is line 4\r\n".ToCharArray());
+                writer.Write("This is line 1\r\n");
+                writer.Write(str1 + "\r\n");
+                writer.Write(str2 + "\r\n");
+                writer.Write("This is line 4\r\n");
 
                 writer.Flush();
                 ms.Seek(0, SeekOrigin.Begin);

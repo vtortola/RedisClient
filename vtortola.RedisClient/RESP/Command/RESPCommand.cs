@@ -45,24 +45,8 @@ namespace vtortola.Redis
 
         internal void WriteTo(SocketWriter writter)
         {
-            const Char CRChar = '\r';
-            const Char LFChar = '\n';
-
-            var scount = _parts.Count.ToString();
-            var array = new Char[1 + scount.Length + 2];
-            
-            var index = 0;
-            array[index++] = RESPHeaders.Array;
-
-            for (int i = 0; i < scount.Length; i++)
-                array[index++] = scount[i];
-
-            array[index++] = CRChar;
-            array[index++] = LFChar;
-
-            Contract.Assert(index == array.Length, "Literal construction does not fit.");
-
-            writter.Write(array);
+            writter.Write(RESPHeaders.Array);
+            writter.WriteLine(_parts.Count.ToString());
 
             foreach (var item in _parts)
                 item.WriteTo(writter);

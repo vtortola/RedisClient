@@ -15,13 +15,17 @@ namespace vtortola.Redis
 
             _writer = new StreamWriter(stream, new UTF8Encoding(false), bufferSize);
         }
-        internal void Write(Char[] value)
+        internal void Write(Char value)
         {
             _writer.Write(value);
         }
         internal void Write(String value)
         {
             _writer.Write(value);
+        }
+        internal void WriteLine(String value)
+        {
+            _writer.WriteLine(value);
         }
         internal void Flush()
         {

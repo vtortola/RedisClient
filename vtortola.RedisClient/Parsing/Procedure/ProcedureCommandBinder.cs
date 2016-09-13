@@ -37,7 +37,7 @@ namespace vtortola.Redis
 
             ProcessArgs<T>(parameters, argv);
 
-            command.Add(new RESPCommandLiteral(keys.Count.ToString()));
+            command.Add(new RESPCommandValue(keys.Count.ToString()));
 
             if (keys.Any())
                 command.AddRange(keys);
