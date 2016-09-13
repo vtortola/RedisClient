@@ -8,28 +8,17 @@ namespace vtortola.Redis
 {
     internal sealed class RESPArray : RESPObject, IReadOnlyCollection<RESPObject>
     {
-        internal static readonly RESPArray Null = new RESPArray() { IsNullArray=true };
+        internal static readonly RESPArray Empty = new RESPArray(0);
 
-        readonly List<RESPObject> _items;
+        readonly RESPObject[] _items;
 
-        internal Boolean IsNullArray { get; private set; }
-        internal override char Header { get { return RESPHeaders.Array; } }
+        internal override Char Header { get { return RESPHeaders.Array; } }
         internal RESPObject this[Int32 index] { get { return _items[index]; } }
 
 
-        internal RESPArray()
+        internal RESPArray(Int32 length)
         {
-            _items = new List<RESPObject>();
-        }
-
-        internal RESPArray(params RESPObject[] objects)
-        {
-            _items = new List<RESPObject>(objects);
-        }
-
-        internal RESPArray(params String[] literals)
-        {
-            _items = new List<RESPObject>(literals.Select(l => new RESPBulkString(l)));
+            _items = new RESPObject[length];
         }
 
         internal T ElementAt<T>(Int32 index)
@@ -47,27 +36,27 @@ namespace vtortola.Redis
             Int32 itemCount = reader.ReadInt32();
             
             if (itemCount < 0)
-                return Null;
+                return RESPArray.Empty;
 
-            var array = new RESPArray();
+            var array = new RESPArray(itemCount);
             for (int i = 0; i < itemCount; i++)
             {
                 var obj = RESPObject.Read(reader);
                 if (obj == null)
-                    throw new RESPException("Cannot read aray elements.");
-                array._items.Add(obj);
+                    throw new RESPException("Cannot read array elements.");
+                array._items[i]=obj;
             }
             return array;
         }
        
-        public int Count
+        public Int32 Count
         {
-            get { return _items.Count; }
+            get { return _items.Length; }
         }
 
         public IEnumerator<RESPObject> GetEnumerator()
         {
-            return _items.GetEnumerator();
+            return _items.OfType<RESPObject>().GetEnumerator();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
@@ -79,10 +68,10 @@ namespace vtortola.Redis
         {
             var sb = new StringBuilder();
             sb.AppendFormat("{0}{1}\r\n[", this.Header, this.Count.ToString());
-            for (var i = 0; i < _items.Count; i++)
+            for (var i = 0; i < _items.Length; i++)
             {
                 sb.Append(_items[i].ToString());
-                if (i != _items.Count - 1)
+                if (i != _items.Length - 1)
                     sb.Append(", ");
             }
             sb.Append("]");
