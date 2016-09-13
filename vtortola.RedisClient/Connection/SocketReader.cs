@@ -152,7 +152,12 @@ namespace vtortola.Redis
         {
             byteCount += 2;
             // byteCount + 2 since I want to read the final CRLF
-            var builder = byteCount > 2 ? new StringBuilder() : new StringBuilder(byteCount);
+
+            // Even if the byteCount is empty, the CRLF needs to be readed.
+
+            // byteCount won't be the length of the string, but it is
+            // a good approximation
+            var builder = byteCount == 2 ? new StringBuilder() : new StringBuilder(byteCount);
 
             var bytesUsed = 0;
             var charUsed = 0;
