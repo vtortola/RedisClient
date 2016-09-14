@@ -14,7 +14,7 @@ namespace vtortola.Redis
 
         SubscriptionResponsesTracker _tracker;
 
-        public Boolean IsCompleted { get; private set; }
+        public Boolean IsCompleted { get { return _tracker != null && _tracker.IsCompleted; } }
 
         public SubscriptionOperation(IRedisChannel channel, RESPCommand[] commands, RESPObject[] responses, SubscriptionSplitter subscriptions)
         {
@@ -44,7 +44,6 @@ namespace vtortola.Redis
             Contract.Assert(response != null && response is RESPArray, "SubscriptionOperation cannot handle response: " + (response==null?"Null":response.GetType().Name));
 
             _tracker.Acknowledge((RESPArray)response);
-            IsCompleted = _tracker.IsCompleted;
         }
     }
 }
