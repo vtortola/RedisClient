@@ -31,7 +31,7 @@ namespace vtortola.Redis
             if (Parts.Count - 1 != _procedure.Parameters.Length)
                 throw new RedisClientParsingException(String.Format("The procedure '{0}' expected {1} parameters, but only {2} have been provided.", _procedure.Name, _procedure.Parameters.Length, Parts.Count -1 ));
 
-            command.Add(Parts[0]);
+            command.Add(Parts[0]); // sha1
 
             ProcessKeys<T>(parameters, keys, argv);
 
@@ -71,25 +71,24 @@ namespace vtortola.Redis
             }
         }
 
-        static void AppendParameter<T>(List<RESPCommandPart> list, List<RESPCommandPart> argv, T parameters, ProcedureParameter parameter, RESPCommandPart commandPart)
+        static void AppendParameter<T>(List<RESPCommandPart> list, List<RESPCommandPart> argv, T parameters, ProcedureParameter procedureParameter, RESPCommandPart commandPart)
         {
-            var parameterPart = commandPart as RESPCommandParameter;
-            if (parameterPart != null)
+            if (commandPart.IsParameter)
             {
-                var paramValues = GetParameterByName<T>(parameterPart.Value, parameters).ToList();
-                MapInputParameterToProcParameter(parameter, paramValues, argv);
+                var paramValues = GetParameterByName<T>(commandPart.Value, parameters).ToList();
+                MapInputParameterToProcParameter(procedureParameter, paramValues, argv);
                 list.AddRange(paramValues);
             }
             else
             {
-                if(parameter.IsArray)
+                if(procedureParameter.IsArray)
                     argv.Add(_literalArray);
 
                 list.Add(commandPart);
             }
         }
 
-        static void MapInputParameterToProcParameter(ProcedureParameter parameter, List<RESPCommandPart> values, IList<RESPCommandPart> argv)
+        static void MapInputParameterToProcParameter(ProcedureParameter parameter, List<RESPCommandValue> values, IList<RESPCommandPart> argv)
         {
             if (values.Count == 0)
             {

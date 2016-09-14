@@ -19,9 +19,8 @@ namespace vtortola.Redis
             var command = base.CreateUnboundCommand();
             foreach (var part in Parts)
             {
-                var parameter = part as RESPCommandParameter;
-                if (parameter != null)
-                    command.AddRange(GetParameterByName(parameter.Value, parameters));
+                if (part.IsParameter)
+                    command.AddRange(GetParameterByName(part.Value, parameters));
                 else
                     command.Add(part);
             }

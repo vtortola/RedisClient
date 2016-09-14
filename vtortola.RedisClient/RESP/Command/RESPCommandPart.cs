@@ -5,12 +5,19 @@ namespace vtortola.Redis
 {
     internal abstract class RESPCommandPart
     {
-        protected const Char CRChar = '\r';
-        protected const Char LFChar = '\n';
+        readonly String _value;
+        internal String Value { get { return _value; } }
 
-        internal abstract String Value { get;}
+        readonly Boolean _isParameter;
+        internal Boolean IsParameter { get { return _isParameter; } }
 
         protected static readonly String _empty = "$-1\r\n";
+
+        public RESPCommandPart(String value, Boolean isParameter = false)
+        {
+            _value = value;
+            _isParameter = isParameter;
+        }
 
         internal abstract void WriteTo(SocketWriter writer);
 

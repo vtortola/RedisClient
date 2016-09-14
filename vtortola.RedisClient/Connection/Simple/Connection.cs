@@ -17,7 +17,7 @@ namespace vtortola.Redis
         protected override void ExecuteToken(ExecutionToken token, CancellationToken cancel)
         {
             // Ping can be executed at the same time that a user command.
-            // Howerver, chances of this happening are very small. 'lock' expense is 
+            // However, chances of this happening are very small. 'lock' expense is 
             // small if there is no contention.
             // ConcurrentConnection overrides this method in another way using producer/consumer            
             lock (_locker)

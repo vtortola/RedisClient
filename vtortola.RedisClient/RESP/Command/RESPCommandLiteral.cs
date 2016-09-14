@@ -8,26 +8,22 @@ namespace vtortola.Redis
     internal sealed class RESPCommandLiteral : RESPCommandPart
     {
         readonly String _resp;
-        readonly String _value;
-        internal override String Value { get { return _value; } }
-
 
         internal RESPCommandLiteral(String value)
+            :base(value)
         {
-            _value = value;
-
             if (value == null)
             {
                 _resp = _empty;
                 return;
             }
 
-            _resp = "$" + CountBytes(Value).ToString() + "\r\n" + _value;
+            _resp = "$" + CountBytes(Value).ToString() + "\r\n" + value + "\r\n";
         }
 
         internal override void WriteTo(SocketWriter writer)
         {
-            writer.WriteLine(_resp);
+            writer.Write(_resp);
         }
     }
 

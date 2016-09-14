@@ -29,7 +29,7 @@ namespace vtortola.Redis
             return new RESPCommand(Header, IsSubscription, Parts.Count);
         }
 
-        protected static IEnumerable<RESPCommandPart> GetParameterByName<T>(String parameterName, T obj)
+        protected static IEnumerable<RESPCommandValue> GetParameterByName<T>(String parameterName, T obj)
         {
             Exception error = null;
             try

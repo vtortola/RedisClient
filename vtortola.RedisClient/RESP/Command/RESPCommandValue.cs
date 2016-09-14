@@ -11,14 +11,12 @@ namespace vtortola.Redis
     [DebuggerDisplay("{Value}")]
     internal sealed class RESPCommandValue : RESPCommandPart
     {
-        String _value;
         String _scount;
-        internal override String Value { get { return _value; } }
         
         public RESPCommandValue(String value)
+            :base(value)
         {
-            _value = value;
-            if(_value != null)
+            if(value != null)
                 _scount = CountBytes(Value).ToString();
         }
 
