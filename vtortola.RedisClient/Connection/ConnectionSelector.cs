@@ -52,7 +52,7 @@ namespace vtortola.Redis
         public Task ConnectAsync(CancellationToken cancel)
         {
             _options.Logger.Info("Initiating pool with {0} connections ...", _connections.Length);
-            return Task.WhenAny(_connections.Select(c => c.ConnectAsync(cancel)));
+            return Task.WhenAll(_connections.Select(c => c.ConnectAsync(cancel)));
         }
 
         public void Dispose()

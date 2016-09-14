@@ -87,9 +87,9 @@ namespace IntegrationTests.RedisClientTests
             using (var channel = Client.CreateChannel())
             {
                 channel.NotificationHandler = msg => msgList.Add(msg);
-                
-                var results = channel.Execute("subscribe whatever");
-                results = channel.Execute("publish whatever whenever");
+
+                var results = channel.Execute("subscribe CanReceiveMessage");
+                results = channel.Execute("publish CanReceiveMessage whenever");
                 var counter = 0;
                 while (msgList.Count < 1 && counter < 10)
                 {
