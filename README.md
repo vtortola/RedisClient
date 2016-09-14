@@ -48,7 +48,7 @@ var result = channel.Execute("ZPaginate @key @page @items",
 // Expand result of the first line as a collection of results
 var hashes = result[0].AsResults();
 
-// Bind each hash to objects
+// Bind each hash to an object
 // Where <Product> is a class with properties that match the hash keys.
 var products = hashes.Select(h => h.AsObjectCollation<Product>()).ToArray();
 ```
