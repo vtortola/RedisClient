@@ -16,17 +16,17 @@ namespace vtortola.Redis
 
         protected override void SignalCompleted()
         {
-            Task.Run(()=>_completion.SetResult(null));
+            _completion.TrySetResult(null);
         }
 
         protected override void SignalFaulted(Exception error)
         {
-            Task.Run(()=>_completion.TrySetException(Error));
+            _completion.TrySetException(Error);
         }
 
         protected override void SignalCancelled()
         {
-            Task.Run(()=>_completion.TrySetCanceled());
+            _completion.TrySetCanceled();
         }
     }
 }

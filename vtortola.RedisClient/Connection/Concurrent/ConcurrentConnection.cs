@@ -34,7 +34,7 @@ namespace vtortola.Redis
             var baseTasks = base.RunConnectionTasks(cancel);
             var tasks = new Task[baseTasks.Length + 1];
             Array.Copy(baseTasks, tasks, baseTasks.Length);
-            tasks[baseTasks.Length] = Task.Factory.StartNew(() => TokenHandling.ProcessTokensLoop(_requests, base.ExecuteToken, cancel), TaskCreationOptions.LongRunning);
+            tasks[baseTasks.Length] = Task.Run(() => TokenHandling.ProcessTokensLoop(_requests, base.ExecuteToken, cancel));
             return tasks;
         }   
 

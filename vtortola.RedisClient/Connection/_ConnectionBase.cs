@@ -204,20 +204,18 @@ namespace vtortola.Redis
         protected virtual Task[] RunConnectionTasks(CancellationToken cancel)
         {
             var tasks = new Task[2];
-            // StartNew does not give 1 fuck about your method returning a Task
-            tasks[0] = Task.Factory.StartNew(() => ProcessResponses(cancel), TaskCreationOptions.LongRunning);
+            tasks[0] = Task.Run(() => ProcessResponses(cancel));
             tasks[1] = Task.Run(() => TimeoutWatchdogAsync(cancel));
             return tasks;
         }
 
-        private void ProcessResponses(CancellationToken cancel)
+        private async Task ProcessResponses(CancellationToken cancel)
         {
             try
             {
                 while (!cancel.IsCancellationRequested && _client.Connected)
                 {
-                    //var resp = await RESPObject.ReadAsync(_reader, cancel).ConfigureAwait(false);
-                    var resp = RESPObject.Read(_reader);
+                    var resp = await RESPObject.ReadAsync(_reader, cancel).ConfigureAwait(false);
                     RegisterActivity();
                     ProcessResponse(resp, _pending, cancel);
                 }
