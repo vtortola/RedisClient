@@ -21,7 +21,7 @@ namespace vtortola.Redis
         {
             _requests = TokenHandling.CreateQueue<ExecutionToken>(options.QueuesBoundedCapacity);
             _options = options;
-            LoadFactor = 10;
+            LoadFactor = 100;
         }
 
         protected sealed override void ExecuteToken(ExecutionToken token, CancellationToken cancel)
@@ -40,18 +40,18 @@ namespace vtortola.Redis
 
         protected override void OnConnection()
         {
-            base.OnConnection();
             // restore load factor to normal level
             LoadFactor = 1; 
+            base.OnConnection();
+            
         }
 
         protected override void OnDisconnection()
         {
-            base.OnDisconnection();
             // make this instance less likely for be choosen
-            LoadFactor = 10;
+            LoadFactor = 100;
+            base.OnDisconnection();
         }
-
 
         protected override void Dispose(Boolean disposing)
         {

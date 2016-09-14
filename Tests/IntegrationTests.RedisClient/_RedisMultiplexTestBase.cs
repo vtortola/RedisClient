@@ -36,10 +36,9 @@ namespace IntegrationTests.RedisClientTests
                 Logger = new TraceRedisClientLogger()
             };
 
-            options.MultiplexPool.CommandConnections = 10;
-            options.MultiplexPool.SubscriptionOptions = 10;
+            options.MultiplexPool.CommandConnections = 5;
+            options.MultiplexPool.SubscriptionOptions = 5;
  
-
             if (!Debugger.IsAttached)
                 options.PingTimeout = TimeSpan.FromMilliseconds(500);
 

@@ -131,8 +131,8 @@ namespace vtortola.Redis
             multiplexPool.SubscriptionOptions = 2;
             MultiplexPool = multiplexPool;
             var exclusivePool = new ExclusivePoolOptions();
-            exclusivePool.Minimum = 10;
-            exclusivePool.Maximum = 50;
+            exclusivePool.Minimum = 1;
+            exclusivePool.Maximum = 10;
             ExclusivePool = exclusivePool;
         }
 
@@ -142,7 +142,6 @@ namespace vtortola.Redis
             {
                 ValidateMultiplex(this.MultiplexPool);
                 ValidateExclusive(this.ExclusivePool);
-
 
                 var clone = new RedisClientOptions()
                 {
