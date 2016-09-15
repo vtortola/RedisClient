@@ -118,6 +118,9 @@ namespace vtortola.Redis
                             _options.PingTimeout != Timeout.InfiniteTimeSpan ? Task.Run(()=> TimeoutWatchdogAsync()) : new Task(()=>{})
                         };
 
+                        if(!_skipTimerReset)
+                            _pingTimer.Change(_interval, _interval); // start timer
+
                         _loadFactor = 1;
                         OnConnection();
 
@@ -217,7 +220,7 @@ namespace vtortola.Redis
                     if (token == null || token.IsCancelled)
                         return;
 
-                    await WriteTokenAsync(writer, token).ConfigureAwait(false);
+                    WriteToken(writer, token);
                 }
             }
             catch (OperationCanceledException) { }
@@ -225,7 +228,7 @@ namespace vtortola.Redis
             catch (ArgumentNullException) { }
         }
 
-        private async Task WriteTokenAsync(SocketWriter writer, ExecutionToken token)
+        private void WriteToken(SocketWriter writer, ExecutionToken token)
         {
             try
             {
@@ -247,8 +250,6 @@ namespace vtortola.Redis
 
                 if (hasCommands)
                 {
-                    writer.Flush();
-                    //await writer.FlushAsync().ConfigureAwait(false);
                     _logger.Debug("{0} flushed buffer.", _code);
                 }
             }
