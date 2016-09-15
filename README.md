@@ -1,5 +1,4 @@
 # RedisClient
-#### Another .NET Redis client, for the craic.
 ##### Status: ALPHA 
 [![Build status](https://ci.appveyor.com/api/projects/status/we9e8or6ajlm72pu/branch/master?svg=true)](https://ci.appveyor.com/project/vtortola/redisclient/branch/master)
 
