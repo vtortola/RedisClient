@@ -250,6 +250,7 @@ namespace vtortola.Redis
 
                 if (hasCommands)
                 {
+                    writer.Flush(); // using the async version kills performance, worth investigating why
                     _logger.Debug("{0} flushed buffer.", _code);
                 }
             }
