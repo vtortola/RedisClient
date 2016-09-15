@@ -57,6 +57,7 @@
   <ItemGroup>
     <Compile Include="RedisInstance.cs" />
     <Compile Include="Scripting\PaginationTest.cs" />
+    <Compile Include="BlockingConnectionTests.cs" />
     <Compile Include="_RedisMultiplexTestBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scripting\MULTIGETTests.cs" />

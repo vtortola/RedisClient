@@ -36,10 +36,11 @@ namespace vtortola.Redis
             _selector.Select(_commanders).Execute(token, cancel);
         }
 
-        public Task ConnectAsync(CancellationToken cancel)
+        public async Task ConnectAsync(CancellationToken cancel)
         {
             _options.Logger.Info("Initiating {0} commander connections ...", _commanders.Length);
-            return Task.WhenAll(_commanders.Select(c => c.ConnectAsync(cancel)));
+            var task = await Task.WhenAny(_commanders.Select(c => c.ConnectAsync(cancel))).ConfigureAwait(false);
+            await task.ConfigureAwait(false);
         }
 
         public void Dispose()

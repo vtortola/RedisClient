@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using vtortola.Redis;
 using System.Threading.Tasks;
 using UnitTests.Common;
+using System.Diagnostics;
 
 namespace IntegrationTests.RedisClientTests
 {

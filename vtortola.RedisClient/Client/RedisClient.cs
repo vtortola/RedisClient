@@ -43,9 +43,13 @@ namespace vtortola.Redis
 
             _procedures = _options.Procedures != null ? _options.Procedures.ToCollection() : ProcedureCollection.Empty;
 
-            _multiplexedCommander = new AggregatedCommandConnection<ConcurrentCommanderConnection>(_options.MultiplexPool.CommandConnections, ConcurrentCommander, _options, _procedures);
-            _subscriptorsPool = new ConnectionSelector<ConcurrentSubscriberConnection>(_options.MultiplexPool.SubscriptionOptions, ConcurrentSubscriber, _options);
-            _exclusivePool = new ConnectionPool(_options.ExclusivePool.Minimum, _options.ExclusivePool.Maximum, Commander, _options.Logger);
+            _multiplexedCommander = new AggregatedCommandConnection<RedisCommanderConnection>(_options.MultiplexPool.CommandConnections, CommanderFactory, _options, _procedures);
+            _subscriptorsPool = new ConnectionSelector<RedisSubscriberConnection>(_options.MultiplexPool.SubscriptionOptions, SubscriberFactory, _options);
+
+            if (_options.ExclusivePool.Maximum > 0)
+                _exclusivePool = new ConnectionPool(_options.ExclusivePool.Minimum, _options.ExclusivePool.Maximum, CommanderFactory, _options.Logger);
+            else
+                _exclusivePool = DisabledConnectionPool.Instance;
 
             IExecutionPlanner planner = new ExecutionPlanner(_procedures);
             _planner = _options.UseExecutionPlanCaching ? new CachingExecutionPlanner(planner) : planner;
@@ -64,19 +68,14 @@ namespace vtortola.Redis
             _endpoints = new[] { endpoint };
         }
 
-        private ConcurrentCommanderConnection ConcurrentCommander()
+        private RedisCommanderConnection CommanderFactory()
         {
-            return new ConcurrentCommanderConnection(_endpoints, _options, _procedures);
-        } 
-
-        private ConcurrentSubscriberConnection ConcurrentSubscriber()
-        {
-            return new ConcurrentSubscriberConnection(_endpoints, _options);
+            return new RedisCommanderConnection(_endpoints, _options, _procedures);
         }
 
-        private CommanderConnection Commander()
+        private RedisSubscriberConnection SubscriberFactory()
         {
-            return new CommanderConnection(_endpoints, _options, _procedures);
+            return new RedisSubscriberConnection(_endpoints, _options);
         }
 
         /// <summary>
@@ -91,10 +90,12 @@ namespace vtortola.Redis
             _logger.Info("Initiating connections to Redis...");
             using (cancel.Register(_cancel.Cancel))
             {
-                await Task.WhenAll(_multiplexedCommander.ConnectAsync(_cancel.Token), 
-                                   _subscriptorsPool.ConnectAsync(_cancel.Token),
-                                   _exclusivePool.ConnectAsync(_cancel.Token)).ConfigureAwait(false);
+                await Task.WhenAll(_multiplexedCommander.ConnectAsync(_cancel.Token),
+                    _subscriptorsPool.ConnectAsync(_cancel.Token),
+                    _exclusivePool.ConnectAsync(_cancel.Token)
+                    ).ConfigureAwait(false);
             }
+            _logger.Info("Connections to Redis initiated.");
         }
 
         /// <summary>

@@ -54,6 +54,11 @@ namespace SimpleQA.WebApp
             {
                 _log.Error(error, format, args);
             }
+
+            public void Debug(string format, params object[] args)
+            {
+                
+            }
         }
 
     }

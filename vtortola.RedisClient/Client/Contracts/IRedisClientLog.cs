@@ -20,6 +20,13 @@ namespace vtortola.Redis
         void Info(String format, params Object[] args);
 
         /// <summary>
+        /// Logs debug information.
+        /// </summary>
+        /// <param name="format"></param>
+        /// <param name="args"></param>
+        void Debug(String format, params Object[] args);
+
+        /// <summary>
         /// Logs an error.
         /// </summary>
         /// <param name="format"></param>
@@ -42,7 +49,7 @@ namespace vtortola.Redis
         public void Info(String format, params Object[] args) {}
         public void Error(String format, params Object[] args) {}
         public void Error(Exception error, String format, params Object[] args){}
-
+        public void Debug(String format, params Object[] args) { }
         internal static NoLogger Instance = new NoLogger();
     }
 

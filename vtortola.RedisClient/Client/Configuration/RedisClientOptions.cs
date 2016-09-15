@@ -131,8 +131,8 @@ namespace vtortola.Redis
             multiplexPool.SubscriptionOptions = 2;
             MultiplexPool = multiplexPool;
             var exclusivePool = new ExclusivePoolOptions();
-            exclusivePool.Minimum = 1;
-            exclusivePool.Maximum = 10;
+            exclusivePool.Minimum = 0;
+            exclusivePool.Maximum = 0;
             ExclusivePool = exclusivePool;
         }
 
@@ -171,7 +171,7 @@ namespace vtortola.Redis
 
         private void ValidateExclusive(ExclusivePoolOptions config)
         {
-            ParameterGuard.CannotBeZeroOrNegative(config.Minimum, "ExclusivePoolOptions.Minimum");
+            ParameterGuard.CannotBeNegative(config.Minimum, "ExclusivePoolOptions.Minimum");
             ParameterGuard.MustBeBiggerOrEqualThan(config.Maximum, "ExclusivePoolOptions.Maximum", config.Minimum);
         }
 

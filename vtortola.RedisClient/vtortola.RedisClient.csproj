@@ -59,6 +59,7 @@
     <Compile Include="Client\Procedure.cs" />
     <Compile Include="Client\RedisChannelExtensions.cs" />
     <Compile Include="Client\Transaction.cs" />
+    <Compile Include="Connection\DisabledConnectionPool.cs" />
     <Compile Include="Connection\PooledConnection.cs" />
     <Compile Include="Client\Contracts\IRedisResults.cs" />
     <Compile Include="Client\Contracts\IRedisClientLog.cs" />
@@ -68,9 +69,8 @@
     <Compile Include="Client\RedisResultInspector.cs" />
     <Compile Include="Connection\BasicLoadBasedSelector.cs" />
     <Compile Include="Connection\ConnectionInitializer.cs" />
-    <Compile Include="Connection\Simple\CommanderConnection.cs" />
-    <Compile Include="Connection\_ConnectionBase.cs" />
-    <Compile Include="Connection\Simple\Connection.cs" />
+    <Compile Include="Connection\RedisCommanderConnection.cs" />
+    <Compile Include="Connection\RedisSubscriberConnection.cs" />
     <Compile Include="Dynamic\FormatterHelper.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -94,7 +94,6 @@
     <Compile Include="Operations\RemoveChannelOperation.cs" />
     <Compile Include="Operations\CommandOperation.cs" />
     <Compile Include="Operations\SubscriptionOperation.cs" />
-    <Compile Include="Connection\Concurrent\ConcurrentCommanderConnection.cs" />
     <Compile Include="Connection\SocketWriter.cs" />
     <Compile Include="Connection\SocketReader.cs" />
     <Compile Include="Connection\ConnectionSelector.cs" />
@@ -103,8 +102,6 @@
     <Compile Include="Connection\AggregatedCommandConnection.cs" />
     <Compile Include="Connection\_IConnection.cs" />
     <Compile Include="Connection\_IConnectionInitializer.cs" />
-    <Compile Include="Connection\Concurrent\ConcurrentConnection.cs" />
-    <Compile Include="Connection\Concurrent\ConcurrentSubscriberConnection.cs" />
     <Compile Include="Parsing\CachingExecutionPlanner.cs" />
     <Compile Include="Parsing\ExecutionContext.cs" />
     <Compile Include="Parsing\ExecutionContextOperation.cs" />

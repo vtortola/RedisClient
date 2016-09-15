@@ -2,6 +2,7 @@
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace vtortola.Redis
 {
@@ -30,6 +31,10 @@ namespace vtortola.Redis
         internal void Flush()
         {
             _writer.Flush();
+        }
+        internal Task FlushAsync()
+        {
+            return _writer.FlushAsync();
         }
         public void Dispose()
         {

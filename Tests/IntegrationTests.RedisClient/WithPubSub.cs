@@ -61,7 +61,7 @@ namespace IntegrationTests.RedisClientTests
                         subscribe whateverrr
                         get aa";
 
-                var results = await channel.ExecuteAsync(cmd);
+                var results = await channel.ExecuteAsync(cmd).ConfigureAwait(false);
 
                 Assert.AreEqual("OK", results[0].GetString());
                 Assert.AreEqual("OK", results[1].GetString());
@@ -71,7 +71,7 @@ namespace IntegrationTests.RedisClientTests
                 Assert.AreEqual(1L, results[0].GetInteger());
 
                 var counter = 0;
-                while (msgList.Count < 1 && counter < 10)
+                while (msgList.Count < 1 && counter < 20)
                 {
                     await Task.Delay(100).ConfigureAwait(false);
                     counter++;
@@ -81,7 +81,7 @@ namespace IntegrationTests.RedisClientTests
         }
 
         [TestMethod]
-        public void CanReceiveMessage()
+        public async Task CanReceiveMessage()
         {
             var msgList = new List<RedisNotification>();
             using (var channel = Client.CreateChannel())
@@ -91,9 +91,9 @@ namespace IntegrationTests.RedisClientTests
                 var results = channel.Execute("subscribe CanReceiveMessage");
                 results = channel.Execute("publish CanReceiveMessage whenever");
                 var counter = 0;
-                while (msgList.Count < 1 && counter < 10)
+                while (msgList.Count < 1 && counter < 20)
                 {
-                    Thread.Sleep(100);
+                    await Task.Delay(100).ConfigureAwait(false);
                     counter++;
                 }
                 Assert.AreEqual(1, msgList.Count);
@@ -101,7 +101,7 @@ namespace IntegrationTests.RedisClientTests
         }
 
         [TestMethod]
-        public void CanReceiveUtf8Message()
+        public async Task CanReceiveUtf8Message()
         {
             var msgList = new List<RedisNotification>();
             using (var channel = Client.CreateChannel())
@@ -111,9 +111,9 @@ namespace IntegrationTests.RedisClientTests
                 var results = channel.Execute("subscribe Düsseldorf");
                 results = channel.Execute("publish Düsseldorf Düsseldorf");
                 var counter = 0;
-                while (msgList.Count < 1 && counter < 10)
+                while (msgList.Count < 1 && counter < 20)
                 {
-                    Thread.Sleep(100);
+                    await Task.Delay(100).ConfigureAwait(false);
                     counter++;
                 }
                 Assert.AreEqual(1, msgList.Count);
@@ -125,7 +125,7 @@ namespace IntegrationTests.RedisClientTests
         }
 
         [TestMethod]
-        public void CanReceivePMessage()
+        public async Task CanReceivePMessage()
         {
             var messages = 0;
             using (var channel = Client.CreateChannel())
@@ -135,9 +135,9 @@ namespace IntegrationTests.RedisClientTests
                 var results = channel.Execute("psubscribe ?hateve?");
                 results = channel.Execute("publish whatever whenever");
                 var counter = 0;
-                while (messages < 1 && counter < 100)
+                while (messages < 1 && counter < 20)
                 {
-                    Thread.Sleep(100);
+                    await Task.Delay(100).ConfigureAwait(false);
                     counter++;
                 }
 

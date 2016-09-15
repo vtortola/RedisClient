@@ -7,6 +7,7 @@ using System.IO;
 using System.Text;
 using UnitTests.Common;
 using System.Threading;
+using System.Diagnostics;
 
 namespace IntegrationTests.RedisClientTests
 {
@@ -281,7 +282,7 @@ namespace IntegrationTests.RedisClientTests
         [ExpectedExceptionPattern(typeof(RedisClientParsingException), typeof(RedisClientCommandException), MessagePattern="syntax error")]
         public void CanDetectDeclaringError()
         {
-            Thread.Sleep(1000);
+            Trace.WriteLine("test");
             using (var channel = Client.CreateChannel())
             {
                 channel.Execute("declaringError")[0].GetString();

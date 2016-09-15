@@ -14,6 +14,8 @@ namespace IntegrationTests.RedisClientTests
         {
             var options = base.GetOptions();
             options.PingTimeout = Timeout.InfiniteTimeSpan;
+            options.ExclusivePool.Minimum = 1;
+            options.ExclusivePool.Maximum = 1;
             return options;
         }
 

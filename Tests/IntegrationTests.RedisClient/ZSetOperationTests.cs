@@ -21,7 +21,7 @@ namespace IntegrationTests.RedisClientTests
 
             using (var channel = Client.CreateChannel())
             {
-                var result = await channel.ExecuteAsync(@"ZADD examplekey @values", new { values = Parameter.Sequence(values)});
+                var result = await channel.ExecuteAsync(@"ZADD examplekey @values", new { values = Parameter.Sequence(values)}).ConfigureAwait(false);
 
                 Assert.IsNotNull(result);
                 Assert.AreEqual(10L, result[0].GetInteger());

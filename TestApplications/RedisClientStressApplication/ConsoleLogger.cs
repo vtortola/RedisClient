@@ -23,5 +23,10 @@ namespace RedisClientStressApplication
         {
             Console.WriteLine("Exception: " + String.Format(format, args) + "\n" + error.ToString());
         }
+        
+        public void Debug(String format, params Object[] args)
+        {
+
+        }
     }
 }

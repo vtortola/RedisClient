@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Diagnostics.Contracts;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace vtortola.Redis
 {
@@ -11,7 +12,6 @@ namespace vtortola.Redis
         readonly BlockingCollection<ICommandConnection> _queue;
         readonly Func<ICommandConnection> _factory;
         readonly ICommandConnection[] _connections;
-        readonly Task[] _initial;
         readonly CancellationTokenSource _cancel;
         readonly IRedisClientLog _logger;
 
@@ -26,7 +26,6 @@ namespace vtortola.Redis
             _factory = factory;
             _queue = new BlockingCollection<ICommandConnection>(maximum);
             _connections = new ICommandConnection[maximum];
-            _initial = new Task[minimum];
             _current = minimum;
             _logger = logger;
             _cancel = new CancellationTokenSource();
@@ -35,14 +34,14 @@ namespace vtortola.Redis
             {
                 var connection = factory();
                 _connections[i] = connection;
-                _initial[i] = connection.ConnectAsync(_cancel.Token);
                 _queue.Add(connection);
             }
         }
 
-        public Task ConnectAsync(CancellationToken cancel)
+        public async Task ConnectAsync(CancellationToken cancel)
         {
-            return Task.WhenAll(_initial);
+            var connections = _connections.Where((c, i) => i < _current).ToArray();
+            await Task.WhenAll(connections.Select(c => c.ConnectAsync(cancel))).ConfigureAwait(false);
         }
 
         public ICommandConnection Provide()

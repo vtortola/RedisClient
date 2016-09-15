@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics;
 using System.Net;
 using System.Threading;
+using System.Threading.Tasks;
 using vtortola.Redis;
 
 namespace IntegrationTests.RedisClientTests
@@ -19,12 +20,17 @@ namespace IntegrationTests.RedisClientTests
             var options = GetOptions();
             Client = new RedisClient(RedisInstance.Endpoint, options);
             _cancel = new CancellationTokenSource();
-            Client.ConnectAsync(_cancel.Token).Wait();
-
-            using(var channel = Client.CreateChannel())
+            Task.Run(()=> Client.ConnectAsync(_cancel.Token));
+            using (var channel = Client.CreateChannel())
             {
-                channel.Dispatch("FLUSHALL");
+                channel.Execute("FLUSHALL");
             }
+            Log("Test Initialized.");
+        }
+
+        protected void Log(String format, params Object[] args)
+        {
+            Trace.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff ") + String.Format(format, args));
         }
 
         protected virtual RedisClientOptions GetOptions()
@@ -36,9 +42,6 @@ namespace IntegrationTests.RedisClientTests
                 Logger = new TraceRedisClientLogger()
             };
 
-            options.MultiplexPool.CommandConnections = 5;
-            options.MultiplexPool.SubscriptionOptions = 5;
- 
             if (!Debugger.IsAttached)
                 options.PingTimeout = TimeSpan.FromMilliseconds(500);
 
@@ -48,6 +51,7 @@ namespace IntegrationTests.RedisClientTests
         [TestCleanup]
         public void TearDown()
         {
+            Log("Test Tear down.");
             _cancel.Cancel();
             Client.Dispose();
         }

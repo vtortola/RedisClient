@@ -49,10 +49,11 @@ namespace vtortola.Redis
             return _connections.GetEnumerator();
         }
 
-        public Task ConnectAsync(CancellationToken cancel)
+        public async Task ConnectAsync(CancellationToken cancel)
         {
             _options.Logger.Info("Initiating pool with {0} connections ...", _connections.Length);
-            return Task.WhenAll(_connections.Select(c => c.ConnectAsync(cancel)));
+            var task = await Task.WhenAny(_connections.Select(c => c.ConnectAsync(cancel))).ConfigureAwait(false);
+            await task.ConfigureAwait(false);
         }
 
         public void Dispose()
