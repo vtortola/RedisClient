@@ -58,8 +58,8 @@ Server side scripting has multiple advantages, like preventing multiple round tr
 #### Performance
 A [performance comparison](//github.com/vtortola/RedisClient/wiki/Performance) shows the that the performance is close to other well known clients.
 
-<a href="//github.com/vtortola/RedisClient/wiki/Performance" style="display:block"><img src="http://vtortola.github.io/rcclientperfTran.png" height="250"></a>
-<a href="//github.com/vtortola/RedisClient/wiki/Performance" style="display:block"><img src="http://vtortola.github.io/rcclientperfPipe.png" height="250"></a>
+<a href="//github.com/vtortola/RedisClient/wiki/Performance" style="display:block"><img src="http://vtortola.github.io/RCPerf/pipeline.png" height="250"></a>
+<a href="//github.com/vtortola/RedisClient/wiki/Performance" style="display:block"><img src="http://vtortola.github.io/RCPerf/transactions.png" height="250"></a>
 
 
 #### Use in a web application
