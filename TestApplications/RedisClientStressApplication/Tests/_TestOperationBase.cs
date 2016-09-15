@@ -19,7 +19,10 @@ namespace RedisClientStressApplication
 
         public Tuple<Int64, TimeSpan> Test(Int32 threads, Int32 loops)
         {
-            using (var client = new RedisClient(_endpoint, new RedisClientOptions() /*{ Logger = new ConsoleLogger() }*/))
+            var options = new RedisClientOptions() { Logger = new ConsoleLogger(false) };
+            options.MultiplexPool.CommandConnections = 1;
+            options.MultiplexPool.SubscriptionOptions = 1;
+            using (var client = new RedisClient(_endpoint, options))
             {
                 client.ConnectAsync(CancellationToken.None).Wait();
 

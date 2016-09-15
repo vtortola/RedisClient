@@ -9,6 +9,12 @@ namespace RedisClientStressApplication
 {
     public sealed class ConsoleLogger : IRedisClientLog
     {
+        readonly Boolean _withDebug;
+        public ConsoleLogger(Boolean withDebug)
+        {
+            _withDebug = withDebug;
+        }
+
         public void Info(string format, params object[] args)
         {
             Console.WriteLine(format, args);
@@ -26,7 +32,8 @@ namespace RedisClientStressApplication
         
         public void Debug(String format, params Object[] args)
         {
-
+            if (_withDebug)
+                Console.WriteLine(format, args);
         }
     }
 }

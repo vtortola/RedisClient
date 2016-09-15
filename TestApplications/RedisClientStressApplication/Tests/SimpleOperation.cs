@@ -16,12 +16,12 @@ namespace RedisClientStressApplication
         {
         }
 
-        protected override Task RunClient(String userId, IRedisChannel channel, CancellationToken cancel)
+        protected override async Task RunClient(String userId, IRedisChannel channel, CancellationToken cancel)
         {
             try
             {
                 var userKey = "user_" + userId;
-                var result = channel.Execute("incr @key", new { key = userKey });
+                var result = await channel.ExecuteAsync("incr @key", new { key = userKey }).ConfigureAwait(false);
             }
             catch (ObjectDisposedException)
             {
@@ -42,7 +42,6 @@ namespace RedisClientStressApplication
             {
                 Console.Write("[EX: " + ex.Message+"]");
             }
-            return Task.FromResult<Object>(null);
         }
     }
 }
