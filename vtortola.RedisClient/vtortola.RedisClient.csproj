@@ -70,6 +70,7 @@
     <Compile Include="Connection\BasicLoadBasedSelector.cs" />
     <Compile Include="Connection\ConnectionInitializer.cs" />
     <Compile Include="Connection\RedisCommanderConnection.cs" />
+    <Compile Include="Connection\_RedisConnection.cs" />
     <Compile Include="Connection\RedisSubscriberConnection.cs" />
     <Compile Include="Dynamic\FormatterHelper.cs">
       <AutoGen>True</AutoGen>
