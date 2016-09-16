@@ -42,8 +42,8 @@ namespace IntegrationTests.RedisClientTests
                 Logger = new TraceRedisClientLogger()
             };
 
-            if (!Debugger.IsAttached)
-                options.PingTimeout = TimeSpan.FromMilliseconds(500);
+            //if (!Debugger.IsAttached)
+            //    options.PingTimeout = TimeSpan.FromMilliseconds(500);
 
             return options;
         }
