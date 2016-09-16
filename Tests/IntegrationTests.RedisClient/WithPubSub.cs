@@ -10,6 +10,15 @@ namespace IntegrationTests.RedisClientTests
     [TestClass]
     public class WithPubSub : RedisMultiplexTestBase
     {
+        protected override vtortola.Redis.RedisClientOptions GetOptions()
+        {
+            var options = base.GetOptions();
+            options.PingTimeout = Timeout.InfiniteTimeSpan;
+            options.ExclusivePool.Minimum = 1;
+            options.ExclusivePool.Maximum = 1;
+            return options;
+        }
+
         [TestMethod]
         public void CanDoSimpleSubscribe()
         {

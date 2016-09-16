@@ -53,6 +53,7 @@ namespace vtortola.Redis
             }
             else
             {
+                _interval = Timeout.InfiniteTimeSpan;
                 _skipTimerReset = true;
             }
             _logger.Info("Created connection {0} of type {1}.", _code, this.GetType().Name);
@@ -118,7 +119,7 @@ namespace vtortola.Redis
                             _options.PingTimeout != Timeout.InfiniteTimeSpan ? Task.Run(()=> TimeoutWatchdogAsync()) : new Task(()=>{})
                         };
 
-                        if(!_skipTimerReset)
+                        if(_interval != Timeout.InfiniteTimeSpan)
                             _pingTimer.Change(_interval, _interval); // start timer
 
                         _loadFactor = 1;
@@ -286,6 +287,9 @@ namespace vtortola.Redis
 
         private void RegisterActivity()
         {
+            if (_interval == Timeout.InfiniteTimeSpan)
+                return;
+
             if (!_skipTimerReset)
                 _pingTimer.Change(_interval, _interval); // restart ping timer
 

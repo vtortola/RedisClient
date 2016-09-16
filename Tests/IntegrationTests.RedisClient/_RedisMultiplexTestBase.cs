@@ -18,7 +18,7 @@ namespace IntegrationTests.RedisClientTests
         public void Init()
         {
             var options = GetOptions();
-            Client = new RedisClient(RedisInstance.Endpoint, options);
+            Client = new RedisClient(new IPEndPoint(IPAddress.Loopback, 6379)/* RedisInstance.Endpoint*/, options);
             _cancel = new CancellationTokenSource();
             Task.Run(()=> Client.ConnectAsync(_cancel.Token));
             using (var channel = Client.CreateChannel())
@@ -42,8 +42,8 @@ namespace IntegrationTests.RedisClientTests
                 Logger = new TraceRedisClientLogger()
             };
 
-            //if (!Debugger.IsAttached)
-            //    options.PingTimeout = TimeSpan.FromMilliseconds(500);
+            if (!Debugger.IsAttached)
+                options.PingTimeout = TimeSpan.FromMilliseconds(100);
 
             return options;
         }
