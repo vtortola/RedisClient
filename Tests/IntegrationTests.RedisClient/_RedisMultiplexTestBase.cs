@@ -43,7 +43,7 @@ namespace IntegrationTests.RedisClientTests
             };
 
             if (!Debugger.IsAttached)
-                options.PingTimeout = TimeSpan.FromMilliseconds(100);
+                options.PingTimeout = TimeSpan.FromMilliseconds(500);
 
             return options;
         }
