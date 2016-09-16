@@ -20,12 +20,30 @@ namespace RedisClientStressApplication
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
 
-            var endpoint = new IPEndPoint(IPAddress.Parse("192.168.0.16"), 6379);
+            IPEndPoint endpoint;
+            try
+            {
+                endpoint = new IPEndPoint(IPAddress.Parse(args[0]), Int32.Parse(args[1]));
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                Console.WriteLine("Usage: RedisClientStressApplication <IPAddress> <Port>");
+                Console.ReadKey(true);
+                return;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error: " + ex.Message);
+                Console.WriteLine("Usage: RedisClientStressApplication <IPAddress> <Port>");
+                Console.ReadKey(true);
+                return;
+            }
 
             Trace.Listeners.Add(new ConsoleTraceListener());
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("POOR MAN's STRESS TESTING\n");
+            Console.WriteLine("POOR MAN's STRESS TESTING on " + endpoint);
             Console.ResetColor();
+            Console.WriteLine();
             Console.WriteLine("Choose a test:");
             Console.WriteLine("1) Object test.");
             Console.WriteLine("2) Simple test.");

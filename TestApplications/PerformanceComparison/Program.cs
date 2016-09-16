@@ -13,19 +13,28 @@ namespace PerformanceComparison
 {
     class Program
     {
-        class TestData
-        {
-            public Int32 Users { get; set; }
-            public Double RedisClient { get; set; }
-            public Double StackExchangeRedis { get; set; }
-            public Double ServiceStackRedis { get; set; }
-        }
-
         static void Main(string[] args)
         {
-            var endpoint = new IPEndPoint(IPAddress.Parse("192.168.0.16"), 6379);
+            IPEndPoint endpoint;
+            try
+            {
+                endpoint = new IPEndPoint(IPAddress.Parse(args[0]), Int32.Parse(args[1]));
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                Console.WriteLine("Usage: RedisClientStressApplication <IPAddress> <Port>");
+                Console.ReadKey(true);
+                return;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Error: " + ex.Message);
+                Console.WriteLine("Usage: PerformanceComparison <IPAddress> <Port>");
+                Console.ReadKey(true);
+                return;
+            }
 
-            Console.WriteLine("PERFORMANCE COMPARISON");
+            Console.WriteLine("PERFORMANCE COMPARISON on " + endpoint);
             Console.WriteLine("Choose scneartio:");
             Console.WriteLine("1) Simple INCR operation.");
             Console.WriteLine("2) Multiple operation transaction.");
@@ -67,7 +76,7 @@ namespace PerformanceComparison
             foreach (var threadCount in threadCounts)
             {
                 var partial = new List<TestData>(5);
-                for (int i = 0; i < 3; i++)
+                for (int i = 0; i < 1; i++)
                 {
                     partial.Add(PerformSingleTest<TRedisClient, TServiceStack, TStackExchange>(threadCount, 10000, endpoint));
                 }
@@ -222,6 +231,14 @@ namespace PerformanceComparison
                 return null;
             else
                 return new Tuple<Int64, TimeSpan>(counter, sw.Elapsed);
+        }
+
+        class TestData
+        {
+            public Int32 Users { get; set; }
+            public Double RedisClient { get; set; }
+            public Double StackExchangeRedis { get; set; }
+            public Double ServiceStackRedis { get; set; }
         }
     }
 }
