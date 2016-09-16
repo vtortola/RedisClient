@@ -14,7 +14,7 @@ namespace SimpleQA
 {
     public static class RedisCommandsConfiguration
     {
-        public static void Configure(Container container, IRedisClientLog log)
+        public static void Configure(Container container, IPEndPoint endpoint, IRedisClientLog log)
         {
             var options = new RedisClientOptions() 
             { 
@@ -25,7 +25,7 @@ namespace SimpleQA
 
             options.Procedures.LoadFromAssembly(Assembly.GetExecutingAssembly());
 
-            var client = new RedisClient(new IPEndPoint(IPAddress.Loopback, 6379), options);
+            var client = new RedisClient(endpoint, options);
 
             var connect = client.ConnectAsync(CancellationToken.None);
 

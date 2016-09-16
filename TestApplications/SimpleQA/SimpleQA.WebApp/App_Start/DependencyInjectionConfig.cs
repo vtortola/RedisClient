@@ -3,6 +3,7 @@ using SimpleInjector;
 using SimpleInjector.Integration.Web;
 using SimpleInjector.Integration.Web.Mvc;
 using SimpleQA.Markdown;
+using System.Net;
 using System.Reflection;
 using System.Web.Mvc;
 using vtortola.Redis;
@@ -25,7 +26,7 @@ namespace SimpleQA.WebApp
 
             container.RegisterMvcIntegratedFilterProvider();
 
-            RedisCommandsConfiguration.Configure(container, new RedisLogger());
+            RedisCommandsConfiguration.Configure(container, new IPEndPoint(IPAddress.Loopback, 6379), new RedisLogger());
 
             container.Verify();
 

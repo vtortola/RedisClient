@@ -45,8 +45,8 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="vtortola.RedisClient, Version=0.0.1.41058, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\vtortola.RedisClient.0.0.1-alpha\lib\net45\vtortola.RedisClient.dll</HintPath>
+    <Reference Include="vtortola.RedisClient, Version=0.0.3.40248, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\vtortola.RedisClient.0.0.3-alpha\lib\net45\vtortola.RedisClient.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>

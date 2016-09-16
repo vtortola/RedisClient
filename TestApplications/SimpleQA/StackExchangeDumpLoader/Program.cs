@@ -2,6 +2,7 @@
 using SimpleQA;
 using System;
 using System.IO;
+using System.Net;
 using System.Xml.Linq;
 using vtortola.Redis;
 
@@ -13,10 +14,30 @@ namespace StackExchangeDumpLoader
     {
         static void Main(string[] args)
         {
-            //var directory = @"C:\\Users\\valeriano_tortola\\Downloads\\arduino.stackexchange.com";
-            //var directory = @"C:\\Users\\valeriano_tortola\\Downloads\\crafts.stackexchange.com";
-            var directory = @"C:\\Users\\valeriano_tortola\\Downloads\\cooking.stackexchange.com";
-            //var directory = @"C:\\Users\\valeriano_tortola\\Downloads\\askubuntu.com";
+            DirectoryInfo directory;
+            IPEndPoint endpoint;
+            try
+            {
+                directory = new DirectoryInfo(args[0]);
+                if (!directory.Exists)
+                    throw new DirectoryNotFoundException(args[0]);
+
+                endpoint = new IPEndPoint(IPAddress.Parse(args[1]), Int32.Parse(args[2]));
+            }
+            catch(ArgumentOutOfRangeException)
+            {
+                Console.WriteLine("Usage: StackExchangeDumpLoader <Directory> <IPAddress> <Port>");
+                Console.ReadKey(true);
+                return;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Error: " + ex.Message);
+                Console.WriteLine("Usage: StackExchangeDumpLoader <Directory>  <IPAddress> <Port>");
+                Console.ReadKey(true);
+                return;
+            }
+
             var dicontainer = new SimpleInjector.Container();
             dicontainer.Options.DefaultScopedLifestyle = new ExecutionContextScopeLifestyle();
 
@@ -24,7 +45,7 @@ namespace StackExchangeDumpLoader
             dicontainer.Register<UsersXMLProcessor>();
             dicontainer.Register<VotesXMLProcessor>();
             dicontainer.Register<ICommandExecuterMediator>( () => new CommandExecuterMediator(dicontainer) );
-            RedisCommandsConfiguration.Configure(dicontainer, new ConsoleLogger());
+            RedisCommandsConfiguration.Configure(dicontainer, endpoint, new ConsoleLogger());
 
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("\nLOAD STACKEXCHANGE DUMP INTO SIMPLEQA\n");
@@ -40,9 +61,9 @@ namespace StackExchangeDumpLoader
 
             using (dicontainer.BeginExecutionContextScope())
             {
-                var users = dicontainer.GetInstance<UsersXMLProcessor>().Process(XDocument.Load(Path.Combine(directory, "Users.xml")));
-                var posts = dicontainer.GetInstance<PostsXMLProcessor>().Process(XDocument.Load(Path.Combine(directory, "Posts.xml")), users);
-                dicontainer.GetInstance<VotesXMLProcessor>().Process(XDocument.Load(Path.Combine(directory, "Votes.xml")), users, posts);
+                var users = dicontainer.GetInstance<UsersXMLProcessor>().Process(XDocument.Load(Path.Combine(directory.FullName, "Users.xml")));
+                var posts = dicontainer.GetInstance<PostsXMLProcessor>().Process(XDocument.Load(Path.Combine(directory.FullName, "Posts.xml")), users);
+                dicontainer.GetInstance<VotesXMLProcessor>().Process(XDocument.Load(Path.Combine(directory.FullName, "Votes.xml")), users, posts);
             }
 
             Console.WriteLine("END");
