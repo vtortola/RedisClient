@@ -17,7 +17,7 @@ An experimental .NET Redis client that uses a special syntax for easing LUA scri
  * RedisClient handles the [procedure deployment](//github.com/vtortola/RedisClient/wiki/Procedure-management).
  * Procedures are invoked by name rather than using `EVAL` or `EVALSHA`.
  * Instead passing parameter values in `KEYS` and `ARGV` arrays, and having to hardcore the index location of the data in those arrays, named parameters are used.
- * **Array parameters of arbitrary length** are supported, being the length of those arrays defined at parameter value binding time.
+ * [Array parameters of arbitrary length](//github.com/vtortola/RedisClient/wiki/Procedures#parameter-cardinality) are supported, being the length of those arrays defined at parameter value binding time.
  * Procedures in RedisClient use the same [parameter binding](//github.com/vtortola/RedisClient/wiki/Parameter-binding) capabilities than for regular Redis commands.
  * Procedure results can be [inspected](//github.com/vtortola/RedisClient/wiki/Getting-results) as any other Redis command.
  * [Learn more about procedures](//github.com/vtortola/RedisClient/wiki/Procedures).
