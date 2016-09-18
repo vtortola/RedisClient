@@ -79,6 +79,13 @@ Also in this repository you will find [SimpleQA](//github.com/vtortola/RedisClie
 
 ## Getting started
 
+ * [Installing](#installing).
+ * [Setting it up](#setting-it-up).
+ * [Binding parameters](#binding-parameters).
+ * [Getting results](#getting-results).
+ * [Subscribing to channels](#subscribing-to-channels).
+ * [Executing procedures](#executing-procedures).
+
 ### Installing
 The alpha version is [available in NuGet](https://www.nuget.org/packages/vtortola.RedisClient/).
 ```
