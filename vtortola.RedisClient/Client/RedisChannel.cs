@@ -130,13 +130,13 @@ namespace vtortola.Redis
             }
         }
 
-        private void AmendResults(ExecutionPlan plan, RESPObject[] responses, String[] headers)
+        private void AmendResults(ExecutionPlan plan, RESPObject[] responses)
         {
             if(plan.IsTransaction)
-                Transaction.Consolidate(responses, headers);
+                Transaction.Consolidate(responses, plan.Headers);
             
             if(plan.HasScripts)
-                Procedure.AmmendScriptErrors(responses, headers, _procedures);
+                Procedure.AmmendScriptErrors(responses, plan.Headers, _procedures);
         }
 
         public async Task<IRedisResults> ExecuteAsync<T>(String command, T parameters, CancellationToken cancel) 
@@ -160,7 +160,8 @@ namespace vtortola.Redis
                 {
                     Clean();
                 }
-                AmendResults(plan, setup.Item3, plan.Headers);
+
+                AmendResults(plan, setup.Item3);
                 return new RedisResults(setup.Item3, plan.Headers);
             }
         }
@@ -186,7 +187,8 @@ namespace vtortola.Redis
                 {
                     Clean();
                 }
-                AmendResults(plan, setup.Item3, plan.Headers);
+
+                AmendResults(plan, setup.Item3);
                 return new RedisResults(setup.Item3, plan.Headers);
             }  
         }
