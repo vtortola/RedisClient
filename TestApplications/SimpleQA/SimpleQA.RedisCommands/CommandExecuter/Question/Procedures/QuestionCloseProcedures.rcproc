@@ -2,11 +2,14 @@
 	
 	local question = redis.call('HMGET', questionId, 'User', 'CloseStatus', 'Slug')
 	if ( question[1] == user ) then
+		return redis.error_reply("OWNER")
 	elseif ( question[2] ~= '0' and question[2] ~= false and question[2] ~= '') then
+		return redis.error_reply('CANNOTCLOSE')
 	end
 
 	local voted = redis.call('SADD',  questionCloseVotesSet, user)
 	if ( voted ~= 1 ) then
+		return redis.error_reply('ALREADYVOTED')
 	end
 
 	voted = redis.call('HINCRBY', questionId, 'CloseVotes', 1)
