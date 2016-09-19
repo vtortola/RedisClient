@@ -11,10 +11,10 @@ namespace vtortola.Redis
     {
         ExecutionToken _current;
 
-        internal RedisCommanderConnection(IPEndPoint[] endpoints, RedisClientOptions options, ProcedureCollection procedures)
+        internal RedisCommanderConnection(IPEndPoint[] endpoints, RedisClientOptions options, ProcedureInitializer proceduresInitializer)
             :base(endpoints, options)
         {
-            Initializers.Add(new ScriptInitialization(procedures, options.Logger));
+            Initializers.Add(proceduresInitializer);
         }
 
         protected override void OnDisconnection()

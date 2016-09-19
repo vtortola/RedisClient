@@ -14,6 +14,7 @@ namespace vtortola.Redis
         readonly IPEndPoint[] _endpoints;
         readonly RedisClientOptions _options;
         readonly ProcedureCollection _procedures;
+        readonly ProcedureInitializer _proceduresInitializer;
         readonly ICommandConnection _multiplexedCommander;
         readonly IConnectionProvider<ISubscriptionConnection> _subscriptorsPool;
         readonly IConnectionProvider<ICommandConnection> _exclusivePool;
@@ -42,8 +43,9 @@ namespace vtortola.Redis
             _endpoints = endpoints.ToArray();
 
             _procedures = _options.Procedures != null ? _options.Procedures.ToCollection() : ProcedureCollection.Empty;
+            _proceduresInitializer = new ProcedureInitializer(_procedures, _options.Logger);
 
-            _multiplexedCommander = new AggregatedCommandConnection<RedisCommanderConnection>(_options.MultiplexPool.CommandConnections, CommanderFactory, _options, _procedures);
+            _multiplexedCommander = new AggregatedCommandConnection<RedisCommanderConnection>(_options.MultiplexPool.CommandConnections, CommanderFactory, _options);
             _subscriptorsPool = new ConnectionSelector<RedisSubscriberConnection>(_options.MultiplexPool.SubscriptionOptions, SubscriberFactory, _options);
 
             if (_options.ExclusivePool.Maximum > 0)
@@ -70,7 +72,7 @@ namespace vtortola.Redis
 
         private RedisCommanderConnection CommanderFactory()
         {
-            return new RedisCommanderConnection(_endpoints, _options, _procedures);
+            return new RedisCommanderConnection(_endpoints, _options, _proceduresInitializer);
         }
 
         private RedisSubscriberConnection SubscriberFactory()

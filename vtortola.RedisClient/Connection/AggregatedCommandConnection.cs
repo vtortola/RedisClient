@@ -15,12 +15,9 @@ namespace vtortola.Redis
 
         public ProcedureCollection Procedures { get; private set; }
 
-        internal AggregatedCommandConnection(Int32 count, Func<TConnection> factory, RedisClientOptions options, ProcedureCollection procedures)
+        internal AggregatedCommandConnection(Int32 count, Func<TConnection> factory, RedisClientOptions options)
         {
             Contract.Assert(options != null, "Redis optiosn cannot be null.");
-            Contract.Assert(procedures != null, "Procedures cannot be null.");
-
-            Procedures = procedures;
 
             _commanders = Enumerable
                             .Range(0, count)

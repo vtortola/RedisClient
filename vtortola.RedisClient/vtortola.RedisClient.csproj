@@ -125,9 +125,8 @@
     <Compile Include="RESP\Command\RESPCommandValue.cs" />
     <Compile Include="RESP\Result\RESPObjectExtensions.cs" />
     <Compile Include="RESP\Command\RESPCommand.cs" />
-    <Compile Include="Scripting\LoadingProcedure.cs" />
     <Compile Include="Scripting\ProcedureCollection.cs" />
-    <Compile Include="Scripting\ScriptInitialization.cs" />
+    <Compile Include="Scripting\ProceduresInitializer.cs" />
     <Compile Include="Subscription\SubscriptionsInitialization.cs" />
     <Compile Include="Operations\_IOperation.cs" />
     <Compile Include="Tokens\NoWaitExecutionToken.cs" />

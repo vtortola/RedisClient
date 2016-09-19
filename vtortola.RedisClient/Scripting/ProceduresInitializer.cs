@@ -2,15 +2,16 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Threading;
 
 namespace vtortola.Redis
 {
-    internal sealed class ScriptInitialization : IConnectionInitializer
+    internal sealed class ProcedureInitializer : IConnectionInitializer
     {
         readonly ProcedureCollection _procedures;
         readonly IRedisClientLog _logger;
 
-        public ScriptInitialization(ProcedureCollection procedures, IRedisClientLog logger)
+        public ProcedureInitializer(ProcedureCollection procedures, IRedisClientLog logger)
         {
             _procedures = procedures;
             _logger = logger;
@@ -18,8 +19,10 @@ namespace vtortola.Redis
 
         public void Initialize(SocketReader reader, SocketWriter writer)
         {
-            var checkQueue = CheckScriptExistence(writer);
-            var loadQueue = LoadUnexistentScripts(reader, writer, checkQueue);
+            if (!ShouldLoadScripts(writer))
+                return;
+
+            var loadQueue = LoadUnexistentScripts(reader, writer);
             ValidateScriptLoadingResults(reader, loadQueue);
         }
 
@@ -56,40 +59,60 @@ namespace vtortola.Redis
             }
         }
 
-        private Queue<String> LoadUnexistentScripts(SocketReader reader, SocketWriter writer, Queue<String> checkQueue)
+        private Queue<String> LoadUnexistentScripts(SocketReader reader, SocketWriter writer)
         {
             var loadQueue = new Queue<String>();
 
             // read results
-            while (checkQueue.Any())
-            {
-                var digest = checkQueue.Dequeue();
-                var result = RESPObject.Read(reader);
-                // if a script does not exists, send 'script load'
-                if (result.Cast<RESPArray>().ElementAt<RESPInteger>(0).Value == 0)
+            var result = RESPObject.Read(reader);
+            var array = result.Cast<RESPArray>();
+            // if a script does not exists, send 'script load'
+            for (int i = 0; i < array.Count; i++)
+			{
+			    var found = array[i].Cast<RESPInteger>().Value != 0;
+                if(!found)
                 {
+                    var digest = _procedures.Digests[i];
                     _logger.Info("Script with digest {0} not found, loading...", digest);
-                    var load = _procedures.GenerateLoadCommand(digest);
+                    var load = GenerateLoadCommand(digest);
                     load.WriteTo(writer);
                     loadQueue.Enqueue(digest);
                 }
-            }
+			}
+
             writer.Flush();
             return loadQueue;
         }
 
-        private Queue<String> CheckScriptExistence(SocketWriter writer)
+        private RESPCommand GenerateLoadCommand(String digest)
         {
-            // get existing scripts and send 'script exists' command
-            var checkQueue = new Queue<String>();
-            foreach (var script in _procedures.GenerateScriptCheckings())
+            ProcedureDefinition procedure;
+            if (!_procedures.TryGetByDigest(digest, out procedure))
+                throw new RedisClientParsingException("Script with digest '" + digest + "' does not exist.");
+
+            var array = new RESPCommand(new RESPCommandLiteral("SCRIPT"), false);
+            array.Add(new RESPCommandLiteral("load"));
+            array.Add(new RESPCommandLiteral(procedure.Body));
+            return array;
+        }
+
+        private Boolean ShouldLoadScripts(SocketWriter writer)
+        {
+            if (_procedures.Digests.Any())
             {
-                _logger.Info("Checking existence of {0} ({1})...", script.Procedure.Name, script.Procedure.Digest);
-                script.Command.WriteTo(writer);
-                checkQueue.Enqueue(script.Procedure.Digest);
+                var array = new RESPCommand(new RESPCommandLiteral("SCRIPT"), false);
+                array.Add(new RESPCommandLiteral("exists"));
+                foreach (var digest in _procedures.Digests)
+                {
+                    _logger.Info("Checking existence of script digest {0}...", digest);
+                    array.Add(new RESPCommandLiteral(digest));
+                }
+
+                array.WriteTo(writer);
+                writer.Flush();
+                return true;
             }
-            writer.Flush();
-            return checkQueue;
+            return false;
         }
 
     }

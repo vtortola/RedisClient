@@ -1,37 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 
 namespace vtortola.Redis
 {
     internal sealed class ProcedureCollection
     {
-        readonly IDictionary<String, ProcedureDefinition> _proceduresByName;
-        readonly IDictionary<String, ProcedureDefinition> _proceduresByDigest;
-
         internal static readonly ProcedureCollection Empty = new ProcedureCollection();
 
+        readonly IDictionary<String, ProcedureDefinition> _proceduresByName;
+        readonly IDictionary<String, ProcedureDefinition> _proceduresByDigest;
+        readonly IReadOnlyList<String> _digests;
+
+        public IReadOnlyList<String> Digests { get { return _digests; } } 
+        
         internal ProcedureCollection()
         {
             _proceduresByDigest = new Dictionary<String, ProcedureDefinition>();
             _proceduresByName = new Dictionary<String, ProcedureDefinition>(StringComparer.Ordinal);
+            _digests = new List<String>().AsReadOnly();
         }
 
         internal ProcedureCollection(IDictionary<String, ProcedureDefinition> byName, IDictionary<String, ProcedureDefinition> byDigest)
         {
             _proceduresByName = byName;
             _proceduresByDigest = byDigest;
-        }
-
-        internal IEnumerable<LoadingProcedure> GenerateScriptCheckings()
-        {
-            foreach (var procedure in _proceduresByName.Values)
-            {
-                var array = new RESPCommand(new RESPCommandLiteral("SCRIPT"), false);
-                array.Add(new RESPCommandLiteral("exists"));
-                array.Add(new RESPCommandLiteral(procedure.Digest));
-                yield return new LoadingProcedure(procedure, array);
-            }
+            _digests = _proceduresByDigest.Keys.ToList().AsReadOnly();
         }
 
         internal bool TryGetByDigest(String digest, out ProcedureDefinition procedure)
@@ -46,20 +41,6 @@ namespace vtortola.Redis
             Contract.Assert(!String.IsNullOrWhiteSpace(alias), "Using an empty alias for finding a procedure.");
 
             return _proceduresByName.TryGetValue(alias, out procedure);
-        }
-
-        internal RESPCommand GenerateLoadCommand(String scriptDigest)
-        {
-            Contract.Assert(!String.IsNullOrWhiteSpace(scriptDigest), "Using an empty digest for finding a procedure.");
-
-            ProcedureDefinition procedure;
-            if (!_proceduresByDigest.TryGetValue(scriptDigest, out procedure))
-                throw new RedisClientParsingException("Script with digest '" + scriptDigest + "' does not exist.");
-
-            var array = new RESPCommand(new RESPCommandLiteral("SCRIPT"), false);
-            array.Add(new RESPCommandLiteral("load"));
-            array.Add(new RESPCommandLiteral(procedure.Body));
-            return array;
         }
 
         internal void SetFaulted(String scriptDigest, RedisClientException error)
