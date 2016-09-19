@@ -1,0 +1,18 @@
+﻿proc QuestionClose($questionId, $questionCloseVotesSet, user, votesToClose)
+	
+	local question = redis.call('HMGET', questionId, 'User', 'CloseStatus', 'Slug')
+	if ( question[1] == user ) then
+	elseif ( question[2] ~= '0' and question[2] ~= false and question[2] ~= '') then
+	end
+
+	local voted = redis.call('SADD',  questionCloseVotesSet, user)
+	if ( voted ~= 1 ) then
+	end
+
+	voted = redis.call('HINCRBY', questionId, 'CloseVotes', 1)
+	if ( voted >=  tonumber(votesToClose)) then
+		redis.call('HSET', questionId, 'Status', '1')
+	end
+
+	return redis.status_reply('OK') 
+endproc

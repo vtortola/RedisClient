@@ -28,7 +28,7 @@ namespace SimpleQA.RedisCommands
             if (result[1].GetInteger() == 1)
                 throw new SimpleQAException("You already voted to close this item.");
 
-            var votes = result[0].GetString() == null ? 0 : result[0].GetInteger();
+            var votes = result[0].GetString() == null ? 0 : result[0].AsInteger();
 
             return new QuestionCloseFormViewModel() { Id = request.Id, Votes = votes };
         }

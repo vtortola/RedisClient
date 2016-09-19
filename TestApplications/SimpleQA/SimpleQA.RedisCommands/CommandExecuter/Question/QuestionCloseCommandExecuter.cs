@@ -19,30 +19,33 @@ namespace SimpleQA.RedisCommands
         {
             var questionKey = Keys.QuestionKey(command.Id);
             var username = user.Identity.Name;
+            var closeSet = Keys.QuestionCloseVotesCollectionKey(command.Id);
+            var votesToClose = Constant.CloseVotesRequired;
 
-            var result = await _channel.ExecuteAsync("HMGET @questionKey User CloseStatus Slug", new { questionKey }).ConfigureAwait(false);
+            var result = await _channel.ExecuteAsync(@"
+                                        QuestionClose @questionKey @closeSet @username @votesToClose
+                                        HGET @questionKey Slug", 
+                                        new { questionKey, closeSet, username, votesToClose }).ConfigureAwait(false);
 
-            var data = result[0].GetStringArray();
-            var questionUser = data[0];
-            if (questionUser == user.Identity.Name)
-                throw new SimpleQANotOwnerException("You cannot close a question that is yours.");
-
-            var slug = data[2];
-
-            if (data[1] != "Closed" && data[1] != "Deleted")
+            var error = result[0].GetException();
+            if (error != null)
             {
-                var closeSet = Keys.QuestionCloseVotesCollectionKey(command.Id);
-                result = await _channel.ExecuteAsync(@"
-                                            HINCRBY @questionKey CloseVotes 1
-                                            SADD @closeSet @username",
-                                            new { questionKey, closeSet, username }).ConfigureAwait(false);
+                switch (error.Prefix)
+                {
+                    case "OWNER":
+                        throw new SimpleQANotOwnerException("You cannot close a question that is yours.");
 
-                if (result[0].GetInteger() >= Constant.CloseVotesRequired)
-                    result = await _channel.ExecuteAsync(@"HSET @key Status Closed",
-                                                            new { questionKey }).ConfigureAwait(false);
+                    case "CANNOTCLOSE":
+                        throw new SimpleQANotOwnerException("Tne question is not open anymore.");
+
+                    case "ALREADYVOTED":
+                        throw new SimpleQANotOwnerException("User already voted to close this question.");
+
+                    default: throw error;
+                }
             }
 
-            return new QuestionCloseCommandResult(command.Id, slug);
+            return new QuestionCloseCommandResult(command.Id, result[1].GetString());
         }
     }
 }
