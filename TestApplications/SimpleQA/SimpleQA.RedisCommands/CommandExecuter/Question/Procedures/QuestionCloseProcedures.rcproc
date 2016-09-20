@@ -1,6 +1,6 @@
 ﻿proc QuestionClose($questionId, $questionCloseVotesSet, user, votesToClose)
 	
-	local question = redis.call('HMGET', questionId, 'User', 'CloseStatus', 'Slug')
+	local question = redis.call('HMGET', questionId, 'User', 'Status', 'Slug')
 	if ( question[1] == user ) then
 		return redis.error_reply("OWNER")
 	elseif ( question[2] ~= '0' and question[2] ~= false and question[2] ~= '') then

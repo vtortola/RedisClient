@@ -3,14 +3,16 @@
 proc SaveQuestionData($questionId, questionData[], $userVotes)
 	redis.call('HMSET', questionId, unpack(questionData))
 	redis.call('ZADD', userVotes, 0, questionId)
-	return 'OK'
+
+	return redis.status_reply('OK') 
 endproc
 
 proc IndexQuestion($questionId, $questionsByTimeId, $questionsByScoreId, initialScore, $questionCounterId)
 	redis.call('ZADD', questionsByTimeId, initialScore, questionId)
     redis.call('ZADD', questionsByScoreId, initialScore, questionId)
-	redis.call('INCR', questionCounterId)
-	return 'OK'
+	redis.call('INCR', questionCounterId
+
+	return redis.status_reply('OK') 
 endproc
 
 -- http://oldblog.antirez.com/post/autocomplete-with-redis.html
@@ -29,7 +31,7 @@ proc SaveQuestionTags($questionTagsId, $tagsAutocompleteId, tags[])
 		redis.call('ZADD', tagsAutocompleteId, 0, tag .. '*')
 	end
 
-	return 'OK'
+	return redis.status_reply('OK') 
 endproc
 
 proc NotifyTags(tagsId[])
@@ -37,7 +39,7 @@ proc NotifyTags(tagsId[])
 	do 
 		redis.call('PUBLISH', tagsId[i], 'ADDED')
 	end
-	return 'OK'
+	return redis.status_reply('OK') 
 endproc
 
 proc RegisterQuestionTagsByScore($questionId, $tagsId[], score)
@@ -45,7 +47,7 @@ proc RegisterQuestionTagsByScore($questionId, $tagsId[], score)
 	do 
 	   redis.call('ZINCRBY', tagsId[i], score, questionId) 
 	end
-	return 'OK'
+	return redis.status_reply('OK') 
 endproc
 
 proc RegisterQuestionTagsByDate($questionId, $tagsId[], score)
@@ -53,7 +55,7 @@ proc RegisterQuestionTagsByDate($questionId, $tagsId[], score)
 	do 
 	   redis.call('ZADD', tagsId[i], score, questionId) 
 	end
-	return 'OK'
+	return redis.status_reply('OK') 
 endproc
 
 proc IndexQuestionTags(tags[], $tagsByScore, scoreToAdd, $tagsByDate, dateScore, $tagCounting)
@@ -63,5 +65,5 @@ proc IndexQuestionTags(tags[], $tagsByScore, scoreToAdd, $tagsByDate, dateScore,
 	   redis.call('ZADD', tagsByDate, dateScore, tags[i])
 	   redis.call('ZINCRBY', tagCounting, 1, tags[i]) 
 	end
-	return 'OK'
+	return redis.status_reply('OK') 
 endproc
