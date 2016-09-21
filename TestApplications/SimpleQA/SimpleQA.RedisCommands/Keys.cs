@@ -7,6 +7,15 @@ namespace SimpleQA
 {
     public static class Keys
     {
+        internal static String QuestionIdStore()
+        {
+            return "{questions}:ids";
+        }
+
+
+        //////////////
+
+
         public static String QuestionCounter()
         {
             return "questioncounter";
@@ -51,10 +60,7 @@ namespace SimpleQA
         {
             return "question:" + questionId + ":answers_ids";
         }
-        internal static String QuestionIdStore()
-        {
-            return "questions_ids";
-        }
+
         internal static String AnswerVoteKey(String questionId, String answerId)
         {
             return "question:" + questionId + ":answer:" + answerId +":votes";

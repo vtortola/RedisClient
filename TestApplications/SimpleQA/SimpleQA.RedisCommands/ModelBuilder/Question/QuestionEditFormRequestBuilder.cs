@@ -16,23 +16,33 @@ namespace SimpleQA.RedisCommands
 
         public async Task<QuestionEditFormViewModel> BuildAsync(QuestionEditFormRequest request, IPrincipal user, CancellationToken cancel)
         {
-            var result = await _channel.ExecuteAsync(@"
-                                        HMGET @key Content Title User
-                                        SMEMBERS @tagKey", new
-                                                         {
-                                                             key = Keys.QuestionKey(request.Id),
-                                                             tagKey = Keys.QuestionTagsKey(request.Id),
-                                                         }).ConfigureAwait(false);
+            var result = await _channel.ExecuteAsync(
+                                        "QuestionEditForm {question} @id @user", 
+                                        new
+                                        {
+                                            id = request.Id,
+                                            user = user.Identity.Name
+                                        })
+                                        .ConfigureAwait(false);
 
-            var dic = result[0].GetStringArray();
+            var error = result[0].GetException();
+            if(error != null)
+            {
+                switch (error.Prefix)
+                {
+                    case "NOTOWNER":
+                        throw new SimpleQAException("You are not the author of the question you try to edit.");
+                    default: 
+                        throw error;
+                }
+            }
 
-            if (dic[2] != user.Identity.Name)
-                throw new SimpleQAException("You are not the author of the question you try to edit.");
+            result = result[0].AsResults();
 
             var model = new QuestionEditFormViewModel();
-            model.Content = dic[0];
-            model.Title = dic[1];
-            model.Tags = result[1].GetStringArray();
+            model.Content = result[0].GetString();
+            model.Title = result[1].GetString();
+            model.Tags = result[2].GetStringArray();
             model.Id = request.Id;
             return model;
         }

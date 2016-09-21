@@ -11,11 +11,6 @@
 
 <hr/>
 
-@if(Model.InnerException!=null)
-{
-    <h2>@Model.InnerException.GetBaseException().Message</h2>
-}
-
 @if (badRequest != null)
 {
     <ul>

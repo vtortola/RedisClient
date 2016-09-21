@@ -72,6 +72,7 @@
     <Compile Include="ModelBuilder\Answer\AnswerRequestBuilder.cs" />
     <Compile Include="ModelBuilder\Home\HomeByTagRequestBuilder.cs" />
     <Compile Include="ModelBuilder\Home\HomeRequestBuilder.cs" />
+    <EmbeddedResource Include="ModelBuilder\Question\Procedures\QuestionEditFormProcedure.rcproc" />
     <Compile Include="ModelBuilder\Question\QuestionCloseFormRequestBuilder.cs" />
     <Compile Include="ModelBuilder\Question\QuestionDeleteFormRequestBuilder.cs" />
     <Compile Include="ModelBuilder\Question\QuestionEditFormRequestBuilder.cs" />
@@ -92,7 +93,12 @@
   <ItemGroup>
     <EmbeddedResource Include="CommandExecuter\Question\Procedures\QuestionCreateProcedures.rcproc" />
     <EmbeddedResource Include="CommandExecuter\Question\Procedures\QuestionCloseProcedures.rcproc" />
+    <EmbeddedResource Include="ModelBuilder\Question\Procedures\QuestionRequestProcedure.rcproc" />
+    <EmbeddedResource Include="ModelBuilder\Question\Procedures\QuestionCloseFormProcedures.rcproc" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="CommandExecuter\Authentication\Procedures\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

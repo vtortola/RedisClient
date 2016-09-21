@@ -16,6 +16,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedisClientStressApplication", "TestApplications\RedisClientStressApplication\RedisClientStressApplication.csproj", "{F8F460F6-ED9A-47C9-8CB8-E57FE7227FF8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SimpleQA", "SimpleQA", "{C66FE0FB-3D23-4B85-AF98-5BA764F3539C}"
+	ProjectSection(SolutionItems) = preProject
+		TestApplications\SimpleQA\SimpleQAModel.txt = TestApplications\SimpleQA\SimpleQAModel.txt
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleQA.Model", "TestApplications\SimpleQA\SimpleQA.Common\SimpleQA.Model.csproj", "{D3CA0210-2896-4F98-B1F2-7460F43CC503}"
 EndProject

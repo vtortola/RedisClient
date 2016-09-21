@@ -1,0 +1,34 @@
+﻿proc QuestionRequest($hashtag, questionId, user)
+
+	local question = {}
+	local qkey = hashtag .. ':post:' .. questionId
+	local qtagkey = hashtag .. ':tags:' .. questionId
+	local qvoteskey = hashtag .. ':votes:' .. questionId 
+	local closeVotesKey = hashtag .. ':close:' .. questionId
+	local answersKey = hashtag .. ':answers:' .. questionId
+
+	local exists = redis.call('EXISTS', qkey)
+	if ( exists == 0 ) then
+		return redis.error_reply('NOTFOUND')
+	end
+
+	question[1] = redis.call('HGETALL', qkey)
+	question[2] = redis.call('SMEMBERS',  qtagkey)
+	question[3] = redis.call('ZSCORE', qvoteskey, user)
+	question[4] = redis.call('ZSCORE', closeVotesKey, user)
+	 
+	local answers = {}
+	local answerIds = redis.call('SMEMBERS', answersKey)
+	for index, id in ipairs(answerIds) do
+		local answer = {}
+		local answerKey = hashtag .. ':answer:' .. id
+		local answerVotesKey = hashtag .. ':avotes:' .. id
+
+		answer[1] = redis.call('HGETALL', answerKey)
+		answer[2] = redis.call('ZSCORE', answerVotesKey, user)
+		answers[index] = answer
+	end
+	question[5] = answers
+
+	return question
+endproc

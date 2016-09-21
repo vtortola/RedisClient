@@ -23,56 +23,43 @@ namespace SimpleQA.RedisCommands
 
        public async Task<QuestionCreateCommandResult> ExecuteAsync(QuestionCreateCommand command, IPrincipal user, CancellationToken cancel)
        {
-           var store = Keys.QuestionIdStore();
-
-           var result = await _channel.ExecuteAsync(@"INCR @store", new { store }).ConfigureAwait(false);
+           var result = await _channel.ExecuteAsync(@"CreateQuestionId {questions}").ConfigureAwait(false);
            var id = result[0].GetInteger().ToString();
 
-           var slug = RemoveSymbols(command.Title);
-           slug = RemoveDiacritics(slug);
-           if (String.IsNullOrWhiteSpace(slug))
-               throw new SimpleQAException("Unable to generate a slug");
-
+           var slug = CreateSlug(command);
            var initialScore = command.CreationDate.Ticks;
-
+           var scoreIncr = Constant.VoteScore;
            var data = GetQuestionData(command, user, id, slug, initialScore);
 
            result = await _channel.ExecuteAsync(@"
-                        MULTI
-                        SaveQuestionData @questionKey @data @userVotes
-                        IndexQuestion @questionKey @questionByTime @questionByScore @initialScore @questionCounter
-                        NotifyTags @tagKeys
-                        SaveQuestionTags @qtagKey @autocompleteTags @Tags 
-                        RegisterQuestionTagsByScore @questionKey @tagScoreKeys @scoreIncr
-                        RegisterQuestionTagsByDate @questionKey @tagDateKeys @initialScore
-                        IndexQuestionTags @Tags @tagsByScore @scoreIncr @tagsByDate @initialScore @tagCounting
-                        EXEC",
-                       new
-                       {
-                           questionKey = Keys.QuestionKey(id),
-                           data,
-                           questionByTime = Keys.QuestionsByDate(),
-                           questionByScore = Keys.QuestionsByScore(),
-                           initialScore,
-                           questionCounter = Keys.QuestionCounter(),
-                           tagScoreKeys = command.Tags.Select(t => Keys.TagKeyByScore(t)),
-                           tagDateKeys = command.Tags.Select(t => Keys.TagKeyByDate(t)),
-                           command.Tags,
-                           tagsByScore = Keys.TagsByScore(),
-                           scoreIncr = Constant.VoteScore,
-                           tagsByDate = Keys.TagsByDate(),
-                           qtagKey = Keys.QuestionTagsKey(id),
-                           tagCounting = Keys.TagCounting(),
-                           userVotes = Keys.UserVotesKey(user.Identity.Name),
-                           autocompleteTags = Keys.AutoCompleteTags(),
-                           tagKeys = command.Tags.Select(t=>Keys.TagNotification(t))
-                       })
-                       .ConfigureAwait(false);
-
+                                    SaveQuestion {question} @id @user @data @tags
+                                    IndexQuestion {questions} @id @initialScore
+                                    IndexTags {tag} @id @tags @scoreIncr @initialScore
+                                    IndexAutoCompleteTags {tag} @tags",
+                                   new
+                                   {
+                                       id,
+                                       user = user.Identity.Name,
+                                       data,
+                                       tags = command.Tags,
+                                       initialScore,
+                                       scoreIncr
+                                   })
+                                   .ConfigureAwait(false);
+           
            result.ThrowErrorIfAny();
            result.Last().AssertOK();
 
            return new QuestionCreateCommandResult(id, slug);
+       }
+
+       private static string CreateSlug(QuestionCreateCommand command)
+       {
+           var slug = RemoveSymbols(command.Title);
+           slug = RemoveDiacritics(slug);
+           if (String.IsNullOrWhiteSpace(slug))
+               throw new SimpleQAException("Unable to generate a slug");
+           return slug;
        }
 
        static IEnumerable<String> GetQuestionData(QuestionCreateCommand command, IPrincipal user, String id, String slug, Int64 initialScore)

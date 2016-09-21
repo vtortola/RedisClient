@@ -1,0 +1,6 @@
+﻿proc QuestionCloseForm($hashtag, questionId)
+
+	local qvoteskey = hashtag .. ':close:' .. questionId
+	return tonumber(redis.call('SCARD', qvoteskey)) or 0
+
+endproc

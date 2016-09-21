@@ -1,23 +1,73 @@
-﻿-- for creating questions
-
-proc SaveQuestionData($questionId, questionData[], $userVotes)
-	redis.call('HMSET', questionId, unpack(questionData))
-	redis.call('ZADD', userVotes, 0, questionId)
-
-	return redis.status_reply('OK') 
+﻿-- Generates an unique question ID
+proc CreateQuestionId($hashtag)
+	return redis.call('INCR', hashtag .. ':ids')
 endproc
 
-proc IndexQuestion($questionId, $questionsByTimeId, $questionsByScoreId, initialScore, $questionCounterId)
-	redis.call('ZADD', questionsByTimeId, initialScore, questionId)
-    redis.call('ZADD', questionsByScoreId, initialScore, questionId)
-	redis.call('INCR', questionCounterId
+-- Save question data using {question} hashtag
+proc SaveQuestion($hashtag, questionId, user, questionData[], tags[])
+
+	local qkey = hashtag .. ':post:' .. questionId
+	local qtkey = hashtag .. ':tags:' .. questionId
+	local qvoteskey = hashtag .. ':votes:' .. questionId
+
+	redis.call('HMSET', qkey, unpack(questionData))
+	redis.call('SADD', qtkey, unpack(tags))
+	redis.call('ZADD', qvoteskey, 0, user)
 
 	return redis.status_reply('OK') 
+
+endproc
+
+-- Index the question id in the global zsets
+proc IndexQuestion($hashtag, questionId, initialScore)
+
+	local qbydate = hashtag .. ':date'
+	local qbyscore= hashtag .. ':score'
+	local qcounter = hashtag .. ':counter'
+
+	redis.call('ZADD', qbydate, initialScore, questionId)
+    redis.call('ZADD', qbyscore, initialScore, questionId)
+	redis.call('INCR', qcounter)
+
+	return redis.status_reply('OK') 
+
+endproc
+
+-- Index the tags in the popularity ranks
+proc IndexTags($hashtag, questionId, tags[], score, dateScore)
+
+	local alltagbydate = hashtag .. ':date'
+	local alltagbyscore= hashtag .. ':score'
+	local alltagcount  = hashtag .. ':count'
+
+	local function indexTag(tag)
+		local tbydate = hashtag .. ':date:' .. tag
+		local tbyscore = hashtag .. ':score:' .. tag
+
+		redis.call('ZADD', tbydate, dateScore, questionId)
+		redis.call('ZINCRBY', tbyscore, score, questionId) 
+
+		redis.call('ZADD', alltagbydate, dateScore, tag)
+		redis.call('ZINCRBY', alltagbyscore, score, tag) 
+		
+		redis.call('ZINCRBY', alltagcount, 1, tag) 
+
+		redis.call('PUBLISH', tag, 'ADDED')
+	end
+
+	for i=1, table.getn(tags), 1 
+	do 
+	   indexTag(tags[i]) 
+	end
+
+	return redis.status_reply('OK') 
+
 endproc
 
 -- http://oldblog.antirez.com/post/autocomplete-with-redis.html
-proc SaveQuestionTags($questionTagsId, $tagsAutocompleteId, tags[])
-	redis.call('SADD', questionTagsId, unpack(tags))
+proc IndexAutoCompleteTags($hashtag, tags[])
+	
+	local tagsAutocompleteId = hashtag .. ':autocomplete'
 
 	for i=1, table.getn(tags), 1 
 	do 
@@ -31,39 +81,5 @@ proc SaveQuestionTags($questionTagsId, $tagsAutocompleteId, tags[])
 		redis.call('ZADD', tagsAutocompleteId, 0, tag .. '*')
 	end
 
-	return redis.status_reply('OK') 
-endproc
-
-proc NotifyTags(tagsId[])
-	for i=1, table.getn(tagsId), 1 
-	do 
-		redis.call('PUBLISH', tagsId[i], 'ADDED')
-	end
-	return redis.status_reply('OK') 
-endproc
-
-proc RegisterQuestionTagsByScore($questionId, $tagsId[], score)
-	for i=1, table.getn(tagsId), 1 
-	do 
-	   redis.call('ZINCRBY', tagsId[i], score, questionId) 
-	end
-	return redis.status_reply('OK') 
-endproc
-
-proc RegisterQuestionTagsByDate($questionId, $tagsId[], score)
-	for i=1, table.getn(tagsId), 1 
-	do 
-	   redis.call('ZADD', tagsId[i], score, questionId) 
-	end
-	return redis.status_reply('OK') 
-endproc
-
-proc IndexQuestionTags(tags[], $tagsByScore, scoreToAdd, $tagsByDate, dateScore, $tagCounting)
-	for i=1, table.getn(tags), 1 
-	do 
-	   redis.call('ZINCRBY', tagsByScore, scoreToAdd, tags[i]) 
-	   redis.call('ZADD', tagsByDate, dateScore, tags[i])
-	   redis.call('ZINCRBY', tagCounting, 1, tags[i]) 
-	end
 	return redis.status_reply('OK') 
 endproc
