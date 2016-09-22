@@ -105,6 +105,7 @@
     <EmbeddedResource Include="ModelBuilder\Home\Procedures\HomeTagProcedures.rcproc" />
     <EmbeddedResource Include="ModelBuilder\Tags\Procedures\PopularTagsProcedures.rcproc" />
     <EmbeddedResource Include="ModelBuilder\Tags\Procedures\TagSuggestionProcedures.rcproc" />
+    <EmbeddedResource Include="ModelBuilder\User\Procedures\UserInboxProcedures.rcproc" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />

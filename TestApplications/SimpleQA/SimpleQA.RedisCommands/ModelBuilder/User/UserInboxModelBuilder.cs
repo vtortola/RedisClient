@@ -1,5 +1,7 @@
 ﻿using SimpleQA.Models;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,23 +20,36 @@ namespace SimpleQA.RedisCommands
 
         public async Task<UserInboxModel> BuildAsync(UserInboxRequest request, IPrincipal user, CancellationToken cancel)
         {
-            var result = await _channel.ExecuteAsync(@"
-                                        MULTI
-                                        SMEMBERS @inbox
-                                        DEL @inbox
-                                        EXEC",
-                                        new { inbox = Keys.UserInboxKey(user.Identity.Name) })
+            var result = await _channel.ExecuteAsync(
+                                        "GetInboxNotifications {user} @userId",
+                                        new { userId = user.GetSimpleQAIdentity().Id })
                                         .ConfigureAwait(false);
 
-            var list = new List<QuestionNotification>();
-            foreach (var questionId in result[1].GetStringArray())
-            {
-                var questionResult = await _channel.ExecuteAsync("HMGET @questionId Id Slug Title", new { questionId }).ConfigureAwait(false);
-                var data = questionResult[0].GetStringArray();
-                list.Add(new QuestionNotification(data[0], data[1], data[2]));
-            }
+            result.ThrowErrorIfAny();
+            var ids = result[0].GetStringArray();
+            List<QuestionNotification> list;
+            if (ids.Any())
+                list = await GetQuestions(ids).ConfigureAwait(false);
+            else
+                list = new List<QuestionNotification>();
+            return new UserInboxModel(list);
+        }
 
-            return new UserInboxModel(list.ToArray());
+        async Task<List<QuestionNotification>> GetQuestions(IEnumerable<String> ids)
+        {
+            var result =
+                await _channel.ExecuteAsync( // Reuse proc from HomeProcedures.rcproc
+                               "GetQuestions {question} @ids",
+                               new { ids })
+                               .ConfigureAwait(false);
+
+            result.ThrowErrorIfAny();
+
+            return result[0]
+                        .AsResults()
+                        .Select(r => r.AsResults())
+                        .Select(q => q[0].AsObjectCollation<QuestionNotification>())
+                        .ToList();
         }
     }
 }

@@ -1,27 +1,23 @@
 ﻿using SimpleQA.Models;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SimpleQA.Models
 {
     public sealed class QuestionNotification
     {
-        public String Title { get; private set; }
-        public String Id { get; private set; }
-        public String Slug { get; private set; }
-        public QuestionNotification(String id, String slug, String title)
-        {
-            Id = id;
-            Slug = slug;
-            Title = title;
-        }
+        public String Title { get; set; }
+        public String Id { get; set; }
+        public String Slug { get; set; }
     }
 
     public sealed class UserInboxModel : IModel
     {
         public QuestionNotification[] Questions { get; private set; }
-        public UserInboxModel(QuestionNotification[] questions)
+        public UserInboxModel(IEnumerable<QuestionNotification> questions)
         {
-            Questions = questions;
+            Questions = questions.ToArray() ;
         }
     }
 }

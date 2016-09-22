@@ -1,0 +1,10 @@
+﻿proc GetInboxNotifications($hashtag, userId)
+
+	local mailboxkey = hashtag .. ':mailbox:' .. userId
+
+	local ids = redis.call('SMEMBERS', mailboxkey)
+    redis.call('DEL', mailboxkey)
+
+	return ids
+
+endproc
