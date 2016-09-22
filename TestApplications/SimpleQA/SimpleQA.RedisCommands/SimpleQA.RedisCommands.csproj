@@ -64,7 +64,7 @@
     <Compile Include="CommandExecuter\Question\QuestionDeleteCommandExecutor.cs" />
     <Compile Include="CommandExecuter\Question\QuestionEditCommandExecuter.cs" />
     <Compile Include="CommandExecuter\Question\QuestionVoteCommandExecuter.cs" />
-    <Compile Include="CommandExecuter\VisitQuestionCommandExecuter.cs" />
+    <Compile Include="CommandExecuter\VisitQuestion\VisitQuestionCommandExecuter.cs" />
     <Compile Include="Keys.cs" />
     <Compile Include="Messaging\RedisClientMessaging.cs" />
     <Compile Include="ModelBuilder\Answer\AnswerDeleteFormRequestBuilder.cs" />
@@ -100,6 +100,7 @@
     <EmbeddedResource Include="CommandExecuter\Authentication\Procedures\EndSessionProcedure.rcproc" />
     <EmbeddedResource Include="CommandExecuter\Question\Procedures\QuestionDeleteProcedures.rcproc" />
     <EmbeddedResource Include="CommandExecuter\Question\Procedures\QuestionEditProcedures.rcproc" />
+    <EmbeddedResource Include="CommandExecuter\VisitQuestion\Procedures\VisitQuestionProcedures.rcproc" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />

@@ -1,0 +1,6 @@
+﻿proc VisitQuestion($hashtag, questionId, nview)
+
+	local qkey = hashtag .. ":post:" .. questionId
+	return redis.call('HINCRBY', qkey, 'ViewCount', nview)
+
+endproc
