@@ -38,7 +38,7 @@ namespace SimpleQA.RedisCommands
 
             result = await _channel.ExecuteAsync(@"
                                         UnindexQuestion {questions} @id
-                                        UnindexQuestionTags {tags} @id @score @tags",
+                                        UnindexQuestionTags {tag} @id @score @tags",
                                         new
                                         {
                                             id = command.Id,
