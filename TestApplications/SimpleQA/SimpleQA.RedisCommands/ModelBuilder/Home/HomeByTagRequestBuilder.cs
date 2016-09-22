@@ -26,9 +26,10 @@ namespace SimpleQA.RedisCommands
 
             var result =
                 await _channel.ExecuteAsync(
-                               "PaginateHome {questions} @page @items @orderBy",
+                               "PaginateTag {tag} @tag @page @items @orderBy",
                                new
                                {
+                                   tag = request.Tag,
                                    page = request.Page - 1,
                                    items = Constant.ItemsPerPage,
                                    orderBy = sorting.ToString()
