@@ -16,15 +16,10 @@ namespace SimpleQA.RedisCommands
 
         public async Task<PopularTagsViewModel> BuildAsync(PopularTagsRequest request, IPrincipal user, CancellationToken cancel)
         {
-            var result = await _channel.ExecuteAsync(@"ZREVRANGE @tagquestions @start @end",
-                                        new
-                                        {
-                                            tagquestions = Keys.TagCounting(),
-                                            start = 0,
-                                            end = 20
-                                        })
+            var result = await _channel.ExecuteAsync("GetPopularTags {tag} @count",
+                                        new { count = 20  })
                                         .ConfigureAwait(false);
-
+            result.ThrowErrorIfAny();
             return new PopularTagsViewModel()
             {
                 Tags = result[0].GetStringArray()

@@ -1,0 +1,26 @@
+﻿-- http://oldblog.antirez.com/post/autocomplete-with-redis.html
+proc SuggestTags($hashtag, prefix, max)
+
+	local autokey = hashtag .. ':autocomplete'
+	local rank = redis.call('ZRANK', autokey, prefix)
+	if(rank == nil or rank == false) then
+		rank = 0
+	end
+
+	local entries = redis.call('ZRANGE', autokey, rank, rank + max)
+
+	local result = {}
+	local next = 1
+
+	for index, value in ipairs(entries) do
+	
+		if(value:sub(value:len(),value:len()) == '*' and value:sub(1, prefix:len()) == prefix ) then
+			result[next] = value:sub( 1, value:len() - 1)
+			next = next + 1
+		end
+	  
+	end
+
+	return result
+
+endproc

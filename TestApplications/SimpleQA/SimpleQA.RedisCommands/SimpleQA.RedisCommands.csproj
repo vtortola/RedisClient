@@ -103,6 +103,8 @@
     <EmbeddedResource Include="CommandExecuter\VisitQuestion\Procedures\VisitQuestionProcedures.rcproc" />
     <EmbeddedResource Include="ModelBuilder\Home\Procedures\HomeProcedures.rcproc" />
     <EmbeddedResource Include="ModelBuilder\Home\Procedures\HomeTagProcedures.rcproc" />
+    <EmbeddedResource Include="ModelBuilder\Tags\Procedures\PopularTagsProcedures.rcproc" />
+    <EmbeddedResource Include="ModelBuilder\Tags\Procedures\TagSuggestionProcedures.rcproc" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />

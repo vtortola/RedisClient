@@ -4,9 +4,15 @@ simpleqa.global = simpleqa.global || {}
 simpleqa.global.errorhandling = function ($) {
         var $genericErrorModal = $('#generic-error');
         var lastError = 'Unexpected error';
+        var visible = false;
 
         $genericErrorModal.on('show.bs.modal', function (event) {
+            visible = true;
             $genericErrorModal.find('.modal-body').text(lastError)
+        });
+
+        $genericErrorModal.on('hide.bs.modal', function (event) {
+            visible = false;
         });
 
         // removing modal caches
@@ -16,7 +22,12 @@ simpleqa.global.errorhandling = function ($) {
 
         $(document).ajaxError(function (event, jqxhr, settings, thrownError) {
             lastError = thrownError;
-            $('.modal').modal('hide'); // close opened modals
-            $genericErrorModal.modal('show');
+            if (visible) {
+                $genericErrorModal.find('.modal-body').text(lastError);
+            }
+            else {
+                $('.modal').modal('hide'); // close opened modals
+                $genericErrorModal.modal('show');
+            }
         });
 }

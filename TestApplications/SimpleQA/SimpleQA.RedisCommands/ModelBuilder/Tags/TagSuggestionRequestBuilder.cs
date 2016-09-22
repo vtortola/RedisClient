@@ -20,19 +20,16 @@ namespace SimpleQA.RedisCommands
         public async Task<TagSuggestionsModel> BuildAsync(TagSuggestionRequest request, IPrincipal user, CancellationToken cancel)
         {
             var store = Keys.AutoCompleteTags();
-            var result = await _channel.ExecuteAsync("ZRANK @store @prefix", new { store, prefix = request.Query }).ConfigureAwait(false);
+            var result = await _channel.ExecuteAsync(
+                                        "SuggestTags {tag} @prefix @max", 
+                                        new 
+                                        { 
+                                            prefix = request.Query,
+                                            max = 50
+                                        }).ConfigureAwait(false);
 
-            var start = result[0].AsInteger();
-
-            result = await _channel.ExecuteAsync("ZRANGE @store @start @end", new { store, start, end = start + 50 }).ConfigureAwait(false);
-
-            var tags = result[0]
-                         .GetStringArray()
-                         .Where(t => t.EndsWith("*", StringComparison.Ordinal) && t.StartsWith(request.Query, StringComparison.OrdinalIgnoreCase))
-                         .Select(t=>t.Substring(0, t.Length -1))
-                         .ToArray();
-
-            return new TagSuggestionsModel(tags);
+            result.ThrowErrorIfAny();
+            return new TagSuggestionsModel(result[0].GetStringArray());
         }
     }
 }

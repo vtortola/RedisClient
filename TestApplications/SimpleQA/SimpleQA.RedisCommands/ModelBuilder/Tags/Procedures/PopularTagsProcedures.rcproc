@@ -1,0 +1,3 @@
+﻿proc GetPopularTags($hashtag, count)
+	return redis.call('ZREVRANGE', hashtag .. ':count' , 0, count)
+endproc
