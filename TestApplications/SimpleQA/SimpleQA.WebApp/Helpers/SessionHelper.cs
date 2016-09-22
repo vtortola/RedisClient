@@ -17,7 +17,7 @@ namespace SimpleQA.WebApp.Helpers
             var prin = user as SimpleQAPrincipal;
             if (prin != null)
             {
-                builder.Attributes.Add("value", prin.Session);
+                builder.Attributes.Add("value", prin.GetSimpleQAIdentity().Session);
             }
             return MvcHtmlString.Create(builder.ToString());
         }
@@ -29,7 +29,7 @@ namespace SimpleQA.WebApp.Helpers
             var prin = user as SimpleQAPrincipal;
             if (prin != null)
             {
-                session = prin.Session;
+                session = prin.GetSimpleQAIdentity().Session;
             }
             return MvcHtmlString.Create(session);
         }

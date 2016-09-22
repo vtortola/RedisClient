@@ -1,10 +1,10 @@
-﻿proc QuestionEditForm($hashtag, questionId, user)
+﻿proc QuestionEditForm($hashtag, questionId, userId)
 
     local qkey = hashtag .. ':post:' .. questionId
     local qtagskey = hashtag .. ':tags:' .. questionId
 
-    local question = redis.call('HMGET', qkey, 'Content', 'Title', 'User')
-    if ( question[3] ~= user) then  
+    local question = redis.call('HMGET', qkey, 'Content', 'Title', 'UserId')
+    if ( question[3] ~= userId) then  
         return redis.error_reply('NOTOWNER')
     end
     question[3] = redis.call('SMEMBERS', qtagskey)

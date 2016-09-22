@@ -1,0 +1,4 @@
+﻿proc EndSession($hashtag, session)
+	redis.call('DEL', hashtag .. ':session:' .. session)
+	return redis.status_reply('OK') 
+endproc

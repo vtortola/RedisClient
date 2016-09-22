@@ -1,6 +1,13 @@
 ﻿@model SimpleQA.SimpleQAException
 
 @{
+    Exception inner = Model.InnerException;
+    var aex = inner as AggregateException;
+    if(aex != null)
+    {
+        inner = aex.Flatten().InnerExceptions.First();
+    }
+    
     ViewBag.Title = "Unexpected error";
     var badRequest = Model as SimpleQABadRequestException;
 }
@@ -32,11 +39,11 @@
     </div>
 }
 
-@if (Model.InnerException != null)
+@if (inner != null)
 {
-    <h3>@Model.InnerException.Message Stack Trace</h3>
+    <h3>@inner.Message Stack Trace</h3>
     <div class="stacktrace">
-        @foreach (var line in Model.InnerException.StackTrace.Split('\r'))
+        @foreach (var line in inner.StackTrace.Split('\r'))
         {
         <div>@line</div>
         }

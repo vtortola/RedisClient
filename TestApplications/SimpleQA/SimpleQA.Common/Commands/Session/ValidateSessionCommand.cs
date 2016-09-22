@@ -16,18 +16,18 @@ namespace SimpleQA.Commands
     {
         public static readonly ValidateSessionCommandResult NonValid = new ValidateSessionCommandResult();
 
-        public String User { get; private set; }
+        public String Id { get; private set; }
+        public String UserName { get; private set; }
         public Boolean IsValid { get; private set; }
         public Int32 InboxCount { get; private set; }
-        public ValidateSessionCommandResult(String user, Int32 inboxCount)
+        public ValidateSessionCommandResult(String id, String userName, Int32 inboxCount)
         {
-            User = user;
+            Id = id;
+            UserName = userName;
             IsValid = true;
             InboxCount = inboxCount;
         }
-        private ValidateSessionCommandResult()
-        {
-    
-        }
+
+        private ValidateSessionCommandResult(){}
     }
 }

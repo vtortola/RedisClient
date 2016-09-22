@@ -19,38 +19,50 @@ namespace SimpleQA.RedisCommands
 
         public async Task<QuestionVoteCommandResult> ExecuteAsync(QuestionVoteCommand command, IPrincipal user, CancellationToken cancel)
         {
-            // pear each tag it has to vote the question 
+            var result = 
+                await _channel.ExecuteAsync(
+                                        "VoteQuestion {question} @id @userId @score @upvote",
+                                        new
+                                        {
+                                            id = command.QuestionId,
+                                            userId = user.GetSimpleQAIdentity().Id,
+                                            score = command.Upvote ? Constant.VoteScore : 0 - Constant.VoteScore,
+                                            upvote = command.Upvote ? 1 : 0
+                                        })
+                                        .ConfigureAwait(false);
 
-            var questionKey = Keys.QuestionKey(command.QuestionId);
-            var voteTrackerKey = Keys.UserVotesKey(user.Identity.Name);
-            var result = await _channel.ExecuteAsync("VoteQuestion @questionKey @field @questionsByScore @score @voteTrackerKey @value @qtags @tagsByScore",
+            CheckExceptions(result);
+
+            result = result[0].AsResults();
+            var votes = result[0].AsIntegerArray();
+            var tags = result[1].AsStringArray();
+
+            result = await _channel.ExecuteAsync(@"
+                                    VoteQuestionGlobally {questions} @id @score
+                                    VoteTags {tag} @id @tags @score",
                                     new
                                     {
-                                        questionKey,
-                                        field = command.Upvote ? "UpVotes" : "DownVotes",
-                                        value = command.Upvote ? "1" : "-1",
-                                        voteTrackerKey,
-                                        questionsByScore = Keys.QuestionsByScore(),
+                                        id = command.QuestionId,
                                         score = command.Upvote ? Constant.VoteScore : 0 - Constant.VoteScore,
-                                        tagsByScore = Keys.TagsByScore(),
-                                        qtags = Keys.QuestionTagsKey(command.QuestionId)
-                                    }).ConfigureAwait(false);
+                                        tags
+                                    })
+                                    .ConfigureAwait(false);
 
-            var procResult = result[0];
-            if (procResult.RedisType == RedisType.Error)
+            result.ThrowErrorIfAny();
+            return new QuestionVoteCommandResult(votes[0] - votes[1]);
+        }
+
+        static void CheckExceptions(IRedisResults result)
+        {
+            var error = result[0].GetException();
+            if (error != null)
             {
-                var error = procResult.GetException();
-                if (error.OriginalMessage.Contains("ALREADYVOTED"))
-                    throw new SimpleQAException("User already voted");
-                throw error;
+                switch (error.Prefix)
+                {
+                    case "ALREADYVOTED": throw new SimpleQAException("User already voted");
+                    default: throw error;
+                }
             }
-            else if (procResult.RedisType == RedisType.Array)
-            {
-                var votes = procResult.AsIntegerArray();
-                return new QuestionVoteCommandResult(votes[0] - votes[1]);
-            }
-            else
-                throw new Exception("Unexpected result: " + procResult.AsString());
         }
     }
 }

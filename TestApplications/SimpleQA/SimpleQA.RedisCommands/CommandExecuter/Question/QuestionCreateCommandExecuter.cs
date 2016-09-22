@@ -32,15 +32,15 @@ namespace SimpleQA.RedisCommands
            var data = GetQuestionData(command, user, id, slug, initialScore);
 
            result = await _channel.ExecuteAsync(@"
-                                    SaveQuestion {question} @id @user @data @tags
+                                    SaveQuestion {question} @id @userId @data @tags
                                     IndexQuestion {questions} @id @initialScore
                                     IndexTags {tag} @id @tags @scoreIncr @initialScore
                                     IndexAutoCompleteTags {tag} @tags",
                                    new
                                    {
                                        id,
-                                       user = user.Identity.Name,
                                        data,
+                                       userId = user.GetSimpleQAIdentity().Id,
                                        tags = command.Tags,
                                        initialScore,
                                        scoreIncr
@@ -53,7 +53,7 @@ namespace SimpleQA.RedisCommands
            return new QuestionCreateCommandResult(id, slug);
        }
 
-       private static string CreateSlug(QuestionCreateCommand command)
+       static String CreateSlug(QuestionCreateCommand command)
        {
            var slug = RemoveSymbols(command.Title);
            slug = RemoveDiacritics(slug);
@@ -71,7 +71,7 @@ namespace SimpleQA.RedisCommands
                Content = command.Content,
                HtmlContent = command.HtmlContent,
                CreatedOn = command.CreationDate,
-               User = user.Identity.Name,
+               UserId = user.GetSimpleQAIdentity().Id,
                Slug = slug,
                Score = initialScore,
                UpVotes = 0,

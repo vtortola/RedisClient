@@ -16,9 +16,17 @@ namespace SimpleQA.WebApp.Filter
                 var dispatcher = DependencyResolver.Current.GetService<ICommandExecuterMediator>();
 
                 var command = new ValidateSessionCommand(cookie.Value);
-                var result = dispatcher.ExecuteAsync<ValidateSessionCommand, ValidateSessionCommandResult>(command, filterContext.HttpContext.User, CancellationToken.None).Result;
-                if (result.IsValid)
-                    filterContext.RequestContext.HttpContext.User = new SimpleQAPrincipal(result.User, cookie.Value, result.InboxCount);
+                try
+                {
+                    var result = dispatcher.ExecuteAsync<ValidateSessionCommand, ValidateSessionCommandResult>(command, filterContext.HttpContext.User, CancellationToken.None).Result;
+                    if (result.IsValid)
+                        filterContext.RequestContext.HttpContext.User = new SimpleQAPrincipal(result.Id, result.UserName, cookie.Value, result.InboxCount);
+                }
+                catch(Exception ex)
+                {
+                    filterContext.RequestContext.HttpContext.User = SimpleQAPrincipal.Anonymous;
+                    throw new SimpleQAException("Error performing session validation.", ex);
+                }
             }
         }
 

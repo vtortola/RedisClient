@@ -1,0 +1,19 @@
+﻿proc ValidateSession($hashtag, session, sessionTimeout)
+	
+	local sessionKey = hashtag .. ':session:' .. session
+
+	local uid = redis.call('GET', sessionKey)
+	if( uid == nil or uid == false or uid == '') then
+		return redis.error_reply('NOTVALID')
+	end
+
+	redis.call('EXPIRE', sessionKey, sessionTimeout)
+
+	local userKey = hashtag .. ':profile:' .. uid
+	local mailboxkey = hashtag .. ':mailbox:' .. uid
+	
+	local result = redis.call('HMGET', userKey, 'Id' ,'UserName', 'PlaceHolder')
+	result[3] = redis.call('SCARD', mailboxkey)
+	return result
+
+endproc

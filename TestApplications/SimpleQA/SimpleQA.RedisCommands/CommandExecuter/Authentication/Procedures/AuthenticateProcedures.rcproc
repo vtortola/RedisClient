@@ -1,0 +1,21 @@
+﻿
+-- dummy authentication
+proc Authenticate($hashtag, username, newUserId, session, sessionDuration)
+
+	local userMappingKey = hashtag .. ':namemapping' 
+
+	local uid = redis.call('HGET', userMappingKey, username)
+	if( uid == nil or uid == false or uid == '') then
+		local ukey = hashtag .. ':profile:' .. newUserId
+		redis.call('HMSET', ukey, 'Id', newUserId, 'UserName', username)
+		redis.call('HSET', userMappingKey, username, newUserId)
+		uid = newUserId
+	end
+
+	local sessionKey = hashtag .. ':session:' .. session
+
+	redis.call('SETEX', sessionKey, sessionDuration, uid)
+
+	return uid
+
+endproc

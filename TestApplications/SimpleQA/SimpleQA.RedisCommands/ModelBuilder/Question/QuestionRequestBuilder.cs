@@ -32,16 +32,36 @@ namespace SimpleQA.RedisCommands
         public async Task<QuestionViewModel> BuildAsync(QuestionRequest request, IPrincipal user, CancellationToken cancel)
         {
             var result = await _channel.ExecuteAsync(
-                                        "QuestionRequest {question} @id @user",
+                                        "QuestionRequest {question} @id @userId",
                                         new
                                         {
                                             id = request.Id,
-                                            user = user.Identity.Name
+                                            userId = user.GetSimpleQAIdentity().Id
                                         })
                                         .ConfigureAwait(false);
 
+            CheckException(result);
+
+            var complex = result[0].AsResults();
+            var question = new QuestionViewModel();
+            complex[0].AsObjectCollation(question);
+
+            question.User = complex[1].GetString();
+            question.Tags = complex[2].GetStringArray();
+            question.Id = request.Id;
+            question.AuthoredByUser = question.User == user.Identity.Name;
+            question.UpVoted = GetVote(complex[3].GetString());
+            question.UserVotedClose = complex[4].AsInteger() == 1;
+            
+            question.Answers = ExtractAnswers(user, complex[5].AsResults(), question);
+
+            return question;
+        }
+
+        static void CheckException(IRedisResults result)
+        {
             var error = result[0].GetException();
-            if(error != null)
+            if (error != null)
             {
                 switch (error.Prefix)
                 {
@@ -51,30 +71,18 @@ namespace SimpleQA.RedisCommands
                     default: throw error;
                 }
             }
-
-            var complex = result[0].AsResults();
-            var question = new QuestionViewModel();
-            complex[0].AsObjectCollation(question);
-
-            question.Id = request.Id;
-            question.AuthoredByUser = question.User == user.Identity.Name;
-            question.UserVotedClose = complex[3].AsInteger() == 1;
-            question.UpVoted = GetVote(complex[2].GetString());
-            question.Tags = complex[1].GetStringArray();
-            question.Answers = ExtractAnswers(user, complex, question);
-
-            return question;
         }
 
-        private static List<AnswerViewModel> ExtractAnswers(IPrincipal user, IRedisResults complex, QuestionViewModel question)
+        private static List<AnswerViewModel> ExtractAnswers(IPrincipal user, IRedisResults results, QuestionViewModel question)
         {
             var answers = new List<AnswerViewModel>();
-            foreach (var answerData in complex[4].AsResults())
+            foreach (var answerData in results)
             {
                 var answerResult = answerData.AsResults();
 
                 var answer = new AnswerViewModel();
                 answerResult[0].AsObjectCollation(answer);
+                answer.User = answerResult[1].GetString();
                 answer.QuestionId = question.Id;
                 answer.Editable = question.Status == QuestionStatus.Open;
                 answer.Votable = question.Votable;

@@ -25,11 +25,15 @@ QUESTION
 	- {question}:answers:<qid> 	// SET
 	- {question}:answer:<aid> 	// HASH
 	- {question}:avotes:<aid>	// ZSET
+	- {question}:uidmapping		// HASH
 
 USER 
 {user}
-	- {user}:session:<uid>		// STRING
+	- {user}:namemapping		// HASH
 	- {user}:profile:<uid>		// HASH
 	- {user}:mailbox:<uid>		// LIST
+	- {user}:session:<sid>		// STRING
+	- {user}:builin				// SET
+
 	
 

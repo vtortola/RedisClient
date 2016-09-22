@@ -1,5 +1,6 @@
 ﻿using SimpleQA.Commands;
 using System;
+using System.Collections.Generic;
 using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,37 +19,59 @@ namespace SimpleQA.RedisCommands
 
         public async Task<QuestionEditCommandResult> ExecuteAsync(QuestionEditCommand command, IPrincipal user, CancellationToken cancel)
         {
-            var data = Parameter.SequenceProperties(new
+            var data = GetPatchData(command);
+
+            var result = await _channel.ExecuteAsync(@"
+                                        UpdateQuestion {question} @id @userId @data @tags @topic",
+                                        new 
+                                        { 
+                                            id = command.Id,
+                                            userId = user.GetSimpleQAIdentity().Id,
+                                            data, 
+                                            tags = command.Tags,
+                                            topic = "question-" + command.Id
+                                        })
+                                        .ConfigureAwait(false);
+
+            CheckException(result);
+
+            result = result[0].AsResults();
+            var slug = result[0].GetString();
+            var addedTags = result[1].GetStringArray();
+            var removedTags = result[2].GetStringArray();
+
+
+
+            return new QuestionEditCommandResult(command.Id, slug);
+        }
+
+        static IEnumerable<String> GetPatchData(QuestionEditCommand command)
+        {
+            return Parameter.SequenceProperties(new
             {
                 Title = command.Title,
                 Content = command.Content,
                 HtmlContent = command.HtmlContent,
                 ModifiedOn = DateTime.Now,
             });
+        }
 
-            var questionKey = Keys.QuestionKey(command.Id);
-            var tagKey = Keys.QuestionTagsKey(command.Id);
-            var updates = Keys.QuestionNotification(command.Id);
-
-            var result = await _channel.ExecuteAsync(@"
-                                        HMSET @questionKey @data
-                                        DEL @tagKey
-                                        HGET @questionKey Slug
-                                        PUBLISH @updates EDIT",
-                                        new { questionKey, data, tagKey, updates }).ConfigureAwait(false);
-
-            var slug = result[2].GetString();
-            if (command.Tags != null && command.Tags.Length > 0)
+        static void CheckException(IRedisResults result)
+        {
+            var error = result[0].GetException();
+            if (error != null)
             {
-                foreach (var tag in command.Tags)
+                switch (error.Prefix)
                 {
-                    result = await _channel.ExecuteAsync(@"
-                                            SADD tags @tag
-                                            SADD @tagKey @tag",
-                                            new { tag, tagKey }).ConfigureAwait(false);
+                    case "NOTOWNER":
+                        throw new SimpleQANotOwnerException("You cannot close a question that is yours.");
+
+                    case "CANNOTCLOSE":
+                        throw new SimpleQANotOwnerException("Tne question is not open anymore.");
+
+                    default: throw error;
                 }
             }
-            return new QuestionEditCommandResult(command.Id, slug);
         }
     }
 }

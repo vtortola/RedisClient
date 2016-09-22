@@ -4,7 +4,7 @@ proc CreateQuestionId($hashtag)
 endproc
 
 -- Save question data using {question} hashtag
-proc SaveQuestion($hashtag, questionId, user, questionData[], tags[])
+proc SaveQuestion($hashtag, questionId, userId, questionData[], tags[])
 
 	local qkey = hashtag .. ':post:' .. questionId
 	local qtkey = hashtag .. ':tags:' .. questionId
@@ -12,7 +12,7 @@ proc SaveQuestion($hashtag, questionId, user, questionData[], tags[])
 
 	redis.call('HMSET', qkey, unpack(questionData))
 	redis.call('SADD', qtkey, unpack(tags))
-	redis.call('ZADD', qvoteskey, 0, user)
+	redis.call('ZADD', qvoteskey, 0, userId)
 
 	return redis.status_reply('OK') 
 

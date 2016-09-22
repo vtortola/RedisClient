@@ -1,0 +1,78 @@
+﻿proc UpdateQuestion($hashtag, questionId, userId, data[], tags[], questionTopic)
+
+	local function hasValue (array, value)
+		for index, ivalue in ipairs (array) do
+			if ivalue == value then
+				return true
+			end
+		end
+		return false
+	end
+
+	local function diffTags (storedTags, tags)
+		
+		local added = {}
+		local next = 1;
+
+		for index, value in ipairs (tags) do
+			if( hasValue(storedTags, value)) then
+				table.remove (storedTags, index)
+			else
+				added[next] = value
+				next = next + 1
+			end
+		end
+
+		return added, storedTags
+	end
+
+
+	local qkey = hashtag .. ':post:' .. questionId
+	local qtagskey = hashtag .. ':tags:' .. questionId
+
+	local question = redis.call('HMGET', qkey, 'UserId', 'Status', 'Slug')
+	if ( question[1] ~= userId ) then
+		return redis.error_reply("NOTOWNER")
+	elseif ( question[2] ~= '0' and question[2] ~= false and question[2] ~= '') then
+		return redis.error_reply('CANNOTCLOSE')
+	end
+	
+	redis.call('HMSET', qkey, unpack(data))
+	redis.call('PUBLISH', questionTopic, 'EDIT')
+
+	local storedtags = redis.call('SMEMBERS', qtagskey)
+	redis.call('DEL', qtagskey)
+	redis.call('SADD', qtagskey, unpack(tags))
+
+	local added, removed = diffTags(storedtags, tags)
+
+	local result = {}
+	result[1] = question[3]
+	result[2] = added
+	result[3] = removed
+	return result
+
+endproc
+
+proc AdjustTagsScores($hashtag, questionId, score, added[], removed[])
+
+	local tagsByScore = hashtag .. ':score'
+
+	for i=1, table.getn(added), 1 
+	do 
+	   redis.call('ZINCRBY', tagsByScore, score, added[i]) 
+	   local tagkey = hashtag .. ':score:' .. added[i]
+	   redis.call('ZINCRBY', tagkey, score, questionId)
+	end
+
+	local minusScore = 0 - tonumber(score)
+	for i=1, table.getn(removed), 1 
+	do 
+	   redis.call('ZINCRBY', tagsByScore, minusScore, removed[i]) 
+	   local tagkey = hashtag .. ':score:' .. removed[i]
+	   redis.call('ZREM', tagkey, questionId)
+	end
+
+	return redis.status_reply('OK') 
+
+endproc

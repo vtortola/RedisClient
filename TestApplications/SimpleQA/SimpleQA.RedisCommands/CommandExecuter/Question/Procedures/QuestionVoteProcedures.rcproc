@@ -1,22 +1,51 @@
-﻿proc VoteQuestion($questionId, voteField, $questionsByScore, scoreIncr, $userVotes, vote, $questionTagsId, $tagsByScore)
+﻿proc VoteQuestion($hashtag, questionId, userId, scoreIncr, upvote)
     
-	local voted = redis.call('ZSCORE', userVotes, questionId)
+	local qvotes = hashtag .. ':votes:' .. questionId
+	local qkey = hashtag .. ':post:' .. questionId
+	local qtagskey = hashtag .. ':tags:' .. questionId
+
+	local voted = redis.call('ZSCORE', qvotes, userId)
 	if ( voted ~= nil and voted ~= '' and voted ~= false ) then
-		error('ALREADYVOTED')
+		return redis.error_reply('ALREADYVOTED')
 	end
 
-	redis.call('HINCRBY', questionId, voteField, 1)
-    redis.call('HINCRBY', questionId, 'Score', scoreIncr)
-    redis.call('ZINCRBY', questionsByScore, scoreIncr, questionId)
-	redis.call('ZADD', userVotes, vote, questionId)
+	local voteField = 'UpVotes'
+	local voteValue = 1
+	if ( upvote ~= '1' ) then
+		voteField = 'DownVotes'
+		voteValue = -1
+	end
 
-	local tags = redis.call('SMEMBERS', questionTagsId)
+	redis.call('HINCRBY', qkey, voteField, 1)
+    redis.call('HINCRBY', qkey, 'Score', scoreIncr)
+	redis.call('ZADD', qvotes, voteValue, userId)
+
+	local result = {}
+	result[1] = redis.call('HMGET', qkey, 'UpVotes', 'DownVotes')
+	result[2] = redis.call('SMEMBERS', qtagskey)
+	return result
+
+endproc
+
+proc VoteQuestionGlobally($hashtag, questionId, scoreIncr)
+
+	local qbyscore = hashtag .. ':score'
+    redis.call('ZINCRBY', qbyscore, scoreIncr, questionId)
+	return redis.status_reply('OK') 
+
+endproc
+
+proc VoteTags($hashtag, questionId, tags[], scoreIncr)
+
+	local tagsByScore = hashtag .. ':score'
+
 	for i=1, table.getn(tags), 1 
 	do 
 	   redis.call('ZINCRBY', tagsByScore, scoreIncr, tags[i]) 
-	   redis.call('ZINCRBY', 'tag:' .. tags[i] .. ':byscore', scoreIncr, questionId)
-	end
 
-	return redis.call('HMGET', questionId, 'UpVotes', 'DownVotes')
+	   local tagkey = hashtag .. ':score:' .. tags[i]
+	   redis.call('ZINCRBY', tagkey, scoreIncr, questionId)
+	end
+	return redis.status_reply('OK') 
 
 endproc

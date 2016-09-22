@@ -17,22 +17,26 @@ namespace SimpleQA.RedisCommands
 
         public async Task<ValidateSessionCommandResult> ExecuteAsync(ValidateSessionCommand command, IPrincipal user, CancellationToken cancel)
         {
-            var result = await _channel.ExecuteAsync("GET @SessionId", new { command.SessionId }).ConfigureAwait(false);
-            var userName = result[0].GetString();
-
             var sessionDuration = TimeSpan.FromMinutes(5).TotalSeconds;
 
-            if (!String.IsNullOrWhiteSpace(userName))
+            var result = await _channel.ExecuteAsync(
+                                        "ValidateSession {user} @SessionId @sessionDuration",
+                                         new { command.SessionId, sessionDuration })
+                                        .ConfigureAwait(false);
+
+            var error = result[0].GetException();
+            if (error != null)
             {
-                result = await _channel.ExecuteAsync(@"
-                                    EXPIRE @SessionId @sessionDuration
-                                    SCARD @inbox", new { command.SessionId, sessionDuration, inbox = Keys.UserInboxKey(userName)});
-                return new ValidateSessionCommandResult(userName, (Int32)result[1].GetInteger());
+                switch (error.Prefix)
+                {
+                    case "NOTVALID":
+                        return ValidateSessionCommandResult.NonValid;
+                    default: throw error;
+                }
             }
-            else
-            {
-                return ValidateSessionCommandResult.NonValid;
-            }
+            result = result[0].AsResults();
+
+            return new ValidateSessionCommandResult(result[0].GetString(), result[1].GetString(), (Int32)result[2].GetInteger());
         }
     }
 }

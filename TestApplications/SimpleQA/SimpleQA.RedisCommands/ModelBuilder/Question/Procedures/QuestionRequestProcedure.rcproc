@@ -1,4 +1,9 @@
-﻿proc QuestionRequest($hashtag, questionId, user)
+﻿proc QuestionRequest($hashtag, questionId, userId)
+
+	local function GetUserName(hkey)
+		local uid = redis.call('HGET', hkey, 'UserId')
+		return redis.call('HGET', hashtag .. ':uidmapping', uid)
+	end
 
 	local question = {}
 	local qkey = hashtag .. ':post:' .. questionId
@@ -13,9 +18,10 @@
 	end
 
 	question[1] = redis.call('HGETALL', qkey)
-	question[2] = redis.call('SMEMBERS',  qtagkey)
-	question[3] = redis.call('ZSCORE', qvoteskey, user)
-	question[4] = redis.call('ZSCORE', closeVotesKey, user)
+	question[2] = GetUserName(qkey)
+	question[3] = redis.call('SMEMBERS',  qtagkey)
+	question[4] = redis.call('ZSCORE', qvoteskey, userId)
+	question[5] = redis.call('SISMEMBER', closeVotesKey, userId)
 	 
 	local answers = {}
 	local answerIds = redis.call('SMEMBERS', answersKey)
@@ -25,10 +31,11 @@
 		local answerVotesKey = hashtag .. ':avotes:' .. id
 
 		answer[1] = redis.call('HGETALL', answerKey)
-		answer[2] = redis.call('ZSCORE', answerVotesKey, user)
+		answer[2] = GetUserName(answerKey)
+		answer[3] = redis.call('ZSCORE', answerVotesKey, userId)
 		answers[index] = answer
 	end
-	question[5] = answers
+	question[6] = answers
 
 	return question
 endproc

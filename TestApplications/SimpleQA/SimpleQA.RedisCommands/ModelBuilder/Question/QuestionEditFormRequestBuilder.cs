@@ -17,25 +17,15 @@ namespace SimpleQA.RedisCommands
         public async Task<QuestionEditFormViewModel> BuildAsync(QuestionEditFormRequest request, IPrincipal user, CancellationToken cancel)
         {
             var result = await _channel.ExecuteAsync(
-                                        "QuestionEditForm {question} @id @user", 
+                                        "QuestionEditForm {question} @id @userId", 
                                         new
                                         {
                                             id = request.Id,
-                                            user = user.Identity.Name
+                                            userId = user.GetSimpleQAIdentity().Id
                                         })
                                         .ConfigureAwait(false);
 
-            var error = result[0].GetException();
-            if(error != null)
-            {
-                switch (error.Prefix)
-                {
-                    case "NOTOWNER":
-                        throw new SimpleQAException("You are not the author of the question you try to edit.");
-                    default: 
-                        throw error;
-                }
-            }
+            CheckException(result);
 
             result = result[0].AsResults();
 
@@ -45,6 +35,21 @@ namespace SimpleQA.RedisCommands
             model.Tags = result[2].GetStringArray();
             model.Id = request.Id;
             return model;
+        }
+
+        private static void CheckException(IRedisResults result)
+        {
+            var error = result[0].GetException();
+            if (error != null)
+            {
+                switch (error.Prefix)
+                {
+                    case "NOTOWNER":
+                        throw new SimpleQAException("You are not the author of the question you try to edit.");
+                    default:
+                        throw error;
+                }
+            }
         }
     }
 }

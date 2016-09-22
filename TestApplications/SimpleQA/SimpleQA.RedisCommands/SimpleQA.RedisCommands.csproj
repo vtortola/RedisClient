@@ -95,11 +95,14 @@
     <EmbeddedResource Include="CommandExecuter\Question\Procedures\QuestionCloseProcedures.rcproc" />
     <EmbeddedResource Include="ModelBuilder\Question\Procedures\QuestionRequestProcedure.rcproc" />
     <EmbeddedResource Include="ModelBuilder\Question\Procedures\QuestionCloseFormProcedures.rcproc" />
+    <EmbeddedResource Include="CommandExecuter\Authentication\Procedures\AuthenticateProcedures.rcproc" />
+    <EmbeddedResource Include="CommandExecuter\Authentication\Procedures\ValidateSessionProcedures.rcproc" />
+    <EmbeddedResource Include="CommandExecuter\Authentication\Procedures\EndSessionProcedure.rcproc" />
+    <EmbeddedResource Include="CommandExecuter\Question\Procedures\QuestionDeleteProcedures.rcproc" />
+    <EmbeddedResource Include="CommandExecuter\Question\Procedures\QuestionEditProcedures.rcproc" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="CommandExecuter\Authentication\Procedures\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

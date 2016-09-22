@@ -1,0 +1,47 @@
+﻿proc QuestionDelete($hashtag, questionId, userId)
+
+	local qkey = hashtag .. ':post:' .. questionId
+	local qtagskey = hashtag .. ':tags:' .. questionId
+
+	local question = redis.call('HMGET', qkey, 'UserId', 'Status', 'Slug')
+	if ( question[1] ~= userId ) then
+		return redis.error_reply("NOTOWNER")
+	elseif ( question[2] ~= '0' and question[2] ~= false and question[2] ~= '') then
+		return redis.error_reply('CANNOTCLOSE')
+	end
+	
+	redis.call('HSET', qkey, 'Status', '2')
+
+	local result = {}
+	result[1] = question[3]
+	result[2] = redis.call('SMEMBERS', qtagskey)
+	return result
+
+endproc
+
+proc UnindexQuestion($hashtag, questionId)
+
+	local qbyscore = hashtag .. ':score'
+	local qbydate= hashtag .. ':date'
+
+    redis.call('ZREM', qbyscore, questionId)
+	redis.call('ZREM', qbydate, questionId)
+
+	return redis.status_reply('OK') 
+
+endproc
+
+proc UnindexQuestionTags($hashtag, questionId, score, tags[])
+
+	local tagsByScore = hashtag .. ':score'
+
+	local minusScore = 0 - tonumber(score)
+	for i=1, table.getn(tags), 1 
+	do 
+		redis.call('ZINCRBY', tagsByScore, minusScore, tags[i]) 
+		local tagkey = hashtag .. ':score:' .. tags[i]
+		redis.call('ZREM', tagkey, questionId)
+	end
+	return redis.status_reply('OK') 
+
+endproc

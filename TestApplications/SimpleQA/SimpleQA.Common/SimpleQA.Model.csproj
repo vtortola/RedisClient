@@ -93,6 +93,7 @@
     <Compile Include="Exceptions\SimpleQANotOwnerException.cs" />
     <Compile Include="Models\User\UserInboxModel.cs" />
     <Compile Include="Models\User\UserInboxRequest.cs" />
+    <Compile Include="Security\SimpleQAIdentity.cs" />
     <Compile Include="_ICommandExecuter.cs" />
     <Compile Include="Markdown\_IMarkdown.cs" />
     <Compile Include="Messaging\PushSubscriptionRequest.cs" />

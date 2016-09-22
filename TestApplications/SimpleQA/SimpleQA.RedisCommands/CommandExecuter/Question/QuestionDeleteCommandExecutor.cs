@@ -19,39 +19,52 @@ namespace SimpleQA.RedisCommands
 
         public async Task<QuestionDeleteCommandResult> ExecuteAsync(QuestionDeleteCommand command, IPrincipal user, CancellationToken cancel)
         {
-            var questionKey = Keys.QuestionKey(command.Id);
-            var result = await _channel.ExecuteAsync("HMGET @questionKey User Status Slug", new { questionKey }).ConfigureAwait(false);
+            var result = 
+                await _channel.ExecuteAsync(
+                               "QuestionDelete {question} @id @userId", 
+                               new 
+                               { 
+                                   id = command.Id,
+                                   userId = user.GetSimpleQAIdentity().Id
+                               })
+                               .ConfigureAwait(false);
 
-            var results = result[0].GetStringArray();
+            CheckException(result);
 
-            var questionUser = results[0];
-            if (questionUser != user.Identity.Name)
-                throw new SimpleQANotOwnerException("You cannot delete a question that is not yours.");
+            result = result[0].AsResults();
 
-            var status = (QuestionStatus)Enum.Parse(typeof(QuestionStatus), results[1]);
-            if (status != QuestionStatus.Open)
-                throw new SimpleQAException("You cannot delete a question that is Closed or already Deleted.");
-
-            var slug = results[2];
-
-            var questionByTime = Keys.QuestionsByDate();
-            var questionByScore = Keys.QuestionsByScore();
+            var slug = result[0].GetString();
+            var tags = result[1].GetStringArray();
 
             result = await _channel.ExecuteAsync(@"
-                                        MULTI
-                                        ZREM @questionByTime @questionKey
-                                        ZREM @questionByScore @questionKey
-                                        HSET @questionKey Status @deleted
-                                        EXEC",
+                                        UnindexQuestion {questions} @id
+                                        UnindexQuestionTags {tags} @id @score @tags",
                                         new
                                         {
-                                            questionKey,
-                                            deleted = QuestionStatus.Deleted,
-                                            questionByTime,
-                                            questionByScore
+                                            id = command.Id,
+                                            tags,
+                                            score = Constant.VoteScore
                                         }).ConfigureAwait(false);
 
             return new QuestionDeleteCommandResult(command.Id, slug);
+        }
+
+        static void CheckException(IRedisResults result)
+        {
+            var error = result[0].GetException();
+            if (error != null)
+            {
+                switch (error.Prefix)
+                {
+                    case "NOTOWNER":
+                        throw new SimpleQANotOwnerException("You cannot delete a question that is not yours.");
+
+                    case "CANNOTCLOSE":
+                        throw new SimpleQANotOwnerException("Tne question is not open anymore.");
+
+                    default: throw error;
+                }
+            }
         }
     }
 }

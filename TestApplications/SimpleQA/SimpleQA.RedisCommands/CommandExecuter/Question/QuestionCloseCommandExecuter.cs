@@ -17,16 +17,25 @@ namespace SimpleQA.RedisCommands
 
         public async Task<QuestionCloseCommandResult> ExecuteAsync(QuestionCloseCommand command, IPrincipal user, CancellationToken cancel)
         {
-            var questionKey = Keys.QuestionKey(command.Id);
-            var username = user.Identity.Name;
-            var closeSet = Keys.QuestionCloseVotesCollectionKey(command.Id);
             var votesToClose = Constant.CloseVotesRequired;
 
-            var result = await _channel.ExecuteAsync(@"
-                                        QuestionClose @questionKey @closeSet @username @votesToClose
-                                        HGET @questionKey Slug", 
-                                        new { questionKey, closeSet, username, votesToClose }).ConfigureAwait(false);
+            var result = await _channel.ExecuteAsync(
+                                        "QuestionClose {question} @id @userId @votesToClose", 
+                                        new 
+                                        { 
+                                            id = command.Id, 
+                                            userId = user.GetSimpleQAIdentity().Id,
+                                            votesToClose 
+                                        })
+                                        .ConfigureAwait(false);
 
+            CheckException(result);
+
+            return new QuestionCloseCommandResult(command.Id, result[0].GetString());
+        }
+
+        static void CheckException(IRedisResults result)
+        {
             var error = result[0].GetException();
             if (error != null)
             {
@@ -44,8 +53,6 @@ namespace SimpleQA.RedisCommands
                     default: throw error;
                 }
             }
-
-            return new QuestionCloseCommandResult(command.Id, result[1].GetString());
         }
     }
 }
