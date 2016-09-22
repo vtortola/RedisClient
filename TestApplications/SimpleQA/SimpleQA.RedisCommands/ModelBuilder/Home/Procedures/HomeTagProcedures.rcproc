@@ -1,0 +1,36 @@
+﻿proc PaginateTag($hashtag, tag, page, itemsPerPage, orderBy)
+	
+	local zsetkey = ''
+	if(orderBy == 'ByScore') then
+		zsetkey = hashtag .. ':score:' .. tag
+	elseif (orderBy == 'ByDate') then
+		zsetkey = hashtag .. ':date:' .. tag
+	else
+		return redis.error_reply("UNEXPECTEDORDERBY")
+	end
+
+	page = tonumber(page)
+	itemsPerPage = tonumber(itemsPerPage)
+
+	if(page < 0) then 
+		return redis.error_reply("WRONGPAGE")
+	end
+
+	if(itemsPerPage < 1) then 
+		return redis.error_reply("WRONGITEMCOUNT")
+	end
+
+	local start  = page * itemsPerPage
+	local stop = start + itemsPerPage - 1
+	local items = redis.call('ZREVRANGE', zsetkey, start, stop)
+
+	local result = {}
+	result[1] = redis.call('ZSCORE', hashtag .. ':count', tag)
+
+	for index, key in ipairs(items) do
+	  result[index+1] = key
+	end
+
+	return result
+
+endproc

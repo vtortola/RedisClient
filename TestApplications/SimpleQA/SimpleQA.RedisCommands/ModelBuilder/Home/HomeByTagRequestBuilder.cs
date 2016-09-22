@@ -5,6 +5,7 @@ using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
 using vtortola.Redis;
+using System.Linq;
 
 namespace SimpleQA.RedisCommands
 {
@@ -21,49 +22,57 @@ namespace SimpleQA.RedisCommands
         {
             var model = new HomeByTagViewModel();
 
-            var ordering = request.Sorting.HasValue ? request.Sorting.Value : default(QuestionSorting);
-            var start = (request.Page - 1) * Constant.ItemsPerPage;
-            var end = start + Constant.ItemsPerPage - 1;
-            var tagquestions = ordering == QuestionSorting.ByDate ? Keys.TagKeyByDate(request.Tag) : Keys.TagKeyByScore(request.Tag);
+            var sorting = request.Sorting.HasValue ? request.Sorting.Value : QuestionSorting.ByScore;
 
-            var result = await _channel.ExecuteAsync(@"
-                                        ZREVRANGE @tagquestions @start @end
-                                        ZSCORE @tagCounter @tag",
-                                        new 
-                                        { 
-                                            tagquestions,
-                                            start, 
-                                            end, 
-                                            tagCounter = Keys.TagCounting(),
-                                            tag = request.Tag
-                                        })
-                                        .ConfigureAwait(false);
+            var result =
+                await _channel.ExecuteAsync(
+                               "PaginateHome {questions} @page @items @orderBy",
+                               new
+                               {
+                                   page = request.Page - 1,
+                                   items = Constant.ItemsPerPage,
+                                   orderBy = sorting.ToString()
+                               })
+                               .ConfigureAwait(false);
+
+            result.ThrowErrorIfAny();
+            result = result[0].AsResults();
 
             model.Page = request.Page;
-            model.TotalPages = (Int32)Math.Ceiling(result[1].AsInteger() / (Constant.ItemsPerPage * 1.0));
-
-            var list = new List<QuestionExcerptViewModel>(end - start);
-            foreach (var questionKey in result[0].GetStringArray())
-            {
-                result = await _channel.ExecuteAsync(@"
-                                        HGETALL @questionKey
-                                        SMEMBERS @qtagKey
-                                        ",
-                                         new
-                                         {
-                                             questionKey,
-                                             qtagKey = questionKey + ":tags"
-
-                                         }).ConfigureAwait(false);
-                var question = result[0].AsObjectCollation<QuestionExcerptViewModel>();
-                question.Tags = result[1].GetStringArray();
-                list.Add(question);
-            }
-
-            model.Questions = list;
-            model.Sorting = ordering;
+            model.TotalPages = (Int32)Math.Ceiling(result[0].AsInteger() / (Constant.ItemsPerPage * 1.0));
+            model.Sorting = sorting;
             model.Tag = request.Tag;
+
+            var ids = result.Skip(1).Select(r => r.GetString()).ToArray();
+            if (ids.Any())
+                model.Questions = await GetQuestions(ids).ConfigureAwait(false);
+            else
+                model.Questions = new List<QuestionExcerptViewModel>();
+
             return model;
+        }
+
+        private async Task<List<QuestionExcerptViewModel>> GetQuestions(IEnumerable<String> ids)
+        {
+            var result =
+                await _channel.ExecuteAsync( // Reuse proc from HomeProcedures.rcproc
+                               "GetQuestions {question} @ids",
+                               new { ids })
+                               .ConfigureAwait(false);
+
+            result.ThrowErrorIfAny();
+
+            return result[0]
+                        .AsResults()
+                        .Select(r => r.AsResults())
+                        .Select(q =>
+                        {
+                            var question = q[0].AsObjectCollation<QuestionExcerptViewModel>();
+                            question.User = q[1].GetString();
+                            question.Tags = q[2].GetStringArray();
+                            return question;
+                        })
+                        .ToList();
         }
     }
 }

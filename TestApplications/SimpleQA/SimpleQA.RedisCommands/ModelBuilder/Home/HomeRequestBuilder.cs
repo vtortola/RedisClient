@@ -22,41 +22,56 @@ namespace SimpleQA.RedisCommands
         {
             var model = new HomeViewModel();
 
-            var ordering = request.Sorting.HasValue ? request.Sorting.Value : default(QuestionSorting);
-            var start = (request.Page - 1) * Constant.ItemsPerPage;
-            var end = start + Constant.ItemsPerPage - 1;
-            var questions = ordering == QuestionSorting.ByDate ? Keys.QuestionsByDate() : Keys.QuestionsByScore();
+            var sorting = request.Sorting.HasValue ? request.Sorting.Value : QuestionSorting.ByScore;
 
-            var result = await _channel.ExecuteAsync(@"
-                                        ZREVRANGE @questions @start @end
-                                        GET @questionCounter",
-                                        new { questions, start, end, questionCounter = Keys.QuestionCounter() })
-                                        .ConfigureAwait(false);
+            var result = 
+                await _channel.ExecuteAsync(
+                               "PaginateHome {questions} @page @items @orderBy",
+                               new 
+                               { 
+                                   page = request.Page - 1,
+                                   items = Constant.ItemsPerPage,
+                                   orderBy = sorting.ToString() 
+                               })
+                               .ConfigureAwait(false);
+
+            result.ThrowErrorIfAny();
+            result = result[0].AsResults();
 
             model.Page = request.Page;
-            model.TotalPages = (Int32)Math.Ceiling(result[1].AsInteger() / (Constant.ItemsPerPage * 1.0));
+            model.TotalPages = (Int32)Math.Ceiling(result[0].AsInteger() / (Constant.ItemsPerPage * 1.0));
+            model.Sorting = sorting;
 
-            var list = new List<QuestionHeaderViewModel>(end - start);
-            foreach (var questionKey in result[0].GetStringArray())
-            {
-                result = await _channel.ExecuteAsync(@"
-                                        HGETALL @questionKey
-                                        SMEMBERS @qtagKey
-                                        ", 
-                                         new 
-                                         { 
-                                             questionKey,
-                                             qtagKey = questionKey  + ":tags"
-
-                                         }).ConfigureAwait(false);
-                var question = result[0].AsObjectCollation<QuestionHeaderViewModel>();
-                question.Tags = result[1].GetStringArray();
-                list.Add(question);
-            }
-
-            model.Questions = list;
-            model.Sorting = ordering;
+            var ids = result.Skip(1).Select(r => r.GetString()).ToArray();
+            if (ids.Any())
+                model.Questions = await GetQuestions(ids).ConfigureAwait(false);
+            else
+                model.Questions = new List<QuestionHeaderViewModel>();
+            
             return model;
+        }
+
+        private async Task<List<QuestionHeaderViewModel>> GetQuestions(IEnumerable<String> ids)
+        {
+            var result =
+                await _channel.ExecuteAsync(
+                               "GetQuestions {question} @ids",
+                               new { ids })
+                               .ConfigureAwait(false);
+
+            result.ThrowErrorIfAny();
+
+            return result[0]
+                        .AsResults()
+                        .Select(r => r.AsResults())
+                        .Select(q =>
+                        {
+                            var question = q[0].AsObjectCollation<QuestionHeaderViewModel>();
+                            question.User = q[1].GetString();
+                            question.Tags = q[2].GetStringArray();
+                            return question;
+                        })
+                        .ToList();
         }
     }
 }

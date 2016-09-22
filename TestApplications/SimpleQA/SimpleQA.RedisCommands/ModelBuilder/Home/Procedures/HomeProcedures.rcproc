@@ -1,0 +1,61 @@
+﻿proc PaginateHome($hashtag, page, itemsPerPage, orderBy)
+	
+	local zsetkey = ''
+	if(orderBy == 'ByScore') then
+		zsetkey = hashtag .. ':score'
+	elseif (orderBy == 'ByDate') then
+		zsetkey = hashtag .. ':date'
+	else
+		return redis.error_reply("UNEXPECTEDORDERBY")
+	end
+
+	page = tonumber(page)
+	itemsPerPage = tonumber(itemsPerPage)
+
+	if(page < 0) then 
+		return redis.error_reply("WRONGPAGE")
+	end
+
+	if(itemsPerPage < 1) then 
+		return redis.error_reply("WRONGITEMCOUNT")
+	end
+
+	local start  = page * itemsPerPage
+	local stop = start + itemsPerPage - 1
+	local items = redis.call('ZREVRANGE', zsetkey, start, stop)
+
+	local result = {}
+	result[1] = redis.call('GET', hashtag .. ':counter')
+
+	for index, key in ipairs(items) do
+	  result[index+1] = key
+	end
+
+	return result
+
+endproc
+
+proc GetQuestions($hashtag, ids[])
+
+	local function GetUserName(hkey)
+		local uid = redis.call('HGET', hkey, 'UserId')
+		return redis.call('HGET', hashtag .. ':uidmapping', uid)
+	end
+
+	local result = {}
+
+	for index, id in ipairs(ids) do
+		
+		local qkey = hashtag .. ':post:' .. id
+		local qtagskey = hashtag .. ':tags:' .. id 
+
+		local question = {}
+		question[1] = redis.call('HGETALL', qkey)
+		question[2] = GetUserName(qkey)
+		question[3] = redis.call('SMEMBERS', qtagskey)
+		result[index] = question
+	end
+
+	return result
+
+endproc

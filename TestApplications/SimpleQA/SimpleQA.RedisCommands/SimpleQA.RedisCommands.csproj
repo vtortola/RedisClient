@@ -101,6 +101,8 @@
     <EmbeddedResource Include="CommandExecuter\Question\Procedures\QuestionDeleteProcedures.rcproc" />
     <EmbeddedResource Include="CommandExecuter\Question\Procedures\QuestionEditProcedures.rcproc" />
     <EmbeddedResource Include="CommandExecuter\VisitQuestion\Procedures\VisitQuestionProcedures.rcproc" />
+    <EmbeddedResource Include="ModelBuilder\Home\Procedures\HomeProcedures.rcproc" />
+    <EmbeddedResource Include="ModelBuilder\Home\Procedures\HomeTagProcedures.rcproc" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
