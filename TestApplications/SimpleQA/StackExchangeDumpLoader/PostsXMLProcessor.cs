@@ -1,4 +1,5 @@
-﻿using SimpleQA.Commands;
+﻿using SimpleQA;
+using SimpleQA.Commands;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -69,7 +70,7 @@ namespace StackExchangeDumpLoader
             var id = question.Attribute("Id").Value;
             var userId = question.Attribute("OwnerUserId").Value;
 
-            var user = new GenericPrincipal(new GenericIdentity(usermap[userId]), null);
+            var user = new SimpleQAPrincipal(usermap[userId], "whatever", "", 0);
 
             var tags = Regex.Matches(question.Attribute("Tags").Value, "<(.*?)>")
                             .OfType<Match>()
@@ -111,7 +112,7 @@ namespace StackExchangeDumpLoader
                                                   answer.Attribute("Body").Value, 
                                                   answer.Attribute("Body").Value);
 
-            var user = new GenericPrincipal(new GenericIdentity(usermap[userId]), null);
+            var user = new SimpleQAPrincipal(usermap[userId], "whatever", "", 0);
             var result = _mediator.ExecuteAsync<AnswerCreateCommand, AnswerCreateCommandResult>(command, user, CancellationToken.None).Result;
 
             idmap.TryAdd(answer.Attribute("Id").Value, result.QuestionId + "@" + result.AnswerId);

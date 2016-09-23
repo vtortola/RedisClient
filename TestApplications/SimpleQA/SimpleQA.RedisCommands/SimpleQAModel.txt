@@ -1,0 +1,40 @@
+SimpleQA - Redis model
+
+HOME
+{questions}
+	- {questions}:date			// ZSET
+	- {questions}:score			// ZSET
+	- {questions}:ids			// STRING
+	- {questions}:counter		// STRING
+	
+TAG HOME
+{tag}
+	- {tag}:date				// ZSET
+	- {tag}:score				// ZSET
+	- {tag}:date:<tag>			// ZSET
+	- {tag}:score:<tag>			// ZSET
+	- {tag}:count				// ZSET
+	- {tag}:autocomplete		// ZSET
+	
+QUESTION 
+{question}
+	- {question}:post:<qid>		// HASH
+	- {question}:tags:<qid>		// SET
+	- {question}:votes:<qid>	// ZSET
+	- {question}:close:<qid>	// SET
+	- {question}:answers:count	// STRING
+	- {question}:answers:<qid> 	// SET
+	- {question}:answer:<aid> 	// HASH
+	- {question}:avotes:<aid>	// ZSET
+	- {question}:uidmapping		// HASH
+
+USER 
+{user}
+	- {user}:namemapping		// HASH
+	- {user}:profile:<uid>		// HASH
+	- {user}:mailbox:<uid>		// LIST
+	- {user}:session:<sid>		// STRING
+	- {user}:builtin				// SET
+
+	
+

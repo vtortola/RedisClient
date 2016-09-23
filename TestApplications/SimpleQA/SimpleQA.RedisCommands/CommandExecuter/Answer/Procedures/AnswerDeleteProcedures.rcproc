@@ -1,0 +1,20 @@
+﻿proc DeleteAnswer($hashtag, answerId, userId)
+
+	local answerKey = hashtag .. ':answer:' .. answerId
+
+	local answer = redis.call('HMGET', answerKey, 'UserId', 'QuestionId')
+    if ( answer[1] ~= userId) then  
+        return redis.error_reply('NOTOWNER')
+    end
+	local qid = answer[2]
+
+	local qkey = hashtag .. ':post:' .. qid
+	local qanswerskey = hashtag .. ':answers:' .. qid
+
+	redis.call('DEL', answerKey)
+    redis.call('SREM', qanswerskey, answerId)
+    redis.call('HINCRBY', qkey, 'AnswerCount', -1)
+
+	return redis.call('HGET', qkey, 'Slug')
+
+endproc

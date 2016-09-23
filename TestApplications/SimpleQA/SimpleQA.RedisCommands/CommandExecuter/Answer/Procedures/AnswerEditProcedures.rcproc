@@ -1,0 +1,15 @@
+﻿proc AnswerEdit($hashtag, answerId, userId, data[])
+
+	local answerKey = hashtag .. ':answer:' .. answerId
+
+	local answer = redis.call('HMGET', answerKey, 'UserId', 'QuestionId')
+    if ( answer[1] ~= userId) then  
+        return redis.error_reply('NOTOWNER')
+    end
+
+	redis.call('HMSET', answerKey, unpack(data))
+
+	local qkey = hashtag .. ':post:' .. answer[2]
+	return redis.call('HGET', qkey, 'Slug')
+
+endproc

@@ -17,23 +17,37 @@ namespace SimpleQA.RedisCommands
 
         public async Task<AnswerEditFormViewModel> BuildAsync(AnswerEditFormRequest request, IPrincipal user, CancellationToken cancel)
         {
-            var answerKey = Keys.AnswerKey(request.QuestionId, request.AnswerId);
-
-            var result = await _channel.ExecuteAsync(@"
-                                        HMGET @answerKey User Content",
-                                        new { answerKey })
+            var result = await _channel.ExecuteAsync(
+                                        "GetAnswerEditData {question} @answerId @userID",
+                                        new 
+                                        { 
+                                            answerId = request.AnswerId,
+                                            userId = user.GetSimpleQAIdentity().Id
+                                        })
                                         .ConfigureAwait(false);
 
-            var array = result[0].GetStringArray();
-            if (array[0] != user.Identity.Name)
-                throw new SimpleQAException("You cannot edit a question that you did not create");
-
+            CheckException(result);
             return new AnswerEditFormViewModel()
             {
                 AnswerId = request.AnswerId,
                 QuestionId = request.QuestionId,
-                Content = array[1]
+                Content = result[0].GetString()
             };
+        }
+
+        static void CheckException(IRedisResults result)
+        {
+            var error = result[0].GetException();
+            if (error != null)
+            {
+                switch (error.Prefix)
+                {
+                    case "NOTOWNER":
+                        throw new SimpleQAException("You are not the author of the answer you try to edit.");
+                    default:
+                        throw error;
+                }
+            }
         }
     }
 }

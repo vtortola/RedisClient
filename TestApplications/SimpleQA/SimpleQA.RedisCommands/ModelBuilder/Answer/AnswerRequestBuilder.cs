@@ -18,29 +18,40 @@ namespace SimpleQA.RedisCommands
 
         public async Task<AnswerViewModel> BuildAsync(AnswerRequest request, IPrincipal user, CancellationToken cancel)
         {
-            var result = await _channel.ExecuteAsync(@"
-                                        HGETALL @answerId
-                                        ZSCORE @votesKey @user
-                                        HGET @questionId Status",
+            var result = await _channel.ExecuteAsync(
+                                        "GetAnswer {question} @answerId @userId",
                                          new
                                          {
-                                             questionId = Keys.QuestionKey(request.QuestionId),
-                                             answerId = Keys.AnswerKey(request.QuestionId, request.AnswerId),
-                                             votesKey = Keys.AnswerVoteKey(request.QuestionId, request.AnswerId),
-                                             user = user.Identity.IsAuthenticated ? user.Identity.Name : "__anon__"
+                                             answerId = request.AnswerId,
+                                             userId = user.GetSimpleQAIdentity().Id
+                                         })
+                                         .ConfigureAwait(false);
 
-                                         }).ConfigureAwait(false);
-
-            var questionStatus = result[2].GetString();
+            result = result[0].AsResults();
+            var questionStatus = result[3].AsEnum<QuestionStatus>();
 
             var answer = new AnswerViewModel();
             result[0].AsObjectCollation(answer);
+            answer.User = result[1].GetString();
             answer.QuestionId = request.QuestionId;
-            answer.Editable = questionStatus == "Open";
-            answer.Votable = questionStatus == "Open";
+            answer.Editable = questionStatus == QuestionStatus.Open;
+            answer.Votable = questionStatus == QuestionStatus.Open;
             answer.AuthoredByUser = answer.User == user.Identity.Name;
-            answer.UpVoted = result[1].GetString() == null ? (Boolean?)null : (Int32.Parse(result[1].GetString()) > 0 ? true : false);
+            answer.UpVoted = GetVote(result[2].GetString());
             return answer;
+        }
+
+        static Boolean? GetVote(String value)
+        {
+            if (String.IsNullOrWhiteSpace(value))
+                return null;
+            if (value == "0")
+                return null;
+            if (value == "1")
+                return true;
+            if (value == "-1")
+                return false;
+            throw new InvalidOperationException("Unexpected vote value: " + value);
         }
     }
 }

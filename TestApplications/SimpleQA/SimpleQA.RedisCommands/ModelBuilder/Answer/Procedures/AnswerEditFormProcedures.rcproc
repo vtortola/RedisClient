@@ -1,0 +1,10 @@
+﻿proc GetAnswerEditData($hashtag, answerId, userId)
+
+	local answerKey = hashtag .. ':answer:' .. answerId
+	local answer = redis.call('HMGET', answerKey, 'UserId', 'Content')
+    if ( answer[1] ~= userId) then  
+        return redis.error_reply('NOTOWNER')
+    end
+	return answer[2]
+
+endproc

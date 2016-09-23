@@ -1,0 +1,20 @@
+﻿proc GetAnswer($hashtag, answerId, userId)
+
+	local function GetUserName(hkey)
+		local uid = redis.call('HGET', hkey, 'UserId')
+		return redis.call('HGET', hashtag .. ':uidmapping', uid)
+	end
+
+	local answerkey = hashtag .. ':answer:' .. answerId
+	local voteskey = hashtag .. ':avotes:' .. answerId
+	local qid = redis.call('HGET', answerkey, 'QuestionId')
+	local qkey = hashtag .. ':post:' .. qid
+
+	local result = {}
+	result[1] = redis.call('HGETALL', answerkey)
+	result[2] = GetUserName(answerkey)
+	result[3] = redis.call('ZSCORE', voteskey, userId)
+	result[4] = redis.call('HGET', qkey, 'Status');
+	return result
+
+endproc

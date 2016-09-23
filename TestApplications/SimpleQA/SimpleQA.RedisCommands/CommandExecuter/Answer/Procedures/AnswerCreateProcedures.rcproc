@@ -1,0 +1,20 @@
+﻿proc CreateAnswer($hashtag, questionId, data[])
+
+	local answerIdsKey = hashtag .. ':answers:count'
+	local qKey = hashtag .. ':post:' .. questionId 
+	local qanswersKey = hashtag .. ':answers:' .. questionId
+
+	local id = redis.call('INCR', answerIdsKey)
+	local answerKey = hashtag .. ':answer:' .. id
+
+	redis.call('HMSET', answerKey, unpack(data))
+	redis.call('HSET', answerKey, 'Id', id)
+	redis.call('HINCRBY', qKey, 'AnswerCount', 1)
+	redis.call('SADD', qanswersKey, id)
+
+	local result = {};
+	result[1] = tostring(id)
+	result[2] = redis.call('HGET', qKey, 'Slug')
+	return result;
+
+endproc

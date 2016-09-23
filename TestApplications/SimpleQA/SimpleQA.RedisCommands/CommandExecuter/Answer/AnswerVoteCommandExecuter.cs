@@ -1,5 +1,4 @@
 ﻿using SimpleQA.Commands;
-using System;
 using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,34 +16,33 @@ namespace SimpleQA.RedisCommands
 
         public async Task<AnswerVoteCommandResult> ExecuteAsync(AnswerVoteCommand command, IPrincipal user, CancellationToken cancel)
         {
-            var voteTrackerKey = Keys.AnswerVoteKey(command.QuestionId, command.AnswerId); ;
-            var username = user.Identity.Name;
+            var result = await _channel.ExecuteAsync(
+                                        "VoteAswer {question} @answerId @userId @vote",
+                                        new 
+                                        { 
+                                            answerId = command.AnswerId,
+                                            userId = user.GetSimpleQAIdentity().Id,
+                                            vote = command.Upvote ? "1" : "-1"
+                                        })
+                                        .ConfigureAwait(false);
 
-            var result = await _channel.ExecuteAsync(@"
-                                        ZSCORE @voteTrackerKey @username",
-                                        new { voteTrackerKey, username }).ConfigureAwait(false);
+            CheckExceptions(result);
+            var votes = result[0].AsIntegerArray();
 
-            if (result[0].GetString() != null)
-                throw new Exception("User already voted");
-
-            var answerKey = Keys.AnswerKey(command.QuestionId, command.AnswerId);
-
-            result = await _channel.ExecuteAsync(@"
-                                    HINCRBY @answerKey @field 1
-                                    HINCRBY @answerKey Score @value
-                                    ZADD @voteTrackerKey @value @username
-                                    HMGET @answerKey UpVotes DownVotes",
-                                    new
-                                    {
-                                        answerKey,
-                                        field = command.Upvote ? "UpVotes" : "DownVotes",
-                                        value = command.Upvote ? "1" : "-1",
-                                        voteTrackerKey,
-                                        username
-                                    }).ConfigureAwait(false);
-
-            var votes = result[3].AsIntegerArray();
             return new AnswerVoteCommandResult(votes[0] - votes[1]);
+        }
+
+        static void CheckExceptions(IRedisResults result)
+        {
+            var error = result[0].GetException();
+            if (error != null)
+            {
+                switch (error.Prefix)
+                {
+                    case "ALREADYVOTED": throw new SimpleQAException("User already voted");
+                    default: throw error;
+                }
+            }
         }
     }
 }

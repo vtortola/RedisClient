@@ -33,6 +33,7 @@ header h1{
 }
 .page-header {
     border-bottom: 1px solid #ccc;
+    font-size:2em;
 }
 h2{
     font-size:1.5em;
@@ -263,7 +264,7 @@ header nav{
 }
 .vote {
     width:50px;
-    font-size:2em;
+    font-size:2.5em;
 }
 .votes{
     padding-bottom:4px;
@@ -296,7 +297,7 @@ header nav{
     outline:0;
 }
 .answer .vote{
-    font-size:1.5em;
+    font-size:2.5em;
 }
 .disabled .vote-down, .disabled .vote-up,
 .anonymous .vote-down, .anonymous .vote-up, .authored .vote-down, .authored .vote-up, .upvoted .vote-down, .downvoted .vote-up {

@@ -32,8 +32,8 @@ namespace StackExchangeDumpLoader
             {
                 var command = new AuthenticateCommand(user.Attribute("DisplayName").Value, "whatever");
                 var result = _mediator.ExecuteAsync<AuthenticateCommand, AuthenticateCommandResult>(command, anonymous, CancellationToken.None).Result;
-                idmap.TryAdd(user.Attribute("Id").Value, command.Username);
-                _channel.Execute("sadd users:builtin @user", new { user = command.Username }).ThrowErrorIfAny();
+                idmap.TryAdd(user.Attribute("Id").Value, _channel.Execute("HGET {user}:namemapping @Username", new { command.Username })[0].GetString());
+                _channel.Execute("sadd {user}:builtin @user", new { user = command.Username }).ThrowErrorIfAny();
                 Console.WriteLine("Added user: " + command.Username);
             });
 

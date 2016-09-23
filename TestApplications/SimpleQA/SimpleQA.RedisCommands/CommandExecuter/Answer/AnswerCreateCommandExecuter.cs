@@ -1,5 +1,6 @@
 ﻿using SimpleQA.Commands;
 using System;
+using System.Collections.Generic;
 using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,42 +18,26 @@ namespace SimpleQA.RedisCommands
 
         public async Task<AnswerCreateCommandResult> ExecuteAsync(AnswerCreateCommand command, IPrincipal user, CancellationToken cancel)
         {
-            var store = Keys.QuestionAnswerIdStore(command.QuestionId);
-            var questionKey = Keys.QuestionKey(command.QuestionId);
+            var result = await _channel.ExecuteAsync(
+                                        "CreateAnswer {question} @qid @data",
+                                        new 
+                                        { 
+                                            qid= command.QuestionId,
+                                            data = GetAnswerData(command, command.QuestionId, user)
+                                        }).ConfigureAwait(false);
 
-            var result = await _channel.ExecuteAsync(@"
-                                            INCR @store
-                                            HMGET @questionKey Slug User
-                                            HINCRBY @questionKey AnswerCount 1",
-                                            new { store, questionKey }).ConfigureAwait(false);
-
-            var id = result[0].GetInteger().ToString();
-            var questionData = result[1].GetStringArray();
-            var slug = questionData[0];
-            var inbox = Keys.UserInboxKey(questionData[1]);
-
-            var data = GetAnswerData(command, user, id);
-
-            var answerKey = Keys.AnswerKey(command.QuestionId, id);
-            var answerCollectionKey = Keys.AnswerCollectionKey(command.QuestionId);
-
-            result = await _channel.ExecuteAsync(@"
-                                    HMSET @answerKey @data
-                                    SADD  @answerCollectionKey @answerKey
-                                    HINCRBY @questionKey Answers 1
-                                    PUBLISH @inbox @answerKey
-                                    SADD @inbox @questionKey",
-                                    new { answerKey, data, answerCollectionKey, questionKey, inbox }).ConfigureAwait(false);
-            result.ThrowErrorIfAny();
-            return new AnswerCreateCommandResult(command.QuestionId, slug, id);
+            result = result[0].AsResults();
+            var aid = result[0].GetString();
+            var slug = result[1].GetString();
+            return new AnswerCreateCommandResult(command.QuestionId, slug, aid);
         }
 
-        private static System.Collections.Generic.IEnumerable<string> GetAnswerData(AnswerCreateCommand command, IPrincipal user, string id)
+        static IEnumerable<String> GetAnswerData(AnswerCreateCommand command, String questionId, IPrincipal user)
         {
             var data = Parameter.SequenceProperties(new
             {
-                Id = id,
-                User = user.Identity.Name,
+                QuestionId = questionId,
+                UserId = user.GetSimpleQAIdentity().Id,
                 Content = command.Content,
                 HtmlContent = command.HtmlContent,
                 CreatedOn = command.CreationDate,

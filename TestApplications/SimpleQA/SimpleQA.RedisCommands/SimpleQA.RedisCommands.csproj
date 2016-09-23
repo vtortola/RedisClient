@@ -65,7 +65,6 @@
     <Compile Include="CommandExecuter\Question\QuestionEditCommandExecuter.cs" />
     <Compile Include="CommandExecuter\Question\QuestionVoteCommandExecuter.cs" />
     <Compile Include="CommandExecuter\VisitQuestion\VisitQuestionCommandExecuter.cs" />
-    <Compile Include="Keys.cs" />
     <Compile Include="Messaging\RedisClientMessaging.cs" />
     <Compile Include="ModelBuilder\Answer\AnswerDeleteFormRequestBuilder.cs" />
     <Compile Include="ModelBuilder\Answer\AnswerEditFormRequestBuilder.cs" />
@@ -106,9 +105,17 @@
     <EmbeddedResource Include="ModelBuilder\Tags\Procedures\PopularTagsProcedures.rcproc" />
     <EmbeddedResource Include="ModelBuilder\Tags\Procedures\TagSuggestionProcedures.rcproc" />
     <EmbeddedResource Include="ModelBuilder\User\Procedures\UserInboxProcedures.rcproc" />
+    <EmbeddedResource Include="CommandExecuter\Answer\Procedures\AnswerCreateProcedures.rcproc" />
+    <EmbeddedResource Include="CommandExecuter\Answer\Procedures\AnswerDeleteProcedures.rcproc" />
+    <EmbeddedResource Include="CommandExecuter\Answer\Procedures\AnswerEditProcedures.rcproc" />
+    <EmbeddedResource Include="CommandExecuter\Answer\Procedures\AnswerVoteProcedures.rcproc" />
+    <EmbeddedResource Include="ModelBuilder\Answer\Procedures\AnswerEditFormProcedures.rcproc" />
+    <EmbeddedResource Include="ModelBuilder\Answer\Procedures\AnswerRequestProcedures.rcproc" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="SimpleQAModel.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

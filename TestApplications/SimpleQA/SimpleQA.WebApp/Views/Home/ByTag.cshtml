@@ -5,7 +5,7 @@
     ViewBag.Scene = User.Identity.IsAuthenticated ? "tagbrowsing" : String.Empty;
 }
 
-<div class="row home-header" data-push-topic="@Keys.TagNotification(Model.Tag)" data-push-topic-message="New questions about this tag have been added.">
+<div class="row home-header" data-push-topic="Keys.TagNotification(Model.Tag)" data-push-topic-message="New questions about this tag have been added.">
     @Html.QuestionSorter("Latest questions for " + Model.Tag, sorting => Url.RouteUrl("Tag", new { Sorting = sorting }))
     @if (User.Identity.IsAuthenticated)
     {

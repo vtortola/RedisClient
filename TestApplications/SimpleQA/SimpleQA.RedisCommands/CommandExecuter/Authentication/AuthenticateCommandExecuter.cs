@@ -22,7 +22,7 @@ namespace SimpleQA.RedisCommands
             // because markdown code is missing and cannto be edited
             if(user.Identity.Name != "dumpprocessor")
             {
-                var ismember = await _channel.ExecuteAsync("SISMEMBER {user}:builin @user", new { user = command.Username }).ConfigureAwait(false);
+                var ismember = await _channel.ExecuteAsync("SISMEMBER {user}:builtin @user", new { user = command.Username }).ConfigureAwait(false);
                 if (ismember[0].GetInteger() == 1)
                     throw new SimpleQAAuthenticationException("It is a built-in user.");
             }

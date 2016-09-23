@@ -1,0 +1,24 @@
+﻿proc VoteAswer($hashtag, answerId, userId, vote)
+
+	local answerkey = hashtag .. ':answer:' .. answerId
+	local answervoteskey = hashtag .. ':avotes:' .. answerId
+
+	local currentVote = redis.call('ZSCORE', answervoteskey, userId )
+
+	if(currentVote) then
+		return redis.error_reply('ALREADYVOTED')
+	end
+
+	vote = tonumber(vote)
+	redis.call('ZADD', answervoteskey, vote, userId)
+	
+	local field = 'UpVotes';
+	if(vote < 1) then
+		field = 'DownVotes'
+	end
+
+	redis.call('HINCRBY', answerkey, field, 1)
+    redis.call('HINCRBY', answerkey, 'Score', vote)
+    return redis.call('HMGET', answerkey, 'UpVotes', 'DownVotes')
+
+endproc

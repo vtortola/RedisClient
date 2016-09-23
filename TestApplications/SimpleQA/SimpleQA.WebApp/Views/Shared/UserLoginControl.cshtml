@@ -10,7 +10,7 @@
         <div id="authenticated-notifications" class="dropdown">
             <button id="authenticated-notifications-button" 
                     class="dropdown-toggle" type="button" data-toggle="dropdown" 
-                    data-user-inbox="@(Keys.UserInboxKey(User.Identity.Name))"
+                    data-user-inbox="(Keys.UserInboxKey(User.Identity.Name))"
                     data-user-inbox-url="@Url.RouteUrl("UserInbox")">
                 <span id="authenticated-notifications-incoming" class="@(qauser.InboxCount > 0 ? "" : "nodisplay")" >@qauser.InboxCount</span>
                 <span id="authenticated-notifications-icon" class="glyphicon glyphicon-inbox @(qauser.InboxCount > 0 ? "nodisplay" : "")"></span>

@@ -16,32 +16,33 @@ namespace SimpleQA.RedisCommands
 
         public async Task<AnswerDeleteCommandResult> ExecuteAsync(AnswerDeleteCommand command, IPrincipal user, CancellationToken cancel)
         {
-            var parameters = new
-            {
-                key = Keys.AnswerKey(command.QuestionId, command.AnswerId),
-                colkey = Keys.AnswerCollectionKey(command.QuestionId),
-                qKey = Keys.QuestionKey(command.QuestionId)
-            };
-
-            var result = await _channel.ExecuteAsync(@"
-                                            HGET @key User
-                                            HGET @qKey Slug",
-                                            parameters).ConfigureAwait(false);
-
-            var answerUser = result[0].GetString();
-
-            if (answerUser != user.Identity.Name)
-                throw new SimpleQANotOwnerException("You cannot delete an answer you did not create.");
-
-            var slug = result[1].GetString();
-
-            result = await _channel.ExecuteAsync(@"
-                                    DEL @key
-                                    SREM  @colkey @key
-                                    HDECRBY @qKey Answers 1",
-                                    parameters).ConfigureAwait(false);
+            var result = await _channel.ExecuteAsync(
+                                        "DeleteAnswer {question} @answerId @userId",
+                                        new
+                                        {
+                                            answerId = command.AnswerId,
+                                            userId = user.GetSimpleQAIdentity().Id
+                                        })
+                                        .ConfigureAwait(false);
+            CheckException(result);
+            var slug = result[0].GetString();
 
             return new AnswerDeleteCommandResult(command.QuestionId, slug);
+        }
+
+        static void CheckException(IRedisResults result)
+        {
+            var error = result[0].GetException();
+            if (error != null)
+            {
+                switch (error.Prefix)
+                {
+                    case "NOTOWNER":
+                        throw new SimpleQAException("You are not the author of the answer you try to delete.");
+                    default:
+                        throw error;
+                }
+            }
         }
     }
 }

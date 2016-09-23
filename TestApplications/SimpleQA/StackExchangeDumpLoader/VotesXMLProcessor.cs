@@ -1,4 +1,5 @@
-﻿using SimpleQA.Commands;
+﻿using SimpleQA;
+using SimpleQA.Commands;
 using System;
 using System.Collections.Generic;
 using System.Security.Principal;
@@ -34,7 +35,7 @@ namespace StackExchangeDumpLoader
         private void VotePost(XElement vote, IDictionary<String, String> usermap, IDictionary<String, String> postmap)
         {
             var userId = vote.Attribute("UserId").Value;
-            var user = new GenericPrincipal(new GenericIdentity(usermap[userId]), null);
+            var user = new SimpleQAPrincipal(usermap[userId], "whatever", "", 0);
 
             if (!postmap.ContainsKey(vote.Attribute("PostId").Value))
                 return;
@@ -60,14 +61,14 @@ namespace StackExchangeDumpLoader
             }
         }
 
-        private void VoteAnswer(GenericPrincipal user, String questionId, String answerId)
+        private void VoteAnswer(SimpleQAPrincipal user, String questionId, String answerId)
         {
             var command = new AnswerVoteCommand(questionId, answerId, true);
             var result = _mediator.ExecuteAsync<AnswerVoteCommand, AnswerVoteCommandResult>(command, user, CancellationToken.None).Result;
 
         }
 
-        private void VoteQuestion(GenericPrincipal user, String questionId)
+        private void VoteQuestion(SimpleQAPrincipal user, String questionId)
         {
             var command = new QuestionVoteCommand(questionId, true);
             var result = _mediator.ExecuteAsync<QuestionVoteCommand, QuestionVoteCommandResult>(command, user, CancellationToken.None).Result;

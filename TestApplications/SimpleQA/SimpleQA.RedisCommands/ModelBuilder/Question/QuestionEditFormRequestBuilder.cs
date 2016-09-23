@@ -37,7 +37,7 @@ namespace SimpleQA.RedisCommands
             return model;
         }
 
-        private static void CheckException(IRedisResults result)
+        static void CheckException(IRedisResults result)
         {
             var error = result[0].GetException();
             if (error != null)
