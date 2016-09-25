@@ -12,12 +12,12 @@ An experimental .NET Redis client that uses a special syntax for easing LUA scri
  * Support for asynchronous, synchronous and "fire and forget" operations.
 
 ### Why  [procedures](//github.com/vtortola/RedisClient/wiki/Procedures)?
- * They have all the benefits of regular LUA scripting in Redis, like atomicity and avoiding multiple round trips to the server.
+ * They have all the benefits of regular LUA scripting in Redis, like atomicity and avoiding multiple round trips to the server, since a procedure is just a way to wrap regular LUA scripts.
  * Multiple procedures can be defined in a same text file since they are limited by `proc` and `endproc` boundaries.
  * RedisClient handles the [procedure deployment](//github.com/vtortola/RedisClient/wiki/Procedure-management).
  * Procedures are invoked by name rather than using `EVAL` or `EVALSHA`.
- * Instead passing parameter values in `KEYS` and `ARGV` arrays, and having to hardcore the index location of the data in those arrays, named parameters are used.
- * [Array parameters of arbitrary length](//github.com/vtortola/RedisClient/wiki/Procedures#parameter-cardinality) are supported, being the length of those arrays defined at parameter value binding time.
+ * Instead passing parameter values in `KEYS` and `ARGV` arrays, and having to hardcore the index location of the data in those arrays, **named parameters are used**.
+ * [**Array parameters of arbitrary length**](//github.com/vtortola/RedisClient/wiki/Procedures#parameter-cardinality) are supported, being the length of those arrays defined at parameter value binding time.
  * Procedures in RedisClient use the same [parameter binding](//github.com/vtortola/RedisClient/wiki/Parameter-binding) capabilities than for regular Redis commands.
  * Procedure results can be [inspected](//github.com/vtortola/RedisClient/wiki/Getting-results) as any other Redis command.
  * [Learn more about procedures](//github.com/vtortola/RedisClient/wiki/Procedures).
