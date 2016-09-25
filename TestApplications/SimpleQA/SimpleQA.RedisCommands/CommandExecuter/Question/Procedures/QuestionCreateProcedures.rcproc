@@ -52,7 +52,7 @@ proc IndexTags($hashtag, questionId, tags[], score, dateScore)
 		
 		redis.call('ZINCRBY', alltagcount, 1, tag) 
 
-		redis.call('PUBLISH', tag, 'ADDED')
+		redis.call('PUBLISH', 'tag-' .. tag, 'NEWQUESTION')
 	end
 
 	for i=1, table.getn(tags), 1 
