@@ -13,6 +13,20 @@ namespace SimpleQA.RedisCommands
         readonly IRedisChannel _channel;
         readonly BufferBlock<RedisNotification> _notifications;
 
+        SimpleQAPrincipal _user;
+
+        public void Init(SimpleQAPrincipal user)
+        {
+            _user = user;
+            CheckInit();
+        }
+
+        private void CheckInit()
+        {
+            if (_user == null)
+                throw new InvalidOperationException("'RedisClientMessaging' needs to be initialized with a valid user.");
+        }
+
         public RedisClientMessaging(IRedisChannel channel)
         {
             _channel = channel;
@@ -22,12 +36,14 @@ namespace SimpleQA.RedisCommands
 
         public async Task<PushMessage> ReceiveMessage(CancellationToken cancel)
         {
+            CheckInit();
             var notification = await _notifications.ReceiveAsync(cancel).ConfigureAwait(false);
             return new PushMessage() { Topic = notification.PublishedKey, Change = notification.Content };
         }
 
         public Task SendMessageAsync(PushSubscriptionRequest request, CancellationToken cancel)
         {
+            CheckInit();
            _channel.Dispatch("subscribe @key", new { key = request.Topic });
            return Task.FromResult<Object>(null);
         }

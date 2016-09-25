@@ -10,24 +10,14 @@
         <div id="authenticated-notifications" class="dropdown">
             <button id="authenticated-notifications-button" 
                     class="dropdown-toggle" type="button" data-toggle="dropdown" 
-                    data-user-inbox="(Keys.UserInboxKey(User.Identity.Name))"
+                    data-user-inbox="user-inbox"
                     data-user-inbox-url="@Url.RouteUrl("UserInbox")">
                 <span id="authenticated-notifications-incoming" class="@(qauser.InboxCount > 0 ? "" : "nodisplay")" >@qauser.InboxCount</span>
                 <span id="authenticated-notifications-icon" class="glyphicon glyphicon-inbox @(qauser.InboxCount > 0 ? "nodisplay" : "")"></span>
             </button>
             <div class="dropdown-menu" id="authenticated-notifications-items">
                 <div class="glyphicon glyphicon-refresh loading ">
-
                 </div>
-                <ul>
-
-                    @*<li><a href="#">Notification 1</a></li>
-            <li><a href="#">Notification 2</a></li>
-            <li><a href="#">Notification 3</a></li>
-            <li role="separator" class="divider"></li>
-            <li><a href="#">Notification 4</a></li>*@
-                </ul>
-
             </div>
 
         </div>

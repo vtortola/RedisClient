@@ -16,13 +16,13 @@ namespace SimpleQA.WebApp.Controllers
         {
             if(System.Web.HttpContext.Current.IsWebSocketRequest)
             {
-                System.Web.HttpContext.Current.AcceptWebSocketRequest((context) => ProcessWebSocket(context, cancel));
+                System.Web.HttpContext.Current.AcceptWebSocketRequest((context) => ProcessWebSocket(context, User as SimpleQAPrincipal, cancel));
                 return new HttpStatusCodeResult(HttpStatusCode.SwitchingProtocols);
             }
             return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
         }
 
-        private async Task ProcessWebSocket(AspNetWebSocketContext context, CancellationToken cancel)
+        private async Task ProcessWebSocket(AspNetWebSocketContext context, SimpleQAPrincipal user, CancellationToken cancel)
         {
             var websocket = context.WebSocket;
 
@@ -33,6 +33,8 @@ namespace SimpleQA.WebApp.Controllers
 
             using (var messaging = DependencyResolver.Current.GetService<IMessaging>())
             {
+                messaging.Init(user);
+
                 var sending = Task.Run(async () =>
                 {
                     while(!websocket.CloseStatus.HasValue && !cancel.IsCancellationRequested)
