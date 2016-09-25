@@ -3,6 +3,7 @@ using SimpleInjector.Diagnostics;
 using SimpleQA.Commands;
 using SimpleQA.Models;
 using SimpleQA.RedisCommands;
+using System;
 using System.IO;
 using System.Net;
 using System.Reflection;
@@ -14,13 +15,13 @@ namespace SimpleQA
 {
     public static class RedisCommandsConfiguration
     {
-        public static void Configure(Container container, IPEndPoint endpoint, IRedisClientLog log)
+        public static void Configure(Container container, IPEndPoint endpoint, Boolean withLogging)
         {
             var options = new RedisClientOptions() 
             { 
                 //PingTimeout = TimeSpan.FromSeconds(1),
                 //PreventPingIfActive = false,
-                Logger = log
+                Logger = withLogging? new RedisLogger() : null
             };
 
             options.Procedures.LoadFromAssembly(Assembly.GetExecutingAssembly());

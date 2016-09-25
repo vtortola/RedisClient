@@ -141,10 +141,6 @@
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="vtortola.RedisClient, Version=0.0.3.40248, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\vtortola.RedisClient.0.0.3-alpha\lib\net45\vtortola.RedisClient.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="WebGrease, Version=1.5.2.14234, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\WebGrease.1.5.2\lib\WebGrease.dll</HintPath>
       <Private>True</Private>

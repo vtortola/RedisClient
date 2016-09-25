@@ -45,7 +45,7 @@ namespace StackExchangeDumpLoader
             dicontainer.Register<UsersXMLProcessor>();
             dicontainer.Register<VotesXMLProcessor>();
             dicontainer.Register<ICommandExecuterMediator>( () => new CommandExecuterMediator(dicontainer) );
-            RedisCommandsConfiguration.Configure(dicontainer, endpoint, new ConsoleLogger());
+            RedisCommandsConfiguration.Configure(dicontainer, endpoint, false);
 
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("\nLOAD STACKEXCHANGE DUMP INTO SIMPLEQA\n");
@@ -68,28 +68,6 @@ namespace StackExchangeDumpLoader
 
             Console.WriteLine("END");
             Console.ReadKey(true);
-        }
-
-        public sealed class ConsoleLogger : IRedisClientLog
-        {
-            public void Info(string format, params object[] args)
-            {
-                Console.WriteLine(format, args);
-            }
-
-            public void Error(string format, params object[] args)
-            {
-                Console.WriteLine("Exception: " + format, args);
-            }
-
-            public void Error(Exception error, string format, params object[] args)
-            {
-                Console.WriteLine("Exception: " + String.Format(format, args) + "\n" + error.ToString());
-            }
-
-            public void Debug(String format, params Object[] args)
-            {
-            }
         }
     }
 }

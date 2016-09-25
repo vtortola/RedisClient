@@ -6,7 +6,6 @@ using SimpleQA.Markdown;
 using System.Net;
 using System.Reflection;
 using System.Web.Mvc;
-using vtortola.Redis;
 
 namespace SimpleQA.WebApp
 {
@@ -26,41 +25,11 @@ namespace SimpleQA.WebApp
 
             container.RegisterMvcIntegratedFilterProvider();
 
-            RedisCommandsConfiguration.Configure(container, new IPEndPoint(IPAddress.Loopback, 6379), new RedisLogger());
+            RedisCommandsConfiguration.Configure(container, new IPEndPoint(IPAddress.Loopback, 6379), true);
 
             container.Verify();
 
             DependencyResolver.SetResolver(new SimpleInjectorDependencyResolver(container));
         }
-
-        class RedisLogger : IRedisClientLog
-        {
-            readonly ILogger _log;
-            public RedisLogger()
-            {
-                _log = LogManager.GetLogger("vtortola.RedisClient");
-            }
-
-            public void Info(string format, params object[] args)
-            {
-                _log.Info(format, args);
-            }
-
-            public void Error(string format, params object[] args)
-            {
-                _log.Error(format, args);
-            }
-
-            public void Error(System.Exception error, string format, params object[] args)
-            {
-                _log.Error(error, format, args);
-            }
-
-            public void Debug(string format, params object[] args)
-            {
-                
-            }
-        }
-
     }
 }
