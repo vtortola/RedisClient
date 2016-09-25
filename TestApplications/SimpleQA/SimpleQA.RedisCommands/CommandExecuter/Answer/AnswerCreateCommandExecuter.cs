@@ -31,7 +31,7 @@ namespace SimpleQA.RedisCommands
             var quesionData = result[1].GetStringArray();
             var slug = quesionData[0];
             var ownerId = quesionData[1];
-            //if (ownerId != user.GetSimpleQAIdentity().Id)
+            if (ownerId != user.GetSimpleQAIdentity().Id)
             {
                 _channel.Dispatch("NotifyQuestionUpdate {user} @qid @uid",
                                   new
