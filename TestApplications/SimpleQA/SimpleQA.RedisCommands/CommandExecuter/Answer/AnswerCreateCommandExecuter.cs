@@ -28,7 +28,18 @@ namespace SimpleQA.RedisCommands
 
             result = result[0].AsResults();
             var aid = result[0].GetString();
-            var slug = result[1].GetString();
+            var quesionData = result[1].GetStringArray();
+            var slug = quesionData[0];
+            var ownerId = quesionData[1];
+            //if (ownerId != user.GetSimpleQAIdentity().Id)
+            {
+                _channel.Dispatch("NotifyQuestionUpdate {user} @qid @uid",
+                                  new
+                                  {
+                                      qid = command.QuestionId,
+                                      uid = user.GetSimpleQAIdentity().Id
+                                  });
+            }
             return new AnswerCreateCommandResult(command.QuestionId, slug, aid);
         }
 

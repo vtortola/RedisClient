@@ -12,9 +12,11 @@
 	redis.call('HINCRBY', qKey, 'AnswerCount', 1)
 	redis.call('SADD', qanswersKey, id)
 
+	redis.call('PUBLISH', 'question-' .. questionId, 'NEWANSWER')
+
 	local result = {};
 	result[1] = tostring(id)
-	result[2] = redis.call('HGET', qKey, 'Slug')
+	result[2] = redis.call('HMGET', qKey, 'Slug', 'UserId')
 	return result;
 
 endproc

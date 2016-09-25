@@ -38,14 +38,35 @@ namespace SimpleQA.RedisCommands
         {
             CheckInit();
             var notification = await _notifications.ReceiveAsync(cancel).ConfigureAwait(false);
-            return new PushMessage() { Topic = notification.PublishedKey, Change = notification.Content };
+            var topic = GetApplicationTopic(notification.PublishedKey);
+            return new PushMessage() { Topic = topic, Change = notification.Content };
         }
 
         public Task SendMessageAsync(PushSubscriptionRequest request, CancellationToken cancel)
         {
             CheckInit();
-           _channel.Dispatch("subscribe @key", new { key = request.Topic });
+            var topic = GetRedisTopic(request.Topic);
+            _channel.Dispatch("subscribe @topic", new { topic });
            return Task.FromResult<Object>(null);
+        }
+
+        private String GetRedisTopic(String topic)
+        {
+            if(topic.StartsWith("user-"))
+                return topic + "-" + _user.SimpleQAIdentity.Id;
+
+            return topic;
+        }
+
+        private String GetApplicationTopic(String topic)
+        {
+            if (topic.StartsWith("user-"))
+            {
+                var removeLength = _user.SimpleQAIdentity.Id.Length + 1;
+                return topic.Substring(0, topic.Length - removeLength);
+            }
+
+            return topic;
         }
 
         public void Dispose()

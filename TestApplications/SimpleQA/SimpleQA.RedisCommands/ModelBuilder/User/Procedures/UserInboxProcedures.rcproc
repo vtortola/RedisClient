@@ -8,3 +8,13 @@
 	return ids
 
 endproc
+
+proc NotifyQuestionUpdate($hashtag, questionId, userId)
+
+	local inboxKey = hashtag .. ':mailbox:' .. userId
+	redis.call('SADD', inboxKey, questionId)
+	redis.call('PUBLISH', 'user-inbox-' .. userId, 'UPDATES')
+
+	return redis.status_reply('OK') 
+
+endproc
