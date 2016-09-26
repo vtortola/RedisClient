@@ -10,6 +10,7 @@ An experimental .NET Redis client that uses a special syntax for easing LUA scri
  * Server-side scripting through procedures [(more about procedures)](//github.com/vtortola/RedisClient/wiki/Procedures).
  * A [debugging tool for procedures](//github.com/vtortola/RedisClient/wiki/Procedure-Debugger) is available in this repository.
  * Support for asynchronous, synchronous and "fire and forget" operations.
+ * **Redis Cluster**: Not supported at the moment, but is the next thing in my roadmap.
 
 ### Why  [procedures](//github.com/vtortola/RedisClient/wiki/Procedures)?
  * They have all the benefits of regular LUA scripting in Redis, like atomicity and avoiding multiple round trips to the server, since a procedure is just a way to wrap regular LUA scripts.
