@@ -1,10 +1,12 @@
 ﻿using SimpleQA.Models;
+using SimpleQA.WebApp.Filter;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace SimpleQA.WebApp.Controllers
 {
+    [AnonymousOutputCache(CacheProfile="HomePageCaching")]
     public class HomeController : Controller
     {
         readonly IModelBuilderMediator _mediator;

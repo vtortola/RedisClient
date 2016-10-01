@@ -17,6 +17,7 @@ namespace SimpleQA.WebApp.Controllers
         }
 
         [HttpGet]
+        [AnonymousOutputCache(CacheProfile = "QuestionCaching")]
         public async Task<ActionResult> Get(QuestionRequest request, CancellationToken cancel)
         {
             var model = await _mediator.BuildAsync<QuestionRequest, QuestionViewModel>(request, User, cancel);

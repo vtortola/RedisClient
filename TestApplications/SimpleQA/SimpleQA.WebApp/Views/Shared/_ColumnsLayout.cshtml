@@ -7,6 +7,10 @@
     </div>
     <div class="col-sm-4">
         <div id="side">
+            @if(this.Context.IsDebuggingEnabled)
+            { 
+            <p style="background: #ca8912; border-radius: 5px; padding: 2px 5px 2px 15px; color: white;">Page generated at @DateTime.Now.ToString("HH:mm:ss.fff")</p>
+            }
             @RenderSection("side", false)
             @{Html.RenderAction("Popular", "Tags");}
             @RenderSection("sidebottom", false)

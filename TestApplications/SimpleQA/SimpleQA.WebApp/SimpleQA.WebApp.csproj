@@ -201,6 +201,7 @@
     <Compile Include="Controllers\QuestionReadController.cs" />
     <Compile Include="Controllers\TagsController.cs" />
     <Compile Include="Controllers\UserController.cs" />
+    <Compile Include="Filter\AnonymousOutputCacheAttribute.cs" />
     <Compile Include="Filter\SimpleQAErrorHandler.cs" />
     <Compile Include="Filter\SimpleQAAuthentication.cs" />
     <Compile Include="Filter\SimpleQAAuthorizeAttribute.cs" />
