@@ -25,7 +25,7 @@ namespace SimpleQA.WebApp.Controllers
         }
 
         [HttpGet]
-        [SimpleQAAuthorize]
+        [Authorize]
         public ActionResult Ask(QuestionAskFormRequest request, CancellationToken cancel)
         {
             var tags = String.IsNullOrWhiteSpace(request.Tag) ? new String[0] : new[] { request.Tag };
@@ -34,7 +34,7 @@ namespace SimpleQA.WebApp.Controllers
         }
 
         [HttpGet]
-        [SimpleQAAuthorize]
+        [Authorize]
         public async Task<ActionResult> Edit(QuestionEditFormRequest request, CancellationToken cancel)
         {
             var model = await _mediator.BuildAsync<QuestionEditFormRequest, QuestionEditFormViewModel>(request, User, cancel);
@@ -42,7 +42,7 @@ namespace SimpleQA.WebApp.Controllers
         }
 
         [HttpGet]
-        [SimpleQAAuthorize]
+        [Authorize]
         public async Task<PartialViewResult> Close(QuestionCloseFormRequest request, CancellationToken cancel)
         {
             var model = await _mediator.BuildAsync<QuestionCloseFormRequest, QuestionCloseFormViewModel>(request, User, cancel);
@@ -50,7 +50,7 @@ namespace SimpleQA.WebApp.Controllers
         }
 
         [HttpGet]
-        [SimpleQAAuthorize]
+        [Authorize]
         public async Task<PartialViewResult> Delete(QuestionDeleteFormRequest request, CancellationToken cancel)
         {
             var model = await _mediator.BuildAsync<QuestionDeleteFormRequest, QuestionDeleteFormViewModel>(request, User, cancel);

@@ -150,6 +150,14 @@ namespace SimpleQA.WebApp
                 defaults: new { controller = "Authentication", action = "Login" },
                 constraints: new { action = "login|logout", httpMethod = new HttpMethodConstraint("POST") }
             );
+            
+            // ERROR
+            routes.MapRoute(
+                name: "ErrorSessionEnded",
+                url: "error/{action}",
+                defaults: new { controller = "Error" },
+                constraints: new { action = "sessionended", httpMethod = new HttpMethodConstraint("GET") }
+            );
         }
     }
 }

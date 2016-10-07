@@ -8,7 +8,7 @@ namespace SimpleQA.WebApp
     {
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
-            filters.Add(new SimpleQAAuthentication());
+            filters.Add(new SetIdentityAttribute());
             filters.Add(new SimpleQAErrorHandler(LogManager.GetCurrentClassLogger()));
         }
     }

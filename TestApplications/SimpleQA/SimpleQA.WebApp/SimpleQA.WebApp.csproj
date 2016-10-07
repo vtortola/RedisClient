@@ -179,7 +179,9 @@
     <Content Include="Styles\bootstrap-tagsinput.css" />
     <Content Include="Styles\bootstrap.min.css" />
     <Content Include="Styles\simplemde.min.css" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Home\Get.cshtml" />
@@ -193,6 +195,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AnswerReadController.cs" />
     <Compile Include="Controllers\AnswerWriteController.cs" />
+    <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\PushController.cs" />
     <Compile Include="Controllers\QuestionVisitCounterController.cs" />
     <Compile Include="Controllers\QuestionWriteController.cs" />
@@ -202,11 +205,10 @@
     <Compile Include="Controllers\TagsController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Filter\AnonymousOutputCacheAttribute.cs" />
+    <Compile Include="Filter\SetIdentityAttribute.cs" />
     <Compile Include="Filter\SimpleQAErrorHandler.cs" />
-    <Compile Include="Filter\SimpleQAAuthentication.cs" />
-    <Compile Include="Filter\SimpleQAAuthorizeAttribute.cs" />
+    <Compile Include="Filter\AuthorizeWriteAttribute.cs" />
     <Compile Include="Filter\EnforceValidModelAttribute.cs" />
-    <Compile Include="Filter\ValidateSessionAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

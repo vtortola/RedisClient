@@ -70,7 +70,7 @@ namespace StackExchangeDumpLoader
             var id = question.Attribute("Id").Value;
             var userId = question.Attribute("OwnerUserId").Value;
 
-            var user = new SimpleQAPrincipal(usermap[userId], "whatever", "", 0);
+            var user = new SimpleQAPrincipal(usermap[userId], "whatever","", 0);
 
             var tags = Regex.Matches(question.Attribute("Tags").Value, "<(.*?)>")
                             .OfType<Match>()

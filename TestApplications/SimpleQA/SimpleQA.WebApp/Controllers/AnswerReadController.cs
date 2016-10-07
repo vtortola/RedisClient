@@ -6,8 +6,7 @@ using System.Web.Mvc;
 
 namespace SimpleQA.WebApp.Controllers
 {
-    [SimpleQAAuthorize]
-    [ValidateSessionAttribute]
+    [Authorize]
     public class AnswerReadController : Controller
     {
         readonly IModelBuilderMediator _mediator;

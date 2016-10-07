@@ -9,8 +9,7 @@ using System.Web.Mvc;
 
 namespace SimpleQA.WebApp.Controllers
 {
-    [SimpleQAAuthorize]
-    [ValidateSession]
+    [AuthorizeWrite]
     [EnforceValidModel]
     public class AnswerWriteController : Controller
     {

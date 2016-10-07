@@ -33,35 +33,14 @@ namespace SimpleQA.WebApp.Filter
 
         static void SetAnonymousCaching(HttpContext context, Object data, ref HttpValidationStatus status)
         {
-            // Caching checks precede the authentication check.
-            // So unless you check here, once page is cached for anonymous, users
-            // still see the cached version after login
-
-            // TODO : Should I merge this with the authentication attribute?
-
-            var cookie = context.Request.Cookies[Constant.CookieKey];
-            if (cookie != null && !String.IsNullOrWhiteSpace(cookie.Value))
+            if(context.User.Identity.IsAuthenticated)
             {
-                var dispatcher = DependencyResolver.Current.GetService<ICommandExecuterMediator>();
-
-                var command = new ValidateSessionCommand(cookie.Value);
-                try
-                {
-                    var result = dispatcher.ExecuteAsync<ValidateSessionCommand, ValidateSessionCommandResult>(command, context.User, CancellationToken.None).Result;
-                    if (result.IsValid)
-                    {
-                        status = HttpValidationStatus.IgnoreThisRequest;
-                        return;
-                    }
-                }
-                catch (Exception)
-                {
-                    status = HttpValidationStatus.Invalid;
-                    return;
-                }
+                status = HttpValidationStatus.IgnoreThisRequest;
             }
-
-            status = HttpValidationStatus.Valid;
+            else
+            {
+                status = HttpValidationStatus.Valid;
+            }
         }
     }
 }

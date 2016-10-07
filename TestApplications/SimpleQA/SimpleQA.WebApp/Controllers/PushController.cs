@@ -22,7 +22,7 @@ namespace SimpleQA.WebApp.Controllers
         }
 
         [HttpGet]
-        [SimpleQAAuthorize]
+        [Authorize]
         public HttpStatusCodeResult Updates(CancellationToken cancel)
         {
             if(System.Web.HttpContext.Current.IsWebSocketRequest)

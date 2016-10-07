@@ -6,7 +6,7 @@ using System.Web.Mvc;
 
 namespace SimpleQA.WebApp.Filter
 {
-    public class SimpleQAAuthorizeAttribute : ActionFilterAttribute, IAuthorizationFilter
+    public class AuthorizeWriteAttribute : ActionFilterAttribute, IAuthorizationFilter
     {
         public void OnAuthorization(AuthorizationContext filterContext)
         {

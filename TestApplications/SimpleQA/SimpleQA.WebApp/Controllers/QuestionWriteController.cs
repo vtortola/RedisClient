@@ -10,8 +10,7 @@ using System.Threading;
 
 namespace SimpleQA.WebApp.Controllers
 {
-    [ValidateSession]
-    [SimpleQAAuthorize]
+    [AuthorizeWrite]
     [EnforceValidModel]
     public class QuestionWriteController : Controller
     {
