@@ -29,6 +29,7 @@ namespace SimpleQA.WebApp.Filter
                     {
                         var result = dispatcher.ExecuteAsync<ValidateSessionCommand, ValidateSessionCommandResult>(command, filterContext.HttpContext.User, CancellationToken.None).Result;
                         if (result.IsValid)
+                            filterContext.RequestContext.HttpContext.User = new SimpleQAPrincipal(result.Id, result.UserName,sessionId, result.InboxCount);
                         
                         return;
                     }
