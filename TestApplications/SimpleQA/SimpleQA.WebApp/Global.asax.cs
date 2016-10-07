@@ -1,5 +1,5 @@
 ﻿using NLog;
-using SimpleQA.WebApp.Models.ModelBinders;
+using SimpleQA.WebApp.ModelBinders;
 using StackExchange.Profiling;
 using System;
 using System.Web;
@@ -34,8 +34,9 @@ namespace SimpleQA.WebApp
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             BundlingConfiguration.RegisterBundles(BundleTable.Bundles);
+            ModelBinderConfig.Configure(ModelBinderProviders.BinderProviders);
             MiniProfilerHandler.RegisterRoutes();
-            ModelBinderProviders.BinderProviders.Add(new QuestionModelBinderProvider());
+
             LogManager.GetCurrentClassLogger().Info("Application started");
 
             // no wep api right now

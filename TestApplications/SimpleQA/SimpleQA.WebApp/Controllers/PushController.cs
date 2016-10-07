@@ -52,7 +52,8 @@ namespace SimpleQA.WebApp.Controllers
                     {
                         await ProcessIncomingMessaging(websocket, messaging, writeBuffer, cancel).ConfigureAwait(false);
                     }
-                    catch(Exception ex)
+                    catch (OperationCanceledException) { }
+                    catch (Exception ex)
                     {
                         _logger.Error(ex, "Error processing incoming messaging");
                     }
@@ -62,6 +63,7 @@ namespace SimpleQA.WebApp.Controllers
                 {
                     await ProcessingOutgoingMessaging(cancel, websocket, readBuffer, messaging).ConfigureAwait(false);
                 }
+                catch (OperationCanceledException) { }
                 catch (Exception ex)
                 {
                     _logger.Error(ex, "Error processing outgoing messaging");
