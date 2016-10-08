@@ -14,14 +14,12 @@ namespace SimpleQA.WebApp.Controllers
             _mediator = mediator;
         }
 
-        [HttpGet]
         public async Task<ActionResult> Index(UserModelRequest request, CancellationToken cancel)
         {
             var model = await _mediator.BuildAsync<UserModelRequest, UserModel>(request, User, cancel);
             return View(model);
         }
 
-        [HttpPost]
         public async Task<PartialViewResult> Inbox(CancellationToken cancel)
         {
             var model = await _mediator.BuildAsync<UserInboxRequest, UserInboxModel>(UserInboxRequest.Empty, User, cancel);

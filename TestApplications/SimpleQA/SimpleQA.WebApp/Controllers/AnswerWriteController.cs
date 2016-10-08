@@ -22,7 +22,6 @@ namespace SimpleQA.WebApp.Controllers
             _markdown = markdown;
         }
 
-        [HttpPost]
         public async Task<ActionResult> Vote(AnswerVoteRequest request, CancellationToken cancel)
         {
             var command = new AnswerVoteCommand(request.QuestionId, request.AnswerId, request.Upvote);
@@ -30,7 +29,6 @@ namespace SimpleQA.WebApp.Controllers
             return Json(new { Votes = result.Votes  });
         }
                 
-        [HttpPost]
         public async Task<ActionResult> Add(AnswerCreateRequest request, CancellationToken cancel)
         {
             var command = new AnswerCreateCommand(request.QuestionId, DateTime.Now, request.Content, _markdown.TransformIntoHTML(request.Content));
@@ -38,7 +36,6 @@ namespace SimpleQA.WebApp.Controllers
             return Redirect(Url.RouteUrl("QuestionRead", new { id = result.QuestionId, slug = result.Slug, action = "get" }) + "#ans_" + result.AnswerId);
         }
 
-        [HttpPost]
         public async Task<ActionResult> Edit(AnswerEditRequest request, CancellationToken cancel)
         {
             var command = new AnswerEditCommand(request.QuestionId, request.AnswerId, request.Content, _markdown.TransformIntoHTML(request.Content));
@@ -46,7 +43,6 @@ namespace SimpleQA.WebApp.Controllers
             return Redirect(Url.RouteUrl("AnswerRead", new { questionId = result.QuestionId, answerId=result.AnswerId, action = "get" }));
         }
 
-        [HttpPost]
         public async Task<ActionResult> Delete(AnswerActionRequest request, CancellationToken cancel)
         {
             var command = new AnswerDeleteCommand(request.QuestionId, request.AnswerId);

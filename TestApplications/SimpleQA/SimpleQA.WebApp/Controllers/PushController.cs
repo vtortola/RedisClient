@@ -21,7 +21,6 @@ namespace SimpleQA.WebApp.Controllers
             _logger = logger;
         }
 
-        [HttpGet]
         [Authorize]
         public HttpStatusCodeResult Updates(CancellationToken cancel)
         {

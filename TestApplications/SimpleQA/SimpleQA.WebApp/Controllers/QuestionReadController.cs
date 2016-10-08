@@ -16,7 +16,6 @@ namespace SimpleQA.WebApp.Controllers
             _mediator = builder;
         }
 
-        [HttpGet]
         [AnonymousOutputCache(CacheProfile = "QuestionCaching")]
         public async Task<ActionResult> Get(QuestionRequest request, CancellationToken cancel)
         {
@@ -24,7 +23,6 @@ namespace SimpleQA.WebApp.Controllers
             return View(model);
         }
 
-        [HttpGet]
         [Authorize]
         public ActionResult Ask(QuestionAskFormRequest request, CancellationToken cancel)
         {
@@ -33,7 +31,6 @@ namespace SimpleQA.WebApp.Controllers
             return View(new QuestionAddFormViewModel() { Tags = tags });
         }
 
-        [HttpGet]
         [Authorize]
         public async Task<ActionResult> Edit(QuestionEditFormRequest request, CancellationToken cancel)
         {
@@ -41,7 +38,6 @@ namespace SimpleQA.WebApp.Controllers
             return View(model);
         }
 
-        [HttpGet]
         [Authorize]
         public async Task<PartialViewResult> Close(QuestionCloseFormRequest request, CancellationToken cancel)
         {
@@ -49,7 +45,6 @@ namespace SimpleQA.WebApp.Controllers
             return PartialView(model);
         }
 
-        [HttpGet]
         [Authorize]
         public async Task<PartialViewResult> Delete(QuestionDeleteFormRequest request, CancellationToken cancel)
         {

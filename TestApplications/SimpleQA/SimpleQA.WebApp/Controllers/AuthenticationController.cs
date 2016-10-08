@@ -19,7 +19,6 @@ namespace SimpleQA.WebApp.Controllers
             _mediator = mediator;
         }
 
-        [HttpPost]
         public async Task<ActionResult> Login(LoginModel model, CancellationToken cancel)
         {
             if (ModelState.IsValid)

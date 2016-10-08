@@ -14,7 +14,6 @@ namespace SimpleQA.WebApp.Controllers
             _mediator = mediator;
         }
 
-        [HttpPost]
         public async Task<JsonResult> Suggest(TagSuggestionRequest input, CancellationToken cancel)
         {
             var suggestions = await _mediator.BuildAsync<TagSuggestionRequest, TagSuggestionsModel>(input, User, cancel);

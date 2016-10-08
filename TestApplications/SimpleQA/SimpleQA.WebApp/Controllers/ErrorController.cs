@@ -8,7 +8,6 @@ namespace SimpleQA.WebApp.Controllers
 {
     public class ErrorController : Controller
     {
-        // GET: Error
         public ActionResult SessionEnded()
         {
             return View();
