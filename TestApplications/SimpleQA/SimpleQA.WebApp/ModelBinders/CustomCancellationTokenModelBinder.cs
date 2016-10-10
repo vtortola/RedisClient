@@ -14,9 +14,9 @@ namespace SimpleQA.WebApp.ModelBinders
 
         public object BindModel(ControllerContext controllerContext, ModelBindingContext bindingContext)
         {
-            var cancelSource = new CancellationTokenSource();
-            controllerContext.HttpContext.Response.ClientDisconnectedToken.Register(cancelSource.Cancel);
-            controllerContext.HttpContext.Request.TimedOutToken.Register(cancelSource.Cancel);
+            var cancelSource = CancellationTokenSource.CreateLinkedTokenSource(
+                                    controllerContext.HttpContext.Response.ClientDisconnectedToken,
+                                    controllerContext.HttpContext.Request.TimedOutToken);
             return cancelSource.Token;
         }
 
