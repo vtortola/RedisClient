@@ -15,6 +15,7 @@ namespace SimpleQA.WebApp.Filter
             {
                 if (filterContext.HttpContext.Request.IsAjaxRequest())
                 {
+                    filterContext.Result = new HttpStatusCodeResult(HttpStatusCode.Unauthorized, "Your session has ended.");
                 }
                 else
                 {
