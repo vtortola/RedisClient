@@ -17,18 +17,18 @@ namespace SimpleQA.RedisCommands
             _channel = channel;
         }
 
-        public async Task<TagSuggestionsModel> BuildAsync(TagSuggestionRequest request, IPrincipal user, CancellationToken cancel)
+        public async Task<TagSuggestionsModel> BuildAsync(TagSuggestionRequest request, SimpleQAIdentity user, CancellationToken cancel)
         {
             var result = await _channel.ExecuteAsync(
                                         "SuggestTags {tag} @prefix @max", 
                                         new 
                                         { 
                                             prefix = request.Query,
-                                            max = 10
+                                            max = 100
                                         }).ConfigureAwait(false);
 
             result.ThrowErrorIfAny();
-            return new TagSuggestionsModel(result[0].GetStringArray());
+            return new TagSuggestionsModel(result[0].GetStringArray().Take(10).ToArray());
         }
     }
 }
