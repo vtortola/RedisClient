@@ -16,11 +16,11 @@ namespace SimpleQA.RedisCommands
         }
 
         // Dummy authentication
-        public async Task<AuthenticateCommandResult> ExecuteAsync(AuthenticateCommand command, IPrincipal user, CancellationToken cancel)
+        public async Task<AuthenticateCommandResult> ExecuteAsync(AuthenticateCommand command, SimpleQAIdentity user, CancellationToken cancel)
         {
             // Preventing user from login in with a user from a data dump
             // because markdown code is missing and cannto be edited
-            if(user.Identity.Name != "dumpprocessor")
+            if(user.Name != "dumpprocessor")
             {
                 var ismember = await _channel.ExecuteAsync("SISMEMBER {user}:builtin @user", new { user = command.Username }).ConfigureAwait(false);
                 if (ismember[0].GetInteger() == 1)

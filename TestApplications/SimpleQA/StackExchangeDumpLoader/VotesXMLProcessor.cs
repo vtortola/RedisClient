@@ -35,7 +35,7 @@ namespace StackExchangeDumpLoader
         private void VotePost(XElement vote, IDictionary<String, String> usermap, IDictionary<String, String> postmap)
         {
             var userId = vote.Attribute("UserId").Value;
-            var user = new SimpleQAPrincipal(usermap[userId], "whatever", "", 0);
+            var user = new SimpleQAIdentity(usermap[userId], "whatever", "", 0);
 
             if (!postmap.ContainsKey(vote.Attribute("PostId").Value))
                 return;
@@ -61,14 +61,14 @@ namespace StackExchangeDumpLoader
             }
         }
 
-        private void VoteAnswer(SimpleQAPrincipal user, String questionId, String answerId)
+        private void VoteAnswer(SimpleQAIdentity user, String questionId, String answerId)
         {
             var command = new AnswerVoteCommand(questionId, answerId, true);
             var result = _mediator.ExecuteAsync<AnswerVoteCommand, AnswerVoteCommandResult>(command, user, CancellationToken.None).Result;
 
         }
 
-        private void VoteQuestion(SimpleQAPrincipal user, String questionId)
+        private void VoteQuestion(SimpleQAIdentity user, String questionId)
         {
             var command = new QuestionVoteCommand(questionId, true);
             var result = _mediator.ExecuteAsync<QuestionVoteCommand, QuestionVoteCommandResult>(command, user, CancellationToken.None).Result;

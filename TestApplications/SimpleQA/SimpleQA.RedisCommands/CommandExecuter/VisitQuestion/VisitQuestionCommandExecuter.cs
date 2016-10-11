@@ -15,7 +15,7 @@ namespace SimpleQA.RedisCommands
             _channel = channel;
         }
 
-        public Task<VisitQuestionCommandResult> ExecuteAsync(VisitQuestionCommand command, IPrincipal user, CancellationToken cancel)
+        public Task<VisitQuestionCommandResult> ExecuteAsync(VisitQuestionCommand command, SimpleQAIdentity user, CancellationToken cancel)
         {
             _channel.Dispatch("VisitQuestion {question} @QuestionId @Views", command);
             return Task.FromResult(VisitQuestionCommandResult.Nothing);

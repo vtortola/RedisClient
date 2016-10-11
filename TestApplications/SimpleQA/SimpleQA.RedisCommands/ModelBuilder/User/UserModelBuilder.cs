@@ -15,7 +15,7 @@ namespace SimpleQA.RedisCommands
             _channel = channel;
         }
 
-        public Task<UserModel> BuildAsync(UserModelRequest request, IPrincipal user, CancellationToken cancel)
+        public Task<UserModel> BuildAsync(UserModelRequest request, SimpleQAIdentity user, CancellationToken cancel)
         {
             return Task.FromResult(new UserModel() { Name = request.User });
         }

@@ -12,6 +12,6 @@ namespace SimpleQA
     public interface ICommandExecuter<TCommand, TResult>
         where TCommand : ICommand<TResult>
     {
-        Task<TResult> ExecuteAsync(TCommand command, IPrincipal user, CancellationToken cancel);
+        Task<TResult> ExecuteAsync(TCommand command, SimpleQAIdentity user, CancellationToken cancel);
     }
 }

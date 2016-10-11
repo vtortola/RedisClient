@@ -27,7 +27,7 @@ namespace SimpleQA.WebApp.Filter
                     var command = new ValidateSessionCommand(sessionId);
                     try
                     {
-                        var result = dispatcher.ExecuteAsync<ValidateSessionCommand, ValidateSessionCommandResult>(command, filterContext.HttpContext.User, CancellationToken.None).Result;
+                        var result = dispatcher.ExecuteAsync<ValidateSessionCommand, ValidateSessionCommandResult>(command, filterContext.HttpContext.User.GetAppIdentity(), CancellationToken.None).Result;
                         if (result.IsValid)
                         {
                             filterContext.RequestContext.HttpContext.User = new SimpleQAPrincipal(result.Id, result.UserName, sessionId, result.InboxCount);

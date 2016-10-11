@@ -8,7 +8,7 @@ namespace StackExchangeDumpLoader
 {
     public interface ICommandExecuterMediator
     {
-        Task<TResult> ExecuteAsync<TCommand, TResult>(TCommand query, IPrincipal user, CancellationToken cancel)
+        Task<TResult> ExecuteAsync<TCommand, TResult>(TCommand query, SimpleQAIdentity user, CancellationToken cancel)
             where TCommand : ICommand<TResult>;
     }
     
@@ -20,7 +20,7 @@ namespace StackExchangeDumpLoader
             _container = container;
         }
 
-        public Task<TResult> ExecuteAsync<TCommand, TResult>(TCommand query, IPrincipal user, CancellationToken cancel) 
+        public Task<TResult> ExecuteAsync<TCommand, TResult>(TCommand query, SimpleQAIdentity user, CancellationToken cancel) 
             where TCommand : ICommand<TResult>
         {
             var instance = _container.GetInstance<ICommandExecuter<TCommand, TResult>>();

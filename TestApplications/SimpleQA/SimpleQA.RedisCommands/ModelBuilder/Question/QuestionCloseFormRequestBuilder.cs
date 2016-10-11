@@ -13,7 +13,7 @@ namespace SimpleQA.RedisCommands
         {
             _channel = channel;
         }
-        public async Task<QuestionCloseFormViewModel> BuildAsync(QuestionCloseFormRequest request, IPrincipal user, CancellationToken cancel)
+        public async Task<QuestionCloseFormViewModel> BuildAsync(QuestionCloseFormRequest request, SimpleQAIdentity user, CancellationToken cancel)
         {
             var result = await _channel.ExecuteAsync(
                                         "QuestionCloseForm {question} @id",

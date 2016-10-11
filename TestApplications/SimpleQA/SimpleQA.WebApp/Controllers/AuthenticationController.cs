@@ -24,7 +24,7 @@ namespace SimpleQA.WebApp.Controllers
             if (ModelState.IsValid)
             {
                 var command = new AuthenticateCommand(model.Username, model.Password);
-                var result = await _mediator.ExecuteAsync<AuthenticateCommand, AuthenticateCommandResult>(command, User, cancel);
+                var result = await _mediator.ExecuteAsync<AuthenticateCommand, AuthenticateCommandResult>(command, User.GetAppIdentity(), cancel);
 
                 var ticket = new FormsAuthenticationTicket(1, model.Username, DateTime.Now, DateTime.Now.Add(FormsAuthentication.Timeout), true, result.SessionId);
                 var cookie = FormsAuthentication.Encrypt(ticket);
@@ -48,7 +48,7 @@ namespace SimpleQA.WebApp.Controllers
                 var sessionId = FormsAuthentication.Decrypt(cookie.Value).UserData;
                 var command = new EndSessionCommand(cookie.Value);
 
-                await _mediator.ExecuteAsync<EndSessionCommand, EndSessionCommandResult>(command, User, cancel);
+                await _mediator.ExecuteAsync<EndSessionCommand, EndSessionCommandResult>(command, User.GetAppIdentity(), cancel);
 
                 Response.Cookies.Add(new HttpCookie(FormsAuthentication.FormsCookieName, String.Empty));
                 if(Url.IsLocalUrl(returnUrl))

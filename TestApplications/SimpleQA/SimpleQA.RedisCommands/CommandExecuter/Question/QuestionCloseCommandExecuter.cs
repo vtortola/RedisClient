@@ -15,7 +15,7 @@ namespace SimpleQA.RedisCommands
             _channel = channel;
         }
 
-        public async Task<QuestionCloseCommandResult> ExecuteAsync(QuestionCloseCommand command, IPrincipal user, CancellationToken cancel)
+        public async Task<QuestionCloseCommandResult> ExecuteAsync(QuestionCloseCommand command, SimpleQAIdentity user, CancellationToken cancel)
         {
             var votesToClose = Constant.CloseVotesRequired;
 
@@ -24,7 +24,7 @@ namespace SimpleQA.RedisCommands
                                         new 
                                         { 
                                             id = command.Id, 
-                                            userId = user.GetSimpleQAIdentity().Id,
+                                            userId = user.Id,
                                             votesToClose 
                                         })
                                         .ConfigureAwait(false);

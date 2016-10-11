@@ -27,10 +27,10 @@ namespace SimpleQA
 
     public static class SimpleQAPrincipalExtensions
     {
-        public static SimpleQAIdentity GetSimpleQAIdentity(this IPrincipal principal)
+        public static SimpleQAIdentity GetAppIdentity(this IPrincipal principal)
         {
             var identity = principal.Identity as SimpleQAIdentity;
             return identity ?? SimpleQAPrincipal.Anonymous.SimpleQAIdentity;
-        }
+        }        
     }
 }

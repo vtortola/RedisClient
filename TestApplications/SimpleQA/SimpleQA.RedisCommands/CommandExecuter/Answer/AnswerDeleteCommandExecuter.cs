@@ -14,14 +14,14 @@ namespace SimpleQA.RedisCommands
             _channel = channel;
         }
 
-        public async Task<AnswerDeleteCommandResult> ExecuteAsync(AnswerDeleteCommand command, IPrincipal user, CancellationToken cancel)
+        public async Task<AnswerDeleteCommandResult> ExecuteAsync(AnswerDeleteCommand command, SimpleQAIdentity user, CancellationToken cancel)
         {
             var result = await _channel.ExecuteAsync(
                                         "DeleteAnswer {question} @answerId @userId",
                                         new
                                         {
                                             answerId = command.AnswerId,
-                                            userId = user.GetSimpleQAIdentity().Id
+                                            userId = user.Id
                                         })
                                         .ConfigureAwait(false);
             CheckException(result);

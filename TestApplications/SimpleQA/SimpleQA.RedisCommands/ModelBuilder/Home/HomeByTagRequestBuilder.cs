@@ -18,7 +18,7 @@ namespace SimpleQA.RedisCommands
             _channel = channel;
         }
 
-        public async Task<HomeByTagViewModel> BuildAsync(HomeByTagRequest request, IPrincipal user, CancellationToken cancel)
+        public async Task<HomeByTagViewModel> BuildAsync(HomeByTagRequest request, SimpleQAIdentity user, CancellationToken cancel)
         {
             var model = new HomeByTagViewModel();
 

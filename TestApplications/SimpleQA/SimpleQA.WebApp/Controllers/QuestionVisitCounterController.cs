@@ -18,7 +18,7 @@ namespace SimpleQA.WebApp.Controllers
 
         public async Task<ActionResult> Visit(String questionId, CancellationToken cancel)
         {
-            await _mediator.ExecuteAsync<VisitQuestionCommand, VisitQuestionCommandResult>(new VisitQuestionCommand(questionId), User, cancel).ConfigureAwait(false);
+            await _mediator.ExecuteAsync<VisitQuestionCommand, VisitQuestionCommandResult>(new VisitQuestionCommand(questionId), User.GetAppIdentity(), cancel).ConfigureAwait(false);
             return new HttpStatusCodeResult(HttpStatusCode.NoContent);
         }
     }

@@ -15,7 +15,7 @@ namespace SimpleQA.RedisCommands
             _channel = channel;
         }
 
-        public async Task<ValidateSessionCommandResult> ExecuteAsync(ValidateSessionCommand command, IPrincipal user, CancellationToken cancel)
+        public async Task<ValidateSessionCommandResult> ExecuteAsync(ValidateSessionCommand command, SimpleQAIdentity user, CancellationToken cancel)
         {
             var sessionDuration = TimeSpan.FromMinutes(5).TotalSeconds;
 

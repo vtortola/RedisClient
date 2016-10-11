@@ -14,7 +14,7 @@ namespace SimpleQA.RedisCommands
             _channel = channel;
         }
 
-        public async Task<PopularTagsViewModel> BuildAsync(PopularTagsRequest request, IPrincipal user, CancellationToken cancel)
+        public async Task<PopularTagsViewModel> BuildAsync(PopularTagsRequest request, SimpleQAIdentity user, CancellationToken cancel)
         {
             var result = await _channel.ExecuteAsync("GetPopularTags {tag} @count",
                                         new { count = 20  })

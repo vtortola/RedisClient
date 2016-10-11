@@ -29,14 +29,14 @@ namespace SimpleQA.RedisCommands
             throw new InvalidOperationException("Unexpected vote value: " + value);
         }
 
-        public async Task<QuestionViewModel> BuildAsync(QuestionRequest request, IPrincipal user, CancellationToken cancel)
+        public async Task<QuestionViewModel> BuildAsync(QuestionRequest request, SimpleQAIdentity user, CancellationToken cancel)
         {
             var result = await _channel.ExecuteAsync(
                                         "QuestionRequest {question} @id @userId",
                                         new
                                         {
                                             id = request.Id,
-                                            userId = user.GetSimpleQAIdentity().Id
+                                            userId = user.Id
                                         })
                                         .ConfigureAwait(false);
 
@@ -49,7 +49,7 @@ namespace SimpleQA.RedisCommands
             question.User = complex[1].GetString();
             question.Tags = complex[2].GetStringArray();
             question.Id = request.Id;
-            question.AuthoredByUser = question.User == user.Identity.Name;
+            question.AuthoredByUser = question.User == user.Name;
             question.UpVoted = GetVote(complex[3].GetString());
             question.UserVotedClose = complex[4].AsInteger() == 1;
             
@@ -73,7 +73,7 @@ namespace SimpleQA.RedisCommands
             }
         }
 
-        private static List<AnswerViewModel> ExtractAnswers(IPrincipal user, IRedisResults results, QuestionViewModel question)
+        private static List<AnswerViewModel> ExtractAnswers(SimpleQAIdentity user, IRedisResults results, QuestionViewModel question)
         {
             var answers = new List<AnswerViewModel>();
             foreach (var answerData in results)
@@ -86,7 +86,7 @@ namespace SimpleQA.RedisCommands
                 answer.QuestionId = question.Id;
                 answer.Editable = question.Status == QuestionStatus.Open;
                 answer.Votable = question.Votable;
-                answer.AuthoredByUser = answer.User == user.Identity.Name;
+                answer.AuthoredByUser = answer.User == user.Name;
                 answer.UpVoted = GetVote(answerResult[2].GetString());
                 answers.Add(answer);
             }

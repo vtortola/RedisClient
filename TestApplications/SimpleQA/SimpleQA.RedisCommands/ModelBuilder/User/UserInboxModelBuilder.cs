@@ -18,11 +18,11 @@ namespace SimpleQA.RedisCommands
             _channel = channel;
         }
 
-        public async Task<UserInboxModel> BuildAsync(UserInboxRequest request, IPrincipal user, CancellationToken cancel)
+        public async Task<UserInboxModel> BuildAsync(UserInboxRequest request, SimpleQAIdentity user, CancellationToken cancel)
         {
             var result = await _channel.ExecuteAsync(
                                         "GetInboxNotifications {user} @userId",
-                                        new { userId = user.GetSimpleQAIdentity().Id })
+                                        new { userId = user.Id })
                                         .ConfigureAwait(false);
 
             result.ThrowErrorIfAny();

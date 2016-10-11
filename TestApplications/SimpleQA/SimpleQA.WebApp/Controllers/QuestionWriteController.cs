@@ -27,35 +27,35 @@ namespace SimpleQA.WebApp.Controllers
         public async Task<ActionResult> Ask(QuestionCreateRequest request, CancellationToken cancel)
         {
             var command = new QuestionCreateCommand(request.Title, request.Content, _markdown.TransformIntoHTML(request.Content), DateTime.Now, request.Tags);
-            var result = await _mediator.ExecuteAsync<QuestionCreateCommand, QuestionCreateCommandResult>(command, User, cancel);
+            var result = await _mediator.ExecuteAsync<QuestionCreateCommand, QuestionCreateCommandResult>(command, User.GetAppIdentity(), cancel);
             return RedirectToRoute("QuestionRead", new { id = result.Id, slug = result.Slug, action = "get" });
         }
 
         public async Task<ActionResult> Edit(QuestionEditRequest request, CancellationToken cancel)
         {
             var command = new QuestionEditCommand(request.Id, request.Title, request.Content, _markdown.TransformIntoHTML(request.Content), request.Tags);
-            var result = await _mediator.ExecuteAsync<QuestionEditCommand, QuestionEditCommandResult>(command, User, cancel);
+            var result = await _mediator.ExecuteAsync<QuestionEditCommand, QuestionEditCommandResult>(command, User.GetAppIdentity(), cancel);
             return RedirectToRoute("QuestionRead", new { id = result.Id, slug = result.Slug, action = "get" });
         }
         
         public async Task<ActionResult> Vote(QuestionVoteRequest request, CancellationToken cancel)
         {
             var command = new QuestionVoteCommand(request.Id, request.Upvote);
-            var result = await _mediator.ExecuteAsync<QuestionVoteCommand, QuestionVoteCommandResult>(command, User, cancel);
+            var result = await _mediator.ExecuteAsync<QuestionVoteCommand, QuestionVoteCommandResult>(command, User.GetAppIdentity(), cancel);
             return Json(new { Votes = result.Votes });
         }
 
         public async Task<ActionResult> Close(QuestionActionRequest request, CancellationToken cancel)
         {
             var command = new QuestionCloseCommand(request.Id);
-            var result = await _mediator.ExecuteAsync<QuestionCloseCommand, QuestionCloseCommandResult>(command, User, cancel);
+            var result = await _mediator.ExecuteAsync<QuestionCloseCommand, QuestionCloseCommandResult>(command, User.GetAppIdentity(), cancel);
             return RedirectToRoute("QuestionRead", new { id = result.Id, slug = result.Slug, action = "get" });
         }
 
         public async Task<ActionResult> Delete(QuestionActionRequest request, CancellationToken cancel)
         {
             var command = new QuestionDeleteCommand(request.Id);
-            var result = await _mediator.ExecuteAsync<QuestionDeleteCommand, QuestionDeleteCommandResult>(command, User, cancel);
+            var result = await _mediator.ExecuteAsync<QuestionDeleteCommand, QuestionDeleteCommandResult>(command, User.GetAppIdentity(), cancel);
             return RedirectToRoute("QuestionRead", new { id = result.Id, slug = result.Slug, action = "get" });
         }
     }

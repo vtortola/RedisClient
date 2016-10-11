@@ -7,13 +7,13 @@ namespace SimpleQA.WebApp
 {
     public interface ICommandExecuterMediator
     {
-        Task<TResult> ExecuteAsync<TCommand, TResult>(TCommand query, IPrincipal user, CancellationToken cancel)
+        Task<TResult> ExecuteAsync<TCommand, TResult>(TCommand query, SimpleQAIdentity user, CancellationToken cancel)
             where TCommand : ICommand<TResult>;
     }
     
     public sealed class CommandExecuterMediator : ICommandExecuterMediator
     {
-        public Task<TResult> ExecuteAsync<TCommand, TResult>(TCommand query, IPrincipal user, CancellationToken cancel) 
+        public Task<TResult> ExecuteAsync<TCommand, TResult>(TCommand query, SimpleQAIdentity user, CancellationToken cancel) 
             where TCommand : ICommand<TResult>
         {
             var instance = DependencyResolver.Current.GetService<ICommandExecuter<TCommand, TResult>>();

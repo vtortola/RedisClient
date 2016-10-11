@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using vtortola.Redis;
 using System.Linq;
+using SimpleQA;
 
 namespace StackExchangeDumpLoader
 {
@@ -26,7 +27,7 @@ namespace StackExchangeDumpLoader
         {
             var users = doc.Element("users").Elements();
             var idmap = new ConcurrentDictionary<String, String>();
-            var anonymous = new GenericPrincipal(new GenericIdentity("dumpprocessor"), null);
+            var anonymous = new SimpleQAIdentity("", "dumpprocessor", "", 0);
 
             Parallel.ForEach(users, new ParallelOptions() { MaxDegreeOfParallelism = Environment.ProcessorCount }, user =>
             {

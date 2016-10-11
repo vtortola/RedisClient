@@ -17,7 +17,7 @@ namespace SimpleQA.RedisCommands
             _channel = channel;
         }
 
-        public async Task<QuestionEditCommandResult> ExecuteAsync(QuestionEditCommand command, IPrincipal user, CancellationToken cancel)
+        public async Task<QuestionEditCommandResult> ExecuteAsync(QuestionEditCommand command, SimpleQAIdentity user, CancellationToken cancel)
         {
             var data = GetPatchData(command);
 
@@ -26,7 +26,7 @@ namespace SimpleQA.RedisCommands
                                         new 
                                         { 
                                             id = command.Id,
-                                            userId = user.GetSimpleQAIdentity().Id,
+                                            userId = user.Id,
                                             data, 
                                             tags = command.Tags,
                                             topic = "question-" + command.Id

@@ -14,7 +14,7 @@ namespace SimpleQA.RedisCommands
             _channel = channel;
         }
 
-        public Task<EndSessionCommandResult> ExecuteAsync(EndSessionCommand command, IPrincipal user, CancellationToken cancel)
+        public Task<EndSessionCommandResult> ExecuteAsync(EndSessionCommand command, SimpleQAIdentity user, CancellationToken cancel)
         {
             _channel.Dispatch("EndSession {user} @SessionId", new { command.SessionId });
             return Task.FromResult(EndSessionCommandResult.Instance);

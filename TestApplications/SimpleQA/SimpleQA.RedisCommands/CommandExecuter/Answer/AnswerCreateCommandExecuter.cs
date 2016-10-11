@@ -16,7 +16,7 @@ namespace SimpleQA.RedisCommands
             _channel = channel;
         }
 
-        public async Task<AnswerCreateCommandResult> ExecuteAsync(AnswerCreateCommand command, IPrincipal user, CancellationToken cancel)
+        public async Task<AnswerCreateCommandResult> ExecuteAsync(AnswerCreateCommand command, SimpleQAIdentity user, CancellationToken cancel)
         {
             var result = await _channel.ExecuteAsync(
                                         "CreateAnswer {question} @qid @data",
@@ -31,24 +31,24 @@ namespace SimpleQA.RedisCommands
             var quesionData = result[1].GetStringArray();
             var slug = quesionData[0];
             var ownerId = quesionData[1];
-            if (ownerId != user.GetSimpleQAIdentity().Id)
+            if (ownerId != user.Id)
             {
                 _channel.Dispatch("NotifyQuestionUpdate {user} @qid @uid",
                                   new
                                   {
                                       qid = command.QuestionId,
-                                      uid = user.GetSimpleQAIdentity().Id
+                                      uid = user.Id
                                   });
             }
             return new AnswerCreateCommandResult(command.QuestionId, slug, aid);
         }
 
-        static IEnumerable<String> GetAnswerData(AnswerCreateCommand command, String questionId, IPrincipal user)
+        static IEnumerable<String> GetAnswerData(AnswerCreateCommand command, String questionId, SimpleQAIdentity user)
         {
             var data = Parameter.SequenceProperties(new
             {
                 QuestionId = questionId,
-                UserId = user.GetSimpleQAIdentity().Id,
+                UserId = user.Id,
                 Content = command.Content,
                 HtmlContent = command.HtmlContent,
                 CreatedOn = command.CreationDate,

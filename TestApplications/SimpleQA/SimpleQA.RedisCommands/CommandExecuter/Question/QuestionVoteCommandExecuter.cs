@@ -17,7 +17,7 @@ namespace SimpleQA.RedisCommands
             _channel = channel;
         }
 
-        public async Task<QuestionVoteCommandResult> ExecuteAsync(QuestionVoteCommand command, IPrincipal user, CancellationToken cancel)
+        public async Task<QuestionVoteCommandResult> ExecuteAsync(QuestionVoteCommand command, SimpleQAIdentity user, CancellationToken cancel)
         {
             var result = 
                 await _channel.ExecuteAsync(
@@ -25,7 +25,7 @@ namespace SimpleQA.RedisCommands
                                         new
                                         {
                                             id = command.QuestionId,
-                                            userId = user.GetSimpleQAIdentity().Id,
+                                            userId = user.Id,
                                             score = command.Upvote ? Constant.VoteScore : 0 - Constant.VoteScore,
                                             upvote = command.Upvote ? 1 : 0
                                         })

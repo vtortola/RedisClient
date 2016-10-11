@@ -16,14 +16,14 @@ namespace SimpleQA.RedisCommands
             _channel = channel;
         }
 
-        public async Task<AnswerViewModel> BuildAsync(AnswerRequest request, IPrincipal user, CancellationToken cancel)
+        public async Task<AnswerViewModel> BuildAsync(AnswerRequest request, SimpleQAIdentity user, CancellationToken cancel)
         {
             var result = await _channel.ExecuteAsync(
                                         "GetAnswer {question} @answerId @userId",
                                          new
                                          {
                                              answerId = request.AnswerId,
-                                             userId = user.GetSimpleQAIdentity().Id
+                                             userId = user.Id
                                          })
                                          .ConfigureAwait(false);
 
@@ -36,7 +36,7 @@ namespace SimpleQA.RedisCommands
             answer.QuestionId = request.QuestionId;
             answer.Editable = questionStatus == QuestionStatus.Open;
             answer.Votable = questionStatus == QuestionStatus.Open;
-            answer.AuthoredByUser = answer.User == user.Identity.Name;
+            answer.AuthoredByUser = answer.User == user.Name;
             answer.UpVoted = GetVote(result[2].GetString());
             return answer;
         }

@@ -18,17 +18,17 @@ namespace SimpleQA.WebApp.Controllers
 
         public async Task<PartialViewResult> Get(AnswerRequest request, CancellationToken cancel)
         {
-            return PartialView(await _mediator.BuildAsync<AnswerRequest, AnswerViewModel>(request, User, cancel));
+            return PartialView(await _mediator.BuildAsync<AnswerRequest, AnswerViewModel>(request, User.GetAppIdentity(), cancel));
         }
 
         public async Task<PartialViewResult> Edit(AnswerEditFormRequest request, CancellationToken cancel)
         {
-            return PartialView(await _mediator.BuildAsync<AnswerEditFormRequest, AnswerEditFormViewModel>(request, User, cancel));
+            return PartialView(await _mediator.BuildAsync<AnswerEditFormRequest, AnswerEditFormViewModel>(request, User.GetAppIdentity(), cancel));
         }
 
         public async Task<PartialViewResult> Delete(AnswerDeleteFormRequest request, CancellationToken cancel)
         {
-            return PartialView(await _mediator.BuildAsync<AnswerDeleteFormRequest, AnswerDeleteFormViewModel>(request, User, cancel));
+            return PartialView(await _mediator.BuildAsync<AnswerDeleteFormRequest, AnswerDeleteFormViewModel>(request, User.GetAppIdentity(), cancel));
         }
     }
 }

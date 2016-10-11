@@ -8,14 +8,14 @@ namespace SimpleQA.WebApp
 {
     public interface IModelBuilderMediator
     {
-        Task<TModel> BuildAsync<TRequest, TModel>(TRequest request, IPrincipal user, CancellationToken cancel)
+        Task<TModel> BuildAsync<TRequest, TModel>(TRequest request, SimpleQAIdentity user, CancellationToken cancel)
             where TModel : IModel
             where TRequest : IModelRequest<TModel>;
     }
 
     public class ModelBuilderMediator : IModelBuilderMediator
     {
-        public Task<TModel> BuildAsync<TRequest, TModel>(TRequest request, IPrincipal user, CancellationToken cancel)
+        public Task<TModel> BuildAsync<TRequest, TModel>(TRequest request, SimpleQAIdentity user, CancellationToken cancel)
             where TRequest : IModelRequest<TModel>
             where TModel : IModel
         {

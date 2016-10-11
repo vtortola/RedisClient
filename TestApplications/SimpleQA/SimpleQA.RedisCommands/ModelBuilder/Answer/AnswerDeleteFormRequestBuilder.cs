@@ -15,7 +15,7 @@ namespace SimpleQA.RedisCommands
             _channel = channel;
         }
 
-        public Task<AnswerDeleteFormViewModel> BuildAsync(AnswerDeleteFormRequest request, IPrincipal user, CancellationToken cancel)
+        public Task<AnswerDeleteFormViewModel> BuildAsync(AnswerDeleteFormRequest request, SimpleQAIdentity user, CancellationToken cancel)
         {
             return Task.FromResult(new AnswerDeleteFormViewModel() { QuestionId = request.QuestionId, AnswerId = request.AnswerId });
         }

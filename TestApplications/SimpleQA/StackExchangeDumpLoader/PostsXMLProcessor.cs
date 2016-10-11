@@ -88,11 +88,11 @@ namespace StackExchangeDumpLoader
                                                     tags);
             var sw = new Stopwatch();
             sw.Start();
-            var result = _mediator.ExecuteAsync<QuestionCreateCommand, QuestionCreateCommandResult>(command, user, CancellationToken.None).Result;
+            var result = _mediator.ExecuteAsync<QuestionCreateCommand, QuestionCreateCommandResult>(command, user.GetAppIdentity(), CancellationToken.None).Result;
             sw.Stop();
 
             var viewCommand = new VisitQuestionCommand(result.Id, views);
-            _mediator.ExecuteAsync<VisitQuestionCommand, VisitQuestionCommandResult>(viewCommand, user, CancellationToken.None).Wait();
+            _mediator.ExecuteAsync<VisitQuestionCommand, VisitQuestionCommandResult>(viewCommand, user.GetAppIdentity(), CancellationToken.None).Wait();
 
             Console.WriteLine("Added question: " + result.Slug + ",  " + question.Attribute("Body").Value.Length + " chars in " + sw.ElapsedMilliseconds + " ms.");
 
@@ -113,7 +113,7 @@ namespace StackExchangeDumpLoader
                                                   answer.Attribute("Body").Value);
 
             var user = new SimpleQAPrincipal(usermap[userId], "whatever", "", 0);
-            var result = _mediator.ExecuteAsync<AnswerCreateCommand, AnswerCreateCommandResult>(command, user, CancellationToken.None).Result;
+            var result = _mediator.ExecuteAsync<AnswerCreateCommand, AnswerCreateCommandResult>(command, user.GetAppIdentity(), CancellationToken.None).Result;
 
             idmap.TryAdd(answer.Attribute("Id").Value, result.QuestionId + "@" + result.AnswerId);
 

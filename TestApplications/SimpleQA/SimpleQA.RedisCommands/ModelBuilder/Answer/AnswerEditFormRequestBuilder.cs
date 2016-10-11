@@ -15,14 +15,14 @@ namespace SimpleQA.RedisCommands
             _channel = channel;
         }
 
-        public async Task<AnswerEditFormViewModel> BuildAsync(AnswerEditFormRequest request, IPrincipal user, CancellationToken cancel)
+        public async Task<AnswerEditFormViewModel> BuildAsync(AnswerEditFormRequest request, SimpleQAIdentity user, CancellationToken cancel)
         {
             var result = await _channel.ExecuteAsync(
                                         "GetAnswerEditData {question} @answerId @userID",
                                         new 
                                         { 
                                             answerId = request.AnswerId,
-                                            userId = user.GetSimpleQAIdentity().Id
+                                            userId = user.Id
                                         })
                                         .ConfigureAwait(false);
 

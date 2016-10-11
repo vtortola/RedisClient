@@ -21,7 +21,7 @@ namespace SimpleQA.RedisCommands
            _channel = channel;
        }
 
-       public async Task<QuestionCreateCommandResult> ExecuteAsync(QuestionCreateCommand command, IPrincipal user, CancellationToken cancel)
+       public async Task<QuestionCreateCommandResult> ExecuteAsync(QuestionCreateCommand command, SimpleQAIdentity user, CancellationToken cancel)
        {
            var result = await _channel.ExecuteAsync(@"CreateQuestionId {questions}").ConfigureAwait(false);
            var id = result[0].GetInteger().ToString();
@@ -40,7 +40,7 @@ namespace SimpleQA.RedisCommands
                                    {
                                        id,
                                        data,
-                                       userId = user.GetSimpleQAIdentity().Id,
+                                       userId = user.Id,
                                        tags = command.Tags,
                                        initialScore,
                                        scoreIncr
@@ -62,7 +62,7 @@ namespace SimpleQA.RedisCommands
            return slug;
        }
 
-       static IEnumerable<String> GetQuestionData(QuestionCreateCommand command, IPrincipal user, String id, String slug, Int64 initialScore)
+       static IEnumerable<String> GetQuestionData(QuestionCreateCommand command, SimpleQAIdentity user, String id, String slug, Int64 initialScore)
        {
            var data = Parameter.SequenceProperties(new
            {
@@ -71,7 +71,7 @@ namespace SimpleQA.RedisCommands
                Content = command.Content,
                HtmlContent = command.HtmlContent,
                CreatedOn = command.CreationDate,
-               UserId = user.GetSimpleQAIdentity().Id,
+               UserId = user.Id,
                Slug = slug,
                Score = initialScore,
                UpVotes = 0,

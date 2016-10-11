@@ -1,7 +1,7 @@
 ﻿@{
     var uriBuilder = new UriBuilder("ws", Request.Url.Host, Request.Url.Port);
     var ws = uriBuilder.Uri.AbsoluteUri;
-    var qauser = User.GetSimpleQAIdentity();
+    var qauser = User.GetAppIdentity();
 }
 @if (User.Identity.IsAuthenticated)
 {

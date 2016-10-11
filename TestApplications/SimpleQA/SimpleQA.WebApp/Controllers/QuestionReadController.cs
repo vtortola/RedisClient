@@ -19,7 +19,7 @@ namespace SimpleQA.WebApp.Controllers
         [AnonymousOutputCache(CacheProfile = "QuestionCaching")]
         public async Task<ActionResult> Get(QuestionRequest request, CancellationToken cancel)
         {
-            var model = await _mediator.BuildAsync<QuestionRequest, QuestionViewModel>(request, User, cancel);
+            var model = await _mediator.BuildAsync<QuestionRequest, QuestionViewModel>(request, User.GetAppIdentity(), cancel);
             return View(model);
         }
 
@@ -34,21 +34,21 @@ namespace SimpleQA.WebApp.Controllers
         [Authorize]
         public async Task<ActionResult> Edit(QuestionEditFormRequest request, CancellationToken cancel)
         {
-            var model = await _mediator.BuildAsync<QuestionEditFormRequest, QuestionEditFormViewModel>(request, User, cancel);
+            var model = await _mediator.BuildAsync<QuestionEditFormRequest, QuestionEditFormViewModel>(request, User.GetAppIdentity(), cancel);
             return View(model);
         }
 
         [Authorize]
         public async Task<PartialViewResult> Close(QuestionCloseFormRequest request, CancellationToken cancel)
         {
-            var model = await _mediator.BuildAsync<QuestionCloseFormRequest, QuestionCloseFormViewModel>(request, User, cancel);
+            var model = await _mediator.BuildAsync<QuestionCloseFormRequest, QuestionCloseFormViewModel>(request, User.GetAppIdentity(), cancel);
             return PartialView(model);
         }
 
         [Authorize]
         public async Task<PartialViewResult> Delete(QuestionDeleteFormRequest request, CancellationToken cancel)
         {
-            var model = await _mediator.BuildAsync<QuestionDeleteFormRequest, QuestionDeleteFormViewModel>(request, User, cancel);
+            var model = await _mediator.BuildAsync<QuestionDeleteFormRequest, QuestionDeleteFormViewModel>(request, User.GetAppIdentity(), cancel);
             return PartialView(model);
         }
     }

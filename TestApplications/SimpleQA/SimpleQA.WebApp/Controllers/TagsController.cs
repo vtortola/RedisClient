@@ -1,4 +1,5 @@
 ﻿using SimpleQA.Models;
+using SimpleQA.WebApp.Filter;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -14,9 +15,10 @@ namespace SimpleQA.WebApp.Controllers
             _mediator = mediator;
         }
 
+        [AuthorizeWrite]
         public async Task<JsonResult> Suggest(TagSuggestionRequest input, CancellationToken cancel)
         {
-            var suggestions = await _mediator.BuildAsync<TagSuggestionRequest, TagSuggestionsModel>(input, User, cancel);
+            var suggestions = await _mediator.BuildAsync<TagSuggestionRequest, TagSuggestionsModel>(input, User.GetAppIdentity(), cancel);
 
             return Json(suggestions.Suggestions);
         }
@@ -25,7 +27,7 @@ namespace SimpleQA.WebApp.Controllers
         public PartialViewResult Popular(CancellationToken cancel)
         {
             // ChildActionOnly does not support asynchronous operations...
-            var model = _mediator.BuildAsync<PopularTagsRequest, PopularTagsViewModel>(new PopularTagsRequest(), User, cancel).Result;
+            var model = _mediator.BuildAsync<PopularTagsRequest, PopularTagsViewModel>(new PopularTagsRequest(), User.GetAppIdentity(), cancel).Result;
             return PartialView(model);
         }
     }

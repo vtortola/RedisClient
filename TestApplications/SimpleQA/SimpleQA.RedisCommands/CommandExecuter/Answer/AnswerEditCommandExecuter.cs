@@ -16,14 +16,14 @@ namespace SimpleQA.RedisCommands
             _channel = channel;
         }
 
-        public async Task<AnswerEditCommandResult> ExecuteAsync(AnswerEditCommand command, IPrincipal user, CancellationToken cancel)
+        public async Task<AnswerEditCommandResult> ExecuteAsync(AnswerEditCommand command, SimpleQAIdentity user, CancellationToken cancel)
         {
             var result = await _channel.ExecuteAsync(
                                         "AnswerEdit {question} @answerId @userId @data",
                                          new
                                          {
                                              answerId = command.AnswerId,
-                                             userId = user.GetSimpleQAIdentity().Id,
+                                             userId = user.Id,
                                              data = GetData(command)
                                          })
                                          .ConfigureAwait(false);

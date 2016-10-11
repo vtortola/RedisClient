@@ -17,6 +17,6 @@ namespace SimpleQA.Models
         where TRequest : IModelRequest<TModel>
         where TModel : IModel
     {
-        Task<TModel> BuildAsync(TRequest request, IPrincipal user, CancellationToken cancel);
+        Task<TModel> BuildAsync(TRequest request, SimpleQAIdentity user, CancellationToken cancel);
     }
 }
