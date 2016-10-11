@@ -12,6 +12,7 @@ namespace SimpleQA.WebApp.Controllers
 {
     [AuthorizeWrite]
     [EnforceValidModel]
+    [ValidateXSRFToken]
     public class QuestionWriteController : Controller
     {
         readonly ICommandExecuterMediator _mediator;

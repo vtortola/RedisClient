@@ -147,6 +147,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Filter\ValidateXSRFTokenAttribute.cs" />
     <Content Include="Global.asax" />
     <Content Include="Images\logo.png" />
     <Content Include="Scripts\app.action.subscription.js" />
@@ -220,7 +221,7 @@
     <Compile Include="Helpers\PaginationHelper.cs" />
     <Compile Include="Helpers\QuestionOrderingHelper.cs" />
     <Compile Include="Helpers\RelativeDateTimeHelper.cs" />
-    <Compile Include="Helpers\SessionHelper.cs" />
+    <Compile Include="Helpers\XSRFValidationHelper.cs" />
     <Compile Include="Messaging\WebSocketNotificationExtensions.cs" />
     <Compile Include="Infrastructure\_ICommandExecuterMediator.cs" />
     <Compile Include="Infrastructure\Markdown.cs" />
@@ -256,6 +257,7 @@
     <Content Include="Views\Shared\_ColumnsLayout.cshtml" />
     <Content Include="Views\User\Inbox.cshtml" />
     <Content Include="Views\Error\AuthenticationFailed.cshtml" />
+    <Content Include="Views\Error\InvalidToken.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

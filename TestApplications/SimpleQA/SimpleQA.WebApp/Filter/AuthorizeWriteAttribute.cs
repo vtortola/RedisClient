@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Mvc;
 
@@ -14,7 +15,6 @@ namespace SimpleQA.WebApp.Filter
             {
                 if (filterContext.HttpContext.Request.IsAjaxRequest())
                 {
-                    filterContext.Result = new HttpStatusCodeResult(500, "Your session has ended.");
                 }
                 else
                 {

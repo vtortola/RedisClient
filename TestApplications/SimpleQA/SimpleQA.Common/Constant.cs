@@ -13,5 +13,8 @@ namespace SimpleQA
         public static readonly Int64 VoteScore = TimeSpan.FromDays(1).Ticks;
 
         public const Int32 ItemsPerPage = 10;
+
+        public const String XSRFCookie = "xc";
+        public const String XSRFVarName = "xv";
     }
 }

@@ -1,55 +1,58 @@
 ﻿@using StackExchange.Profiling;
 <!DOCTYPE html>
-<html data-session-id="@User.GetSessionToken()" class="@(User.Identity.IsAuthenticated?"authenticated":"anonymous")">
-    <head>
-        <meta name="viewport" content="width=device-width" />
-        <title>@(!String.IsNullOrWhiteSpace(ViewBag.Title)? ViewBag.Title + " | Simple QA":"Simple QA")</title>
-        @*Using external link to prevent font errors in ISS express*@
-        <link href="~/Styles/bootstrap.min.css" rel="stylesheet" />
-        @*<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">*@
-        @if (User.Identity.IsAuthenticated)
-        {
-            <link href="~/Styles/simplemde.min.css" rel="stylesheet" />
-            <link href="~/Styles/bootstrap-tagsinput.css" rel="stylesheet" />
-        }
-        <link href="~/Styles/app.css" rel="stylesheet" />
-    </head>
-    <body data-scene="@ViewBag.Scene">
-    
-        <header>
-            <nav class="navbar navbar-default" id="topbar">
-                <h1 class="navbar-left"><a href="/" id="topbar-title"></a></h1>
-                @{Html.RenderPartial("UserLoginControl");}
-            </nav>
-        </header>
-    
-        <div class="content">
-            @RenderBody()
-        </div>
+<html data-xsrf-value="@this.ViewContext.HttpContext.GetSessionToken()"
+      data-xsrf-key="@Constant.XSRFVarName"
+      class="@(User.Identity.IsAuthenticated?"authenticated":"anonymous")">
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@(!String.IsNullOrWhiteSpace(ViewBag.Title) ? ViewBag.Title + " | Simple QA" : "Simple QA")</title>
+    @*Using external link to prevent font errors in ISS express*@
+    @*<link href="~/Styles/bootstrap.min.css" rel="stylesheet" />*@
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    @if (User.Identity.IsAuthenticated)
+    {
+        <link href="~/Styles/simplemde.min.css" rel="stylesheet" />
+        <link href="~/Styles/bootstrap-tagsinput.css" rel="stylesheet" />
+    }
+    <link href="~/Styles/app.css" rel="stylesheet" />
+</head>
+<body data-scene="@ViewBag.Scene">
 
-        <div id="generic-error" class="modal fade" tabindex="-1" role="dialog">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title">Error</h4>
-                    </div>
-                    <div class="modal-body">
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-danger" data-dismiss="modal">Ok</button>
-                    </div>
+    <header>
+        <nav class="navbar navbar-default" id="topbar">
+            <h1 class="navbar-left"><a href="/" id="topbar-title"></a></h1>
+            @{Html.RenderPartial("UserLoginControl");}
+        </nav>
+    </header>
+
+    <div class="content">
+        @RenderBody()
+    </div>
+
+    <div id="generic-error" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Error</h4>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Ok</button>
                 </div>
             </div>
         </div>
+    </div>
 
-        @Scripts.Render("~/bundles/base")
-        @if (User.Identity.IsAuthenticated) 
-        { 
-            @Scripts.Render("~/bundles/user")
-        }
-        
-        @RenderSection("scripts", false)
-        @MiniProfiler.RenderIncludes()
+    @Scripts.Render("~/bundles/base")
+    @if (User.Identity.IsAuthenticated)
+    {
+        @Scripts.Render("~/bundles/user")
+    }
 
-    </body>
+    @RenderSection("scripts", false)
+    @MiniProfiler.RenderIncludes()
+
+</body>
 </html>
+

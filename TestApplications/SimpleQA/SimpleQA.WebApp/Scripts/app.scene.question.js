@@ -15,11 +15,20 @@ simpleqa.scene.question = function ($) {
         var url = $element.data('vote-url');
         var voteClass = up ? "upvoted" : "downvoted";
 
+        var data = {
+            upvote: up
+        };
+        data[$('html').data('xsrf-key')] = $('html').data('xsrf-value');
+
         $.ajax({
             url: url,
             method: 'post',
-            data: { upvote: up, sessionId: $('html').data('session-id') },
-            dataType: 'json'
+            data: data,
+            dataType: 'json',
+
+            // for using JSON: Still have to work out the XSRF token validation
+            //data: JSON.stringify(data),
+            //contentType: "application/json; charset=utf-8"
         })
         .done(function (response) {
             var $votes = $element.find('.votes');
