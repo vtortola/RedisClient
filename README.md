@@ -1,4 +1,15 @@
 # RedisClient
+
+:warning: :construction: 
+
+This project is abandoned.
+
+It was a prototype and the excuse to learn how Redis works. After reading about `MULTI`, `WATCH` and the benefits of `EVAL` in the monothreaded Redis, the "procedures" seemed like a good idea, but later on I discovered how Redis Cluster works, and then became more clear that Lua scripts in Redis were mean to be short and concise macros rather than big pieces of code. A procedure using keys that are stored in different cluster leaders would fail. Also, although I implemented a connection multiplexer for both commands and subscriptions, the idea of having multiple connections in which I could schedule blocking commands turned out to be messy and limited.
+
+All in all, it was good fun and a learning experience.
+
+:warning: :construction: 
+
 ##### Status: ALPHA 
 [![Build status](https://ci.appveyor.com/api/projects/status/we9e8or6ajlm72pu/branch/master?svg=true)](https://ci.appveyor.com/project/vtortola/redisclient/branch/master)
 
@@ -65,12 +76,6 @@ var products = hashes.Select(h => h.AsObjectCollation<Product>()).ToArray();
 ```
 
 Server side scripting has multiple advantages, like preventing multiple round trips to the Redis instance or atomicity. [Continue reading about procedures](//github.com/vtortola/RedisClient#executing-procedures) 
-
-#### Performance
-A [performance comparison](//github.com/vtortola/RedisClient/wiki/Performance) shows the that the performance is close to other well known clients.
-
-<a href="//github.com/vtortola/RedisClient/wiki/Performance" style="display:block"><img src="http://vtortola.github.io/RCPerf/pipeline.png" height="250"></a>
-<a href="//github.com/vtortola/RedisClient/wiki/Performance" style="display:block"><img src="http://vtortola.github.io/RCPerf/transactions.png" height="250"></a>
 
 
 #### Use in a web application
